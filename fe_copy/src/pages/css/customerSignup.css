@@ -1,0 +1,35 @@
+/* Category list styles */
+.category-list {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  display: grid; /* Use grid layout */
+  grid-template-columns: repeat(auto-fill, minmax(75px, 2fr)); /* Dynamic columns */
+  grid-gap: 5px; /* Spacing between grid items */
+}
+
+.category-list h3 {
+  color: #745038;
+  font-size: 18px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.category-list label {
+  display: inline-block; /* Use flexbox for label alignment */
+  align-items: center; /* Center-align label content */
+  padding: 10px;
+  border: 1px solid #ccc; /* Add border to labels for better separation */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer;
+}
+
+.category-list label:hover {
+  background-color: #ececec;
+}
+
+.category-list input[type="checkbox"] {
+  margin-right: 10px;
+}
