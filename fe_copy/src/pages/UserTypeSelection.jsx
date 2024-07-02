@@ -2,10 +2,13 @@
 import "./css/userTypeSelection.css";
 import React from "react";
 import { NavLink } from "react-router-dom";
+import OutHeader from "../components/OutHeader";
+import Footer from "../components/Footer";
 
 function UserTypeSelection() {
   return (
-    <div>
+    <body>
+      <OutHeader/>
       <section className="typeContainer">
         <h2>Choose your user type</h2>
         <div className="button-container">
@@ -17,7 +20,8 @@ function UserTypeSelection() {
           </NavLink>
         </div>
       </section>
-    </div>
+      <Footer/>
+    </body>
   );
 }
 

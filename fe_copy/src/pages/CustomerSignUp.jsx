@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./css/login.css";
+import "./css/index.css"
+import "./css/outHeader.css"
 import "./css/customerSignup.css";
+import OutHeader from "../components/OutHeader";
+import Footer from "../components/Footer";
 
 function CustomerSignUp() {
   const [name, setName] = useState("");
@@ -77,9 +81,11 @@ function CustomerSignUp() {
   };
 
   return (
-    <div className="container">
-      <h1>All4U</h1>
-      <h2>Customer Sign Up</h2>
+    <body >
+      <OutHeader/>
+      <div className="container">
+        <h1>All4U</h1>
+        <h2>Customer Sign Up</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -139,8 +145,9 @@ function CustomerSignUp() {
           ))}
         </div>
         <button type="submit">Sign Up</button>
-      </form>
-    </div>
+      </form></div>
+      <Footer/>
+    </body>
   );
 }
 

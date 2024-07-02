@@ -1,0 +1,13 @@
+.section1 {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  width: 70%;
+  margin: 0 auto; /* Center the section horizontally */
+  height: 100vh; /* Ensure section takes full viewport height */
+}
+
+.section1 img {
+  max-width: 100%;
+  height: auto; /* Maintain aspect ratio */
+}

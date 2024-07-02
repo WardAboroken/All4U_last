@@ -1,5 +1,4 @@
-import Footer from "./components/Footer";
-import Header from "./components/Header";
+// import Footer from "./components/Footer";
 import { Route, Routes } from "react-router-dom";
 import CustomerSignUp from "./pages/CustomerSignUp";
 import Login from "./pages/Login";
@@ -7,13 +6,13 @@ import ForgotPassword from "./pages/ForgotPassword"
 import MainPage from "./pages/MainPage";
 import UserTypeSelection from "./pages/UserTypeSelection";
 import ShopOwnerSignUp from "./pages/ShopOwnerSignUp"
-// import ShopMainPage from "./pages/ShopMainPage"
+import ShopMainPage from "./pages/ShopMainPage"
 
 function App() {
   const projectName = "Test Project";
   return (
     <body className="App">
-      <Header />
+      {/* <Header /> */}
       <div className="main">
         <Routes>
           <Route path="/CustomerSignUp" element={<CustomerSignUp />} />
@@ -22,10 +21,10 @@ function App() {
           <Route path="/UserTypeSelection" element={<UserTypeSelection />} />
           <Route path="/ShopOwnerSignUp" element={<ShopOwnerSignUp />} />
           <Route path="/" element={<MainPage data={projectName} />} />
-          {/* <Route path="/ShopMainPage" element={<ShopMainPage/>}/> */}
+          <Route path="/ShopMainPage" element={<ShopMainPage/>}/>
         </Routes>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </body>
   );
 }

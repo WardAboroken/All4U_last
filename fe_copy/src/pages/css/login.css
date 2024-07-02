@@ -75,7 +75,7 @@
 }
 
 /* Button styles */
-.container button {
+.container button{
   width: 100%;
   padding: 12px; /* Adjust padding as needed */
   background-color: black; /* Custom button color */
@@ -88,4 +88,9 @@
 
 .container button:hover {
   background-color: #004080; /* Darker button color on hover */
+}
+
+.menuItem_Login
+{
+  color: #ffffff;
 }
