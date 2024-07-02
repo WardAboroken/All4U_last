@@ -5,20 +5,29 @@ import user_profile from "../asserts/images/user_profile.jpeg";
 import "../pages/css/insideHeader.css"; // Adjust the path as per your project structure
 
 function InsideHeader() {
-  const [showDropdown, setShowDropdown] = useState(false); // State to control dropdown visibility
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
-  const toggleDropdown = () => {
-    setShowDropdown(!showDropdown); // Toggle the showDropdown state
+  const toggleCategoryDropdown = () => {
+    setShowCategoryDropdown(!showCategoryDropdown);
+    setShowProfileDropdown(false);
+  };
+
+  const toggleProfileDropdown = () => {
+    setShowProfileDropdown(!showProfileDropdown);
+    setShowCategoryDropdown(false);
   };
 
   return (
     <header className="header">
       <div className="left-section">
         <div className="menu">
-          <button className="toggleButton" onClick={toggleDropdown}>
+          <button className="toggleButton" onClick={toggleCategoryDropdown}>
             Categories
           </button>
-          <div className={`dropdownContent ${showDropdown ? "show" : ""}`}>
+          <div
+            className={`dropdownContent ${showCategoryDropdown ? "show" : ""}`}
+          >
             <NavLink to="/toys" className="menuItem">
               Toys
             </NavLink>
@@ -62,13 +71,61 @@ function InsideHeader() {
           <button type="button">Search</button>
         </div>
       </div>
-      <div className="profileInfo">
-        <NavLink to="/profile" className="menuItem">
-          <img src={user_profile} alt="Basket" />
-        </NavLink>
-        <NavLink to="/cart" className="menuItem">
-          <img src={basket_cart} alt="Basket" />
-        </NavLink>
+      <div className="right-section">
+        <div className="profileInfo">
+          <button className="menuItem" onClick={toggleProfileDropdown}>
+            <img src={user_profile} alt="User Profile" />
+          </button>
+          <div
+            className={`profileDropdownContent ${
+              showProfileDropdown ? "show" : ""
+            }`}
+          >
+            <form action="">
+              <input type="image" id="image" alt="Logout" src={user_profile} />
+              <table>
+                <tr>
+                  <th>Name</th>
+                  <th>
+                    <input type="text" placeholder="Name" />
+                  </th>
+                </tr>
+                <tr>
+                  <td>User Name</td>
+                  <td>
+                    <input type="text" placeholder="Username" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Email</td>
+                  <td>
+                    <input type="text" placeholder="Email" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Phone Number</td>
+                  <td>
+                    <input type="text" placeholder="PhoneNumber" />
+                  </td>
+                </tr>
+              </table>
+              <NavLink to="/EditProfile" className="editProfileBtn">
+                Edit Profile
+              </NavLink>
+              <NavLink to="/CustomerOrdersHistory" className="ordersHistoryBtn">
+                Orders History =&gt;
+              </NavLink>
+              <NavLink to="/" className="logoutBtn">
+                LogOut
+              </NavLink>
+            </form>
+          </div>
+        </div>
+        <div className="basketCart">
+          <NavLink to="/cart" className="menuItem">
+            <img src={basket_cart} alt="Basket" />
+          </NavLink>
+        </div>
       </div>
     </header>
   );

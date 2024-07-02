@@ -1,0 +1,7 @@
+.imagePreview {
+  width: 50px !important;
+  height: 50px !important;
+  margin-bottom: 10px !important;
+  border-radius: 50% !important;
+  object-fit: cover; /* Ensures the image covers the container without distortion */
+}
