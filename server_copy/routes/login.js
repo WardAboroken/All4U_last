@@ -1,7 +1,7 @@
 // This function defines a route handler for user login functionality in your application. 
 const express = require("express");
-const findUser = require("../../database/queries/login");
-const normalUser = require("../../database/queries/checkIfIsNormalUser");
+const findUser = require("../database/queries/login");
+const normalUser = require("../database/queries/checkIfIsNormalUser");
 const router = express.Router();
 
 router.post("/login", async (req, res, next) => {
