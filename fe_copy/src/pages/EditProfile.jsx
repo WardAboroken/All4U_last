@@ -3,7 +3,7 @@ import "./css/index.css";
 import "./css/insideHeader.css";
 import InsideHeader from "../components/InsideHeader";
 import Footer from "../components/Footer";
-import user_profile from "../asserts/images/user_profile.jpeg";
+import user_profile from "../asserts/images/user_profile.jpeg"
 
 function EditProfile() {
   const [name, setName] = useState("");
@@ -83,6 +83,7 @@ function EditProfile() {
       }
 
       // Optionally handle successful profile update
+      setError("Profile updated successfully");
     } catch (error) {
       setError("Network error: " + error.message);
     }
@@ -143,14 +144,12 @@ function EditProfile() {
             placeholder="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            required
           />
           <input
             type="password"
             placeholder="Confirm New Password"
             value={confirmNewPassword}
             onChange={(e) => setConfirmNewPassword(e.target.value)}
-            required
           />
           {error && <p className="error">{error}</p>}
           <button type="submit">Update Profile</button>
