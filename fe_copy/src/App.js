@@ -9,6 +9,7 @@ import ShopOwnerSignUp from "./pages/ShopOwnerSignUp"
 import ShopMainPage from "./pages/ShopMainPage"
 import CustomerOrdersHistory from "./pages/CustomerOrdersHistory"
 import EditProfile from "./pages/EditProfile"
+import ShopOwnerMainPage from "./pages/ShopOwnerMainPage";
 
 function App() {
   const projectName = "Test Project";
@@ -24,6 +25,7 @@ function App() {
           <Route path="/ShopOwnerSignUp" element={<ShopOwnerSignUp />} />
           <Route path="/" element={<MainPage data={projectName} />} />
           <Route path="/ShopMainPage" element={<ShopMainPage />} />
+          <Route path="/ShopOwnerMainPage" element={<ShopOwnerMainPage />} />
           <Route
             path="/CustomerOrdersHistory"
             element={<CustomerOrdersHistory />}

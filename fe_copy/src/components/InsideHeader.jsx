@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import basket_cart from "../asserts/images/shopping_cart_icon.jpeg";
 import user_profile from "../asserts/images/user_profile.jpeg";
@@ -7,6 +7,37 @@ import "../pages/css/insideHeader.css"; // Adjust the path as per your project s
 function InsideHeader() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    username: "",
+    email: "",
+    phoneNumber: "",
+  });
+
+  useEffect(() => {
+    // Fetch user info from session on component mount
+    fetchUserInfo();
+  }, []);
+
+  const fetchUserInfo = async () => {
+    try {
+      const response = await fetch("/login/userinfo", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUserInfo(data.userInfo);
+      } else {
+        console.error("Failed to fetch user info");
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
 
   const toggleCategoryDropdown = () => {
     setShowCategoryDropdown(!showCategoryDropdown);
@@ -31,39 +62,7 @@ function InsideHeader() {
             <NavLink to="/toys" className="menuItem">
               Toys
             </NavLink>
-            <NavLink to="/accessories" className="menuItem">
-              Accessories
-            </NavLink>
-            <NavLink to="/clothing" className="menuItem">
-              Clothing
-            </NavLink>
-            <NavLink to="/shoes" className="menuItem">
-              Shoes
-            </NavLink>
-            <NavLink to="/workTools" className="menuItem">
-              Work Tools
-            </NavLink>
-            <NavLink to="/homeStyling" className="menuItem">
-              Home Styling
-            </NavLink>
-            <NavLink to="/sport" className="menuItem">
-              Sport
-            </NavLink>
-            <NavLink to="/petSupplies" className="menuItem">
-              Pet Supplies
-            </NavLink>
-            <NavLink to="/furnishing" className="menuItem">
-              Furnishing
-            </NavLink>
-            <NavLink to="/beauty" className="menuItem">
-              Beauty
-            </NavLink>
-            <NavLink to="/safety" className="menuItem">
-              Safety
-            </NavLink>
-            <NavLink to="/cleaning" className="menuItem">
-              Cleaning
-            </NavLink>
+            {/* Other category links */}
           </div>
         </div>
         <div className="searchBox">
@@ -82,31 +81,22 @@ function InsideHeader() {
             }`}
           >
             <form action="">
-              <input type="image" id="image" alt="Logout" src={user_profile} />
               <table>
                 <tr>
                   <th>Name</th>
-                  <th>
-                    <input type="text" placeholder="Name" />
-                  </th>
+                  <td>{userInfo.name}</td>
                 </tr>
                 <tr>
                   <td>User Name</td>
-                  <td>
-                    <input type="text" placeholder="Username" />
-                  </td>
+                  <td>{userInfo.username}</td>
                 </tr>
                 <tr>
                   <td>Email</td>
-                  <td>
-                    <input type="text" placeholder="Email" />
-                  </td>
+                  <td>{userInfo.email}</td>
                 </tr>
                 <tr>
                   <td>Phone Number</td>
-                  <td>
-                    <input type="text" placeholder="PhoneNumber" />
-                  </td>
+                  <td>{userInfo.phoneNumber}</td>
                 </tr>
               </table>
               <NavLink to="/EditProfile" className="editProfileBtn">

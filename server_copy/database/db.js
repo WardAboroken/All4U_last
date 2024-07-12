@@ -1,3 +1,4 @@
+// be/databas/db.js
 const mysql = require("mysql2/promise");
 
 // ! the following  creates and uses one database connection for all queries. This single connection is established the first time getDbConnection is called and is then reused for subsequent database operations across your application

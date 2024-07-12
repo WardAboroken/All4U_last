@@ -39,7 +39,8 @@
 }
 
 /* Input field styles */
-.container input {
+.container input,
+.container select {
   width: 100%;
   padding: 12px; /* Adjust padding as needed */
   margin-bottom: 20px; /* Spacing between input fields */
@@ -60,8 +61,8 @@
 }
 
 /* Link styles */
-.container a.menuItem_forgotPassword ,
-.container a.menuItem_createAccount{
+.container a.menuItem_forgotPassword,
+.container a.menuItem_createAccount {
   display: block;
   text-align: right;
   text-decoration: none;
@@ -70,12 +71,12 @@
 }
 
 .container a.menuItem_forgotPassword:hover,
-.container a.menuItem_createAccount:hover  {
+.container a.menuItem_createAccount:hover {
   text-decoration: underline; /* Underline on hover */
 }
 
 /* Button styles */
-.container button{
+.container button {
   width: 100%;
   padding: 12px; /* Adjust padding as needed */
   background-color: black; /* Custom button color */
@@ -90,7 +91,6 @@
   background-color: #004080; /* Darker button color on hover */
 }
 
-.menuItem_Login
-{
-  color: #ffffff;
+.menuItem_Login {
+  color: #ffffff;
 }

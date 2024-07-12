@@ -1,32 +1,36 @@
+// be/database/queries/login.js
+// Import your database query function (doQuery) here
 const doQuery = require("../query");
 
-/**  A function that returns success if user was found in one of the tables, else returns error
- * @param {*} user
- *@returns success/error
- */
-async function findUser(user) {
-  const { userName, password } = user;
+// Function to check user type based on credentials
+async function checkUserType(userInfo) {
+  const { userName, psw } = userInfo;
   try {
-    // Check if the user exists in users table
-    const existingUser = await doQuery(
-      `SELECT * FROM users WHERE userName = ? AND psw=? `,
-      [userName, password]
+    // SQL query to check if user exists in either 'users' or 'businessowner' table
+    const results = await doQuery(
+      `SELECT 'normal' AS userType
+      FROM users
+      WHERE userName = ? AND psw = ?
+      UNION
+      SELECT 'worker' AS userType
+      FROM businessowner
+      WHERE userName = ? AND psw = ?
+   `,
+      [userName, psw, userName, psw]
     );
-    if (existingUser.length > 0) {
-      return { success: "User found" }; // Return a success message
+    // Check if results were returned
+    if (results.length > 0) {
+      // Assuming only one result will be returned due to UNION (user should be in only one table)
+
+      return results[0].userType; // 'normal' or 'worker'
     } else {
-      const secondBdeka = await doQuery(
-        // Checking if user exists in workers table
-        `SELECT * FROM businessowner WHERE userName = ? AND psw=? `,
-        [userName, password]
-      );
-      if (secondBdeka.length > 0) {
-        return { success: "User found" };
-      } else return { error: "User not found" };
+      return null; // User not found in either table
     }
   } catch (error) {
-    console.error("Error finding user:", error); // Log the error for debugging
-    return { error: "Error finding user to the database" }; // Return an error message
+    console.error("Error checking user type:", error);
+    throw error; // Propagate error for handling elsewhere
   }
 }
-module.exports = findUser;
+
+// Export the function to make it accessible to other parts of your application
+module.exports = checkUserType;

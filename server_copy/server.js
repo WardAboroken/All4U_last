@@ -1,29 +1,39 @@
-const express = require("express"); // ייבוא EXP
-
+const express = require("express");
 const mysql2 = require("mysql2");
 const cors = require("cors");
-const path = require("path");// נותן אפשרות לבחירת מסלול(ספרייה שעוזרת לנו לעבוד עם מסלולים)
+const path = require("path");
+const session = require("express-session");
 
+const app = express();
 
-const app = express()
-app.use(express.static(path.join(__dirname,"public")))
-app.use(cors())
+// Static files
+app.use(express.static(path.join(__dirname, "public")));
 
-app.use(express.json())
+// CORS
+app.use(cors());
 
-const port = 5000
+// JSON parser
+app.use(express.json());
 
+// Session middleware
+app.use(
+  session({
+    secret: "your_secret_key", // Replace with your secret key
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }, // Set to true if you are using HTTPS
+  })
+);
+
+// Routes
 const loginRoutes = require("./routes/login");
+const addNewUserRoutes = require("./routes/addNewUser");
 
 app.use("/login", loginRoutes);
+app.use("/addNewUser", addNewUserRoutes);
 
-// const dbConfig = mysql.createConnection ({
-//   host: "localhost",
-//   user: "root",
-//   password: "",
-//   database: "final_project",
-// });
-
-app.listen(port , () =>{
-  console.log(`Server is running on port ${port}`)
-})
+// Start server
+const port = 5000;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});

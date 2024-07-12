@@ -1,16 +1,17 @@
-//This code defines a route handler for adding a new user to your application.
 const express = require("express");
-const addUser = require("../../database/queries/add-user");
+const addCustomerUser = require("../database/queries/add-user-customer");
+const addUserShopOwner = require("../database/queries/addUserShopOwner");
 const router = express.Router();
 
+// Middleware to parse JSON bodies
+router.use(express.json());
 
 // POST /admin/add-user
-router.post("/add-user", async (req, res, next) => {
-  // This function defines a route handler for adding a new user to your application. When a POST request is sent to "/admin/add-user", the function attempts to add the user data received in the request body to the database. If the addition is successful, it redirects the client to "/index.html". If there's an error during the process, it sends an appropriate error response with the corresponding HTTP status code.
+router.post("/add-user-customer", async (req, res, next) => {
+  console.log("Adding new user:", req.body);
   try {
-    console.log("Adding new user:", req.body);
     const user = req.body;
-    const result = await addUser(user);
+    const result = await addCustomerUser(user);
 
     // Sending a response to the client
     if (result.success) {
@@ -20,8 +21,25 @@ router.post("/add-user", async (req, res, next) => {
     }
   } catch (error) {
     console.error("Error adding user:", error);
+    res.status(500).json({ error: "An error occurred while adding the user" });
+  }
+});
 
-    // Sending an error response to the client
+router.post("/addUserShopOwner", async (req, res, next) => {
+  console.log("Adding new user:", req.body);
+  try {
+    const user = req.body;
+    console.log("Received user data:", user); // Log the received data
+    const result = await addUserShopOwner(user);
+
+    // Sending a response to the client
+    if (result.success) {
+      res.status(200).json({ message: "add User success!" }); // Sending success message if addition is successful
+    } else {
+      res.status(400).json({ message: "User already exist." }); // Sending error message if user already exists
+    }
+  } catch (error) {
+    console.error("Error adding user:", error);
     res.status(500).json({ error: "An error occurred while adding the user" });
   }
 });

@@ -1,3 +1,4 @@
+// be/databas/query.js
 const getDbConnection = require("./db");
 
 async function doQuery(sql, params = []) {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./css/login.css";
 import OutHeader from "../components/OutHeader";
 import Footer from "../components/Footer";
@@ -11,14 +11,16 @@ function Login() {
   const handleLoginClick = async (event) => {
     event.preventDefault();
 
+    // Extract username and password from form data
     const formData = new FormData(event.target);
     const userData = {
       userName: formData.get("UserName"),
-      password: formData.get("psw"),
+      psw: formData.get("psw"),
     };
 
     try {
-      const response = await fetch("/login/login", {
+      // Send login request to backend
+      const response = await fetch("/login/loginController", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -26,16 +28,20 @@ function Login() {
         body: JSON.stringify(userData),
       });
 
+      // Parse response JSON data
       const data = await response.json();
+      console.log("Login response:", data); // Log response for debugging
+
+      // Handle response based on server's success or failure
       if (response.ok) {
-        setMessage(data.success);
-        navigate("/ShopMainPage");
+        setMessage(data.message);
+        navigate(data.redirectUrl); // Redirect to the specified URL after successful login
       } else {
-        setMessage(data.error);
+        setMessage(data.message);
       }
     } catch (error) {
-      console.error("Error checking user: ", error.message);
-      setMessage("Invalid userName or password");
+      console.error("Error checking user:", error.message);
+      setMessage("Invalid username or password");
     }
   };
 
@@ -49,7 +55,7 @@ function Login() {
             className="UserName"
             type="text"
             name="UserName"
-            placeholder="UserName"
+            placeholder="Username"
           />
           <input
             className="psw"
@@ -57,19 +63,9 @@ function Login() {
             name="psw"
             placeholder="Password"
           />
-          <NavLink to="/ForgotPassword" className="menuItem_forgotPassword" end>
-            Forgot Password?
-          </NavLink>
           <button className="menuItem_login" type="submit">
             Login
           </button>
-          <NavLink
-            to="/UserTypeSelection"
-            className="menuItem_createAccount"
-            end
-          >
-            Create Account
-          </NavLink>
         </form>
         {message && <p>{message}</p>}
       </div>
