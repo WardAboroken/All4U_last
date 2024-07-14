@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import basket_cart from "../asserts/images/shopping_cart_icon.jpeg";
-import user_profile from "../asserts/images/user_profile.jpeg";
+import user_profile from "../asserts/images/user_profile.jpeg"; // Import default user profile image
 import "../pages/css/insideHeader.css"; // Adjust the path as per your project structure
 
 const InsideHeader = () => {
@@ -9,9 +9,10 @@ const InsideHeader = () => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [userInfo, setUserInfo] = useState({
     name: "",
-    username: "",
+    userName: "",
     email: "",
     phoneNumber: "",
+    image: "", // Added image field
   });
 
   useEffect(() => {
@@ -20,7 +21,7 @@ const InsideHeader = () => {
 
   const fetchUserInfo = async () => {
     try {
-      const response = await fetch("/login/userInfoController", {
+      const response = await fetch("/userinfo/getUserInfo", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +72,7 @@ const InsideHeader = () => {
       <div className="right-section">
         <div className="profileInfo">
           <button className="menuItem" onClick={toggleProfileDropdown}>
-            <img src={user_profile} alt="User Profile" />
+            <img src={userInfo.image || user_profile} alt="User Profile" />
           </button>
           <div
             className={`profileDropdownContent ${
@@ -86,7 +87,7 @@ const InsideHeader = () => {
                 </tr>
                 <tr>
                   <th>User Name</th>
-                  <td>{userInfo.username}</td>
+                  <td>{userInfo.userName}</td>
                 </tr>
                 <tr>
                   <th>Email</th>

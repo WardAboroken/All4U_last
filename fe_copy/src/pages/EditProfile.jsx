@@ -3,7 +3,7 @@ import "./css/index.css";
 import "./css/insideHeader.css";
 import InsideHeader from "../components/InsideHeader";
 import Footer from "../components/Footer";
-import user_profile from "../asserts/images/user_profile.jpeg"
+import user_profile from "../asserts/images/user_profile.jpeg";
 
 function EditProfile() {
   const [name, setName] = useState("");
@@ -14,31 +14,41 @@ function EditProfile() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState("");
-  const [image, setImage] = useState(null); // New state for profile image
-  const [imagePreview, setImagePreview] = useState(user_profile); // State to store image preview
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(user_profile);
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    userName: "",
+    email: "",
+    phoneNumber: "",
+    profileImage: ""
+  });
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUserInfo = async () => {
       try {
-        const response = await fetch("/api/user-profile");
-
+        const response = await fetch("/userinfo/getUserInfo", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error("Failed to fetch user info");
         }
-
         const data = await response.json();
-        setName(data.name);
-        setUserName(data.userName);
-        setEmail(data.email);
-        setNumber(data.number);
-        setImage(data.profileImage); // Assuming the backend sends the image URL
-        setImagePreview(data.profileImage || user_profile); // Set initial image preview
+        setUserInfo(data.userInfo);
+        setName(data.userInfo.name);
+        setUserName(data.userInfo.userName);
+        setEmail(data.userInfo.email);
+        setNumber(data.userInfo.phoneNumber);
+        setImagePreview(data.userInfo.profileImage || user_profile);
       } catch (error) {
-        setError("Error fetching user data: " + error.message);
+        setError("Error fetching user info: " + error.message);
       }
     };
 
-    fetchUserData();
+    fetchUserInfo();
   }, []);
 
   const handleImageChange = (e) => {
@@ -82,7 +92,6 @@ function EditProfile() {
         throw new Error(`Error: ${response.statusText}, ${errorData}`);
       }
 
-      // Optionally handle successful profile update
       setError("Profile updated successfully");
     } catch (error) {
       setError("Network error: " + error.message);
@@ -106,28 +115,28 @@ function EditProfile() {
           )}
           <input
             type="text"
-            placeholder="Name"
+            placeholder={userInfo.name}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
           <input
             type="text"
-            placeholder="User Name"
+            placeholder={userInfo.userName}
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
             required
           />
           <input
             type="email"
-            placeholder="Email"
+            placeholder={userInfo.email}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
             type="tel"
-            placeholder="Phone Number"
+            placeholder={userInfo.phoneNumber}
             value={number}
             onChange={(e) => setNumber(e.target.value)}
             required
