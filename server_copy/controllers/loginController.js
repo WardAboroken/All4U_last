@@ -1,30 +1,35 @@
 // be/controllers/loginController.js
+
 // Import necessary modules and functions
 const checkUserType = require("../database/queries/login");
-const findUser=require("../database/queries/findUser")
+const findUser = require("../database/queries/findUser");
 
 // Handle user login request
 const handleLogin = async (req, res) => {
   try {
-    console.log("Searching for user:", req.body);
     const user = req.body;
+    console.log("Request body:", req.body); // Log entire req.body to inspect structure
+    console.log("Searching for user:", user.userName);
 
-    // find user 
-    const findResult=await findUser(user);
+    // Check if user exists in the database
+    const findResult = await findUser(user);
 
-    // If user is found in the database
     if (findResult.success) {
-      // Call the function to find the user in the database
+      // Determine user type
       const userTypeResult = await checkUserType(user);
+      // req.session.userName = req[1];
 
+      // Store user type in session based on userTypeResult
       if (userTypeResult === "normal") {
-        req.session.result = "normal"; // Store user type in session
+        req.session.userType = "normal";
+        req.session.userName = user.userName;
         return res.status(200).json({
           message: "User authenticated successfully",
           redirectUrl: "/ShopMainPage", // Redirect URL for normal users
         });
       } else if (userTypeResult === "worker") {
-        req.session.userType = "worker"; // Store user type in session
+         req.session.userName = user.userName;
+        req.session.userType = "worker";
         return res.status(200).json({
           message: "User authenticated successfully",
           redirectUrl: "/ShopOwnerMainPage", // Redirect URL for workers
@@ -34,7 +39,7 @@ const handleLogin = async (req, res) => {
       }
     } else {
       // Send error response if user not found
-      console.log("result =>  ", findResult);
+      console.log("User not found:", findResult.error);
       return res.status(400).json({ message: "Invalid username or password" });
     }
   } catch (error) {

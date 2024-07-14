@@ -18,10 +18,10 @@ app.use(express.json());
 // Session middleware
 app.use(
   session({
-    secret: "your_secret_key", // Replace with your secret key
+    secret: "your_secret_key", // Replace with your actual secret key
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // Set to true if you are using HTTPS
+    cookie: { secure: false }, // Set to true if using HTTPS
   })
 );
 

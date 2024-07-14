@@ -1,26 +1,22 @@
-// controllers/userInfoController.js
 
-const checkUserType = require("../database/queries/login");
 const getCustomerInfo = require("../database/queries/getCustomerInfo");
 const getWorkerInfo = require("../database/queries/getWorkerInfo");
 
 const getUserInfo = async (req, res) => {
-      console.log("\u{1F60A} getting the infoooo");
+  // console.log("😊 getting the infoooo");
   try {
     // Check if user session exists
-    if (!req.session.user) {
+
+    if (req.session.userName == undefined) {
       return res.status(401).json({ error: "User session not found" });
     }
 
     // Fetch user type from session
-    const userType = req.session.userType;
-    console.log("userType ===>>>", userType);
+  userType= req.session.userType
     // Initialize userInfo object
     let userInfo = {
-      userName: req.session.user,
-      userType: userType,
+      userName: req.session.userName,
     };
-    console.log("userInfo ===>>>", userInfo);
     // Fetch detailed user information based on user type
     if (userType === "normal") {
       const customerInfo = await getCustomerInfo(userInfo);
@@ -33,7 +29,6 @@ const getUserInfo = async (req, res) => {
         userInfo = { ...userInfo, ...workerInfo };
       }
     }
-    console.log("userInfo222222 ===>>>", userInfo);
     // Send response with user info
     res.status(200).json({ userInfo });
   } catch (error) {

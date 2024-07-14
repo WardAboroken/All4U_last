@@ -1,3 +1,4 @@
+import user_profile from "../assets/images/user_profile.jpeg";
 const doQuery = require("../query");
 
 async function addCustomerUser(user) {
@@ -13,7 +14,8 @@ async function addCustomerUser(user) {
 
   try {
     // Check if the user already exists
-    const existingUser = await doQuery(`
+    const existingUser = await doQuery(
+      `
       SELECT * FROM users WHERE userName = ?`,
       [userName]
     );
@@ -23,8 +25,9 @@ async function addCustomerUser(user) {
     }
 
     // Insert new user into the database
-    await doQuery(`
-      INSERT INTO users (userName, name, psw, email, phoneNumber, typeOfUser, preferredCategories) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    await doQuery(
+      `
+      INSERT INTO users (userName, name, psw, email, phoneNumber, typeOfUser, preferredCategories,image) VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         userName,
         name,
@@ -33,6 +36,7 @@ async function addCustomerUser(user) {
         phoneNumber,
         typeOfUser,
         JSON.stringify(selectedCategories),
+        user_profile,
       ]
     );
 

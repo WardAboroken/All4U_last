@@ -5,15 +5,15 @@ const doQuery = require("../query");
 // Function to check user type based on credentials
 async function getCustomerInfo(userInfo) {
 
-  const { userName, psw } = userInfo;
+  const { userName } = userInfo;
   try {
     // SQL query to check if user exists in the 'users' table
     const results = await doQuery(
       `SELECT *
       FROM users
-      WHERE userName = ? AND psw = ?
+      WHERE userName = ?
    `,
-      [userName, psw]
+      [userName]
     );
 
     if (results.length > 0) {

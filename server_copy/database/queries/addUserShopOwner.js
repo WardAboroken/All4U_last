@@ -1,3 +1,4 @@
+import user_profile from "../assets/images/user_profile.jpeg";
 const doQuery = require("../query");
 
 async function addShopOwnerUser(user) {
@@ -16,8 +17,8 @@ async function addShopOwnerUser(user) {
   try {
     console.log("User data in addShopOwnerUser:", user); // Log the user data to check
     // Check if the user already exists
-    const existingUser = await doQuery(`
-      SELECT * FROM businessowner WHERE userName = ?`,
+    const existingUser = await doQuery(
+      `SELECT * FROM businessowner WHERE userName = ?`,
       [userName]
     );
 
@@ -26,8 +27,8 @@ async function addShopOwnerUser(user) {
     }
 
     // Insert new user into the database
-    await doQuery(`
-      INSERT INTO businessowner (name, userName, email, phoneNumber, psw, subscriptionType, businessName, address, typeOfUser) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    await doQuery(
+      `INSERT INTO businessowner (name, userName, email, phoneNumber, psw, subscriptionType, businessName, address, typeOfUser, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         name,
         userName,
@@ -38,6 +39,7 @@ async function addShopOwnerUser(user) {
         businessName,
         address,
         typeOfUser,
+        user_profile,
       ]
     );
 
