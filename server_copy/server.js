@@ -27,9 +27,11 @@ app.use(
 
 // Routes
 const loginRoutes = require("./routes/login");
+const userInfoRoutes = require("./routes/userInfo");
 const addNewUserRoutes = require("./routes/addNewUser");
 
 app.use("/login", loginRoutes);
+app.use("/userInfo", userInfoRoutes);
 app.use("/addNewUser", addNewUserRoutes);
 
 // Start server

@@ -4,7 +4,8 @@ const express = require("express");
 const userInfoController = require("../controllers/userInfoController");
 const router = express.Router();
 
-// GET /userinfo
-router.get("/userinfo", userInfoController.getUserInfo);
+// GET /getUserInfo
+
+router.get("/userInfoController", userInfoController.getUserInfo);
 
 module.exports = router;

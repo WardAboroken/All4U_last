@@ -1,6 +1,7 @@
 // be/controllers/loginController.js
 // Import necessary modules and functions
 const checkUserType = require("../database/queries/login");
+const findUser=require("../database/queries/findUser")
 
 // Handle user login request
 const handleLogin = async (req, res) => {
@@ -8,20 +9,21 @@ const handleLogin = async (req, res) => {
     console.log("Searching for user:", req.body);
     const user = req.body;
 
-    // find user functionnnnnnnn???????????????????????????????????????????!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // find user 
+    const findResult=await findUser(user);
 
     // If user is found in the database
-    if (result.success) {
+    if (findResult.success) {
       // Call the function to find the user in the database
-      const result = await checkUserType(user);
+      const userTypeResult = await checkUserType(user);
 
-      if (result === "normal") {
+      if (userTypeResult === "normal") {
         req.session.result = "normal"; // Store user type in session
         return res.status(200).json({
           message: "User authenticated successfully",
           redirectUrl: "/ShopMainPage", // Redirect URL for normal users
         });
-      } else if (result === "worker") {
+      } else if (userTypeResult === "worker") {
         req.session.userType = "worker"; // Store user type in session
         return res.status(200).json({
           message: "User authenticated successfully",
@@ -32,7 +34,7 @@ const handleLogin = async (req, res) => {
       }
     } else {
       // Send error response if user not found
-      console.log("result =>  ", result);
+      console.log("result =>  ", findResult);
       return res.status(400).json({ message: "Invalid username or password" });
     }
   } catch (error) {
