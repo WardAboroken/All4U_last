@@ -15,8 +15,6 @@ function App() {
   const projectName = "Test Project";
   return (
     <body className="App">
-      {/* <Header /> */}
-      <div className="main">
         <Routes>
           <Route path="/CustomerSignUp" element={<CustomerSignUp />} />
           <Route path="/Login" element={<Login />} />
@@ -32,8 +30,6 @@ function App() {
           />
           <Route path="/EditProfile" element={<EditProfile />} />
         </Routes>
-      </div>
-      {/* <Footer /> */}
     </body>
   );
 }

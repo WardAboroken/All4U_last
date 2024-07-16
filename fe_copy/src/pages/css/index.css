@@ -16,14 +16,10 @@ body {
   font-size: 1.6rem;
   font-weight: 400;
   line-height: 1.5;
-  height: 100vh;
+  height: 100%;
 }
 
-main {
-  display: flex;
-  align-items: center;
-  margin-left: 5rem;
-}
+
 #root {
   height: 100%;
 }

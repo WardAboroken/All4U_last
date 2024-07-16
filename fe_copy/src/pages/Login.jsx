@@ -46,7 +46,7 @@ function Login() {
   };
 
   return (
-    <div>
+    <body>
       <OutHeader />
       <div className="container">
         <h2>Sign In</h2>
@@ -73,7 +73,7 @@ function Login() {
         {message && <p>{message}</p>}
       </div>
       <Footer />
-    </div>
+    </body>
   );
 }
 

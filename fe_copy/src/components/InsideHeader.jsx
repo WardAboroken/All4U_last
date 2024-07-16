@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import basket_cart from "../asserts/images/shopping_cart_icon.jpeg";
-import user_profile from "../asserts/images/user_profile.jpeg"; // Import default user profile image
+import basket_cart from "../asserts/images/shopping-cart.png";
+import user_profile from "../asserts/images/user_profile.jpeg"; // Adjust the path
 import "../pages/css/insideHeader.css"; // Adjust the path as per your project structure
 
 const InsideHeader = () => {

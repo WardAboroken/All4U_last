@@ -163,7 +163,7 @@ function ShopOwnerSignUp() {
   };
 
   return (
-    <div>
+    <body>
       <OutHeader />
       <div className="container">
         <h1>All4U</h1>
@@ -277,7 +277,7 @@ function ShopOwnerSignUp() {
         </form>
       </div>
       <Footer />
-    </div>
+    </body>
   );
 }
 

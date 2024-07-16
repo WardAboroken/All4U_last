@@ -3,14 +3,15 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  margin: 10%;
+  padding: 10%;
 }
 
 /* Main container styles */
+
 .container {
-  max-width: 400px;
-  margin: 20px auto; /* Add some margin to the top */
+  width: 30%; /* Adjusted max width */
+  margin-bottom: 50px; /* Centered vertically and horizontally */
   padding: 40px;
   background-color: #ffffff;
   border-radius: 8px;
@@ -36,6 +37,7 @@
 .container form {
   width: 100%; /* Full width */
   padding: 20px;
+
 }
 
 /* Input field styles */
@@ -91,6 +93,6 @@
   background-color: #004080; /* Darker button color on hover */
 }
 
-.menuItem_Login {
-  color: #ffffff;
+.menuItem_login {
+  color: #ffffff; /* White text color */
 }

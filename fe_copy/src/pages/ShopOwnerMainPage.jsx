@@ -6,7 +6,7 @@ import background_img from "../asserts/images/warmth_background.jpeg"; // Ensure
 
 function ShopMainPage() {
   return (
-    <div>
+    <body>
       <InsideHeader />
       <main>
         <section className="section1">
@@ -15,7 +15,7 @@ function ShopMainPage() {
         <section className="section2"></section>
       </main>
       <Footer />
-    </div>
+    </body>
   );
 }
 
