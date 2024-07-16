@@ -132,7 +132,6 @@ function CustomerSignUp() {
                   value={category}
                   checked={selectedCategories.includes(category)}
                   onChange={() => handleCategoryChange(category)}
-                  required
                 />
                 {category}
               </label>

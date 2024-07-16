@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./css/login.css";
 import Footer from "../components/Footer";
 import OutHeader from "../components/OutHeader";
@@ -8,27 +8,24 @@ import OutHeader from "../components/OutHeader";
 const api_url = "https://data.gov.il/api/3/action/datastore_search";
 const cities_resource_id = "5c78e9fa-c2e2-4771-93ff-7f400a12f7ba";
 const streets_resource_id = "a7296d1a-f8c9-4b70-96c2-6ebb4352f8e3";
-const city_name_key = "cityName";
-const street_name_key = "streetName";
+const city_name_key = "שם_ישוב";
+const street_name_key = "שם_רחוב";
 
 function ShopOwnerSignUp() {
-  const [formData, setFormData] = useState({
-    name: "",
-    userName: "",
-    password: "",
-    confirmPassword: "",
-    email: "",
-    phoneNumber: "",
-    shopName: "",
-    businessAddress: { city: "", street: "" },
-  });
-
+  const [name, setName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [subscriptionType, setSubscriptionType] = useState("");
+  const [businessName, setBusinessName] = useState("");
   const [cities, setCities] = useState([]);
   const [streets, setStreets] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedStreet, setSelectedStreet] = useState("");
-  const [errors, setErrors] = useState({});
-
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
   const getData = useCallback((resource_id, q = "", limit = "100") => {
@@ -39,104 +36,130 @@ function ShopOwnerSignUp() {
   }, []);
 
   const parseResponse = useCallback((records = [], field_name) => {
-    return records.map((record) => record[field_name].trim());
+    return records.map((record) => record[field_name].trim()).filter(Boolean);
   }, []);
 
-  const loadCities = useCallback(() => {
-    getData(cities_resource_id, "", 32000)
-      .then((response) => {
-        const cityNames = parseResponse(
-          response.data.result.records,
-          city_name_key
-        );
-        setCities(cityNames);
-      })
-      .catch((error) => {
-        console.error("Couldn't get list of cities:", error);
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          cities: "Couldn't load cities. Please try again later.",
-        }));
-      });
-  }, [getData, parseResponse]);
-
-  const loadStreets = useCallback(
-    (city) => {
-      getData(streets_resource_id, { [city_name_key]: city }, 32000)
-        .then((response) => {
-          const streetNames = parseResponse(
-            response.data.result.records,
-            street_name_key
-          );
-          setStreets(streetNames);
-        })
+  const populateDataList = useCallback(
+    (resource_id, field_name, query = {}) => {
+      return getData(resource_id, query, 32000)
+        .then((response) =>
+          parseResponse(response?.data?.result?.records, field_name)
+        )
         .catch((error) => {
-          console.error("Couldn't get list of streets:", error);
-          setErrors((prevErrors) => ({
-            ...prevErrors,
-            streets: "Couldn't load streets. Please try again later.",
-          }));
+          console.log("Error fetching data:", error);
+          return [];
         });
     },
     [getData, parseResponse]
   );
 
-  useEffect(() => {
-    loadCities();
-  }, [loadCities]);
-
-  useEffect(() => {
-    if (selectedCity) {
-      loadStreets(selectedCity);
-      setFormData((prevData) => ({
-        ...prevData,
-        businessAddress: { ...prevData.businessAddress, city: selectedCity },
-      }));
+  const populateCities = useCallback(async () => {
+    try {
+      const citiesList = await populateDataList(
+        cities_resource_id,
+        city_name_key
+      );
+      setCities(citiesList);
+    } catch (error) {
+      console.log("Error populating cities:", error);
     }
-  }, [selectedCity, loadStreets]);
+  }, [populateDataList]);
+
+  const populateStreets = useCallback(
+    async (city) => {
+      try {
+        const streetsList = await populateDataList(
+          streets_resource_id,
+          street_name_key,
+          JSON.stringify({ [city_name_key]: city })
+        );
+        setStreets(streetsList);
+      } catch (error) {
+        console.log("Error populating streets:", error);
+      }
+    },
+    [populateDataList]
+  );
 
   useEffect(() => {
-    if (selectedStreet) {
-      setFormData((prevData) => ({
-        ...prevData,
-        businessAddress: {
-          ...prevData.businessAddress,
-          street: selectedStreet,
-        },
-      }));
-    }
-  }, [selectedStreet]);
+    populateCities();
+  }, [populateCities]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.password = "Passwords do not match.";
-    }
-    // Add more validation checks as needed
-    return newErrors;
-  };
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formErrors = validateForm();
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
+    // Check if all required fields are filled
+    if (
+      !name ||
+      !userName ||
+      !email ||
+      !phoneNumber ||
+      !password ||
+      !confirmPassword ||
+      !subscriptionType ||
+      !businessName ||
+      !selectedCity ||
+      !selectedStreet
+    ) {
+      setErrorMessage("Please fill in all fields.");
       return;
     }
 
-    console.log("Form Data: ", formData);
+    // Check if password and confirm password match
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
 
-    // Navigate to ShopMainPage after form submission
-    navigate("/ShopMainPage");
+    try {
+      // Form data to be sent to the backend
+      const formData = {
+        name,
+        userName,
+        email,
+        phoneNumber,
+        password,
+        subscriptionType,
+        businessName,
+        businessAddress: `city: ${selectedCity} / street: ${selectedStreet}`,
+        typeOfUser: "businessowner",
+      };
+
+      // Log formData to verify it's correct
+      console.log("Form data being sent:", formData);
+
+      // Send POST request to backend endpoint
+      const response = await axios.post(
+        "/addNewUser/addUserShopOwner",
+        formData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      // Check if response is successful
+      if (response.status === 200) {
+        // Display success message to the user
+        setSuccessMessage("User added successfully!");
+
+        // Navigate to another page upon successful submission
+        navigate("/ShopMainPage");
+
+        // Show an alert box for success (you can customize this as needed)
+        window.alert("User added successfully!");
+      } else {
+        // Handle other status codes or errors
+        setErrorMessage("Failed to sign up. Please try again.");
+
+        // Show an alert box for failure (you can customize this as needed)
+        window.alert("Failed to sign up. Please try again.");
+      }
+    } catch (error) {
+      // Handle network error or server error
+      console.error("Error signing up:", error);
+      setErrorMessage("Failed to sign up. Please try again.");
+
+      // Show an alert box for failure (you can customize this as needed)
+      window.alert("Failed to sign up. Please try again.");
+    }
   };
 
   return (
@@ -145,98 +168,111 @@ function ShopOwnerSignUp() {
       <div className="container">
         <h1>All4U</h1>
         <h2>Shop Owner Sign Up</h2>
+        {errorMessage && <p className="error">{errorMessage}</p>}
+        {successMessage && <p className="success">{successMessage}</p>}
         <form onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="Name"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
           />
           <input
             type="text"
             placeholder="User Name"
-            name="userName"
-            value={formData.userName}
-            onChange={handleInputChange}
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
             required
           />
           <input
             type="email"
             placeholder="Email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
             type="tel"
             placeholder="Phone Number"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
             required
           />
           <input
             type="password"
             placeholder="Password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
-          {errors.password && <p className="error">{errors.password}</p>}
           <input
             type="password"
             placeholder="Confirm Password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleInputChange}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
           <input
             type="text"
-            placeholder="Shop Name"
-            name="shopName"
-            value={formData.shopName}
-            onChange={handleInputChange}
+            placeholder="Business Name"
+            value={businessName}
+            onChange={(e) => setBusinessName(e.target.value)}
             required
           />
           <div className="form-field" id="city-selection">
-            <label htmlFor="city-choice">Street City:</label>
+            <label htmlFor="city-choice">Select City:</label>
             <input
-              list="cities-data"
-              id="city-choice"
+              list="cities"
               name="selectedCity"
+              id="city-choice"
               value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
+              onChange={(e) => {
+                setSelectedCity(e.target.value);
+                setSelectedStreet(""); // Reset streets when city changes
+                populateStreets(e.target.value);
+              }}
               required
             />
-            <datalist id="cities-data">
+            <datalist id="cities">
               {cities.map((city, index) => (
                 <option key={index} value={city} />
               ))}
             </datalist>
-            {errors.cities && <p className="error">{errors.cities}</p>}
           </div>
           <div className="form-field" id="street-selection">
-            <label htmlFor="street-choice">Select Street:</label>
-            <input
-              list="streets-data"
+            {/* <label htmlFor="street-choice">Select Street:</label> */}
+            <select
               id="street-choice"
               name="selectedStreet"
               value={selectedStreet}
               onChange={(e) => setSelectedStreet(e.target.value)}
               required
-            />
-            <datalist id="streets-data">
+            >
+              <option value="">Choose Street</option>
+              {streets.length === 0 && (
+                <option disabled>
+                  No streets available for the selected city
+                </option>
+              )}
               {streets.map((street, index) => (
-                <option key={index} value={street} />
+                <option key={index} value={street}>
+                  {street}
+                </option>
               ))}
-            </datalist>
-            {errors.streets && <p className="error">{errors.streets}</p>}
+            </select>
           </div>
+          {/* Subscription Type Select */}
+          <select
+            value={subscriptionType}
+            onChange={(e) => setSubscriptionType(e.target.value)}
+            required
+          >
+            <option value="">Choose Subscription Type</option>
+            <option value="basic">Basic</option>
+            <option value="premium">Premium</option>
+            <option value="enterprise">Enterprise</option>
+          </select>
           <button type="submit">Continue</button>
         </form>
       </div>

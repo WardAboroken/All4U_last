@@ -21,7 +21,7 @@ function EditProfile() {
     userName: "",
     email: "",
     phoneNumber: "",
-    profileImage: ""
+    profileImage: "",
   });
 
   useEffect(() => {
@@ -69,31 +69,34 @@ function EditProfile() {
 
     setError("");
 
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("userName", userName);
-    formData.append("email", email);
-    formData.append("number", number);
-    formData.append("password", password);
-    formData.append("newPassword", newPassword);
-
-    if (image) {
-      formData.append("profileImage", image);
-    }
+    const userData = {
+      name: name || userInfo.name,
+      userName: userName || userInfo.userName,
+      email: email || userInfo.email,
+      phoneNumber: number || userInfo.phoneNumber,
+      password,
+      newPassword,
+      profileImage: image ? image.name : userInfo.profileImage,
+    };
 
     try {
-      const response = await fetch("/api/update-profile", {
+      const response = await fetch("/updateProfile/updateCustomerProfile", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
       });
 
       if (!response.ok) {
         const errorData = await response.text();
+        window.alert("YOUR UPDATE IS NOT SUCCESS");
         throw new Error(`Error: ${response.statusText}, ${errorData}`);
       }
-
+      window.alert("YOUR UPDATE IS SUCCESS");
       setError("Profile updated successfully");
     } catch (error) {
+      window.alert("YOUR UPDATE IS NOT SUCCESS");
       setError("Network error: " + error.message);
     }
   };

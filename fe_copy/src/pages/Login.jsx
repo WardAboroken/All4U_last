@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./css/login.css";
 import OutHeader from "../components/OutHeader";
 import Footer from "../components/Footer";
@@ -66,6 +66,9 @@ function Login() {
           <button className="menuItem_login" type="submit">
             Login
           </button>
+          <NavLink to="/ForgotPassword" className="menuItem_forgotPassword" end>
+            Forgot Password?
+          </NavLink>
         </form>
         {message && <p>{message}</p>}
       </div>

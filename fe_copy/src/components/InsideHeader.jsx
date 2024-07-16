@@ -61,6 +61,39 @@ const InsideHeader = () => {
             <NavLink to="/toys" className="menuItem">
               Toys
             </NavLink>
+            <NavLink to="/clothing" className="menuItem">
+              Clothing
+            </NavLink>
+            <NavLink to="/workTools" className="menuItem">
+              Work Tools
+            </NavLink>
+            <NavLink to="/petSupplies" className="menuItem">
+              Pet Supplies
+            </NavLink>
+            <NavLink to="/homeStyling" className="menuItem">
+              Home Styling
+            </NavLink>
+            <NavLink to="/cleaning" className="menuItem">
+              Cleaning
+            </NavLink>
+            <NavLink to="/shoes" className="menuItem">
+              Shoes
+            </NavLink>
+            <NavLink to="/sport" className="menuItem">
+              Sport
+            </NavLink>
+            <NavLink to="/accessories" className="menuItem">
+              Accessories
+            </NavLink>
+            <NavLink to="/furnishing" className="menuItem">
+              Furnishing
+            </NavLink>
+            <NavLink to="/safety" className="menuItem">
+              Safety
+            </NavLink>
+            <NavLink to="/beauty" className="menuItem">
+              Beauty
+            </NavLink>
             {/* Add more category links */}
           </div>
         </div>
