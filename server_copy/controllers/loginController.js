@@ -9,7 +9,6 @@ const handleLogin = async (req, res) => {
   try {
     const user = req.body;
     console.log("Request body:", req.body); // Log entire req.body to inspect structure
-    console.log("Searching for user:", user.userName);
 
     // Check if user exists in the database
     const findResult = await findUser(user);

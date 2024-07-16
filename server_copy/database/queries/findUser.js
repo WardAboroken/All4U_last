@@ -5,6 +5,7 @@ const doQuery = require("../query");
 async function findUser(userInfo) {
   const { userName, psw } = userInfo;
 
+  
   try {
     const result = await doQuery(
       `
@@ -14,6 +15,7 @@ async function findUser(userInfo) {
     `,
       [userName, psw, userName, psw]
     );
+    
     if (result.length > 0) {
       return { success: true, message: "User found." };
     } else {

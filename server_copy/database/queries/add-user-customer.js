@@ -1,4 +1,4 @@
-import user_profile from "../assets/images/user_profile.jpeg";
+// import user_profile from "../assets/images/user_profile.jpeg";
 const doQuery = require("../query");
 
 async function addCustomerUser(user) {
@@ -27,7 +27,7 @@ async function addCustomerUser(user) {
     // Insert new user into the database
     await doQuery(
       `
-      INSERT INTO users (userName, name, psw, email, phoneNumber, typeOfUser, preferredCategories,image) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      INSERT INTO users (userName, name, psw, email, phoneNumber, typeOfUser, preferredCategories) VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         userName,
         name,
@@ -36,7 +36,6 @@ async function addCustomerUser(user) {
         phoneNumber,
         typeOfUser,
         JSON.stringify(selectedCategories),
-        user_profile,
       ]
     );
 

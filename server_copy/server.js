@@ -9,6 +9,8 @@ const app = express();
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use("/images", express.static(path.join(__dirname, "public/images")));
+
 // CORS
 app.use(cors());
 
@@ -29,10 +31,14 @@ app.use(
 const loginRoutes = require("./routes/login");
 const userInfoRoutes = require("./routes/userInfo");
 const addNewUserRoutes = require("./routes/addNewUser");
+const updateProfileRoutes = require("./routes/updateProfile");
+const shopRoutes = require("./routes/shop");
 
 app.use("/login", loginRoutes);
 app.use("/userInfo", userInfoRoutes);
 app.use("/addNewUser", addNewUserRoutes);
+app.use("/updateProfile", updateProfileRoutes);
+app.use("/shop", shopRoutes);
 
 // Start server
 const port = 5000;
