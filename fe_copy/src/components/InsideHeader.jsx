@@ -48,6 +48,22 @@ const InsideHeader = () => {
     setShowCategoryDropdown(false);
   };
 
+  // Category list
+  const categories = {
+    Toys: 1,
+    Clothing: 2,
+    "Work Tools": 3,
+    "Pet Supplies": 4,
+    "Home Styling": 5,
+    Cleaning: 6,
+    Shoes: 7,
+    Sport: 8,
+    Accessories: 9,
+    Furnishing: 10,
+    Safety: 11,
+    Beauty: 12,
+  };
+
   return (
     <header className="header">
       <div className="left-section">
@@ -58,43 +74,15 @@ const InsideHeader = () => {
           <div
             className={`dropdownContent ${showCategoryDropdown ? "show" : ""}`}
           >
-            <NavLink to="/toys" className="menuItem">
-              Toys
-            </NavLink>
-            <NavLink to="/clothing" className="menuItem">
-              Clothing
-            </NavLink>
-            <NavLink to="/workTools" className="menuItem">
-              Work Tools
-            </NavLink>
-            <NavLink to="/petSupplies" className="menuItem">
-              Pet Supplies
-            </NavLink>
-            <NavLink to="/homeStyling" className="menuItem">
-              Home Styling
-            </NavLink>
-            <NavLink to="/cleaning" className="menuItem">
-              Cleaning
-            </NavLink>
-            <NavLink to="/shoes" className="menuItem">
-              Shoes
-            </NavLink>
-            <NavLink to="/sport" className="menuItem">
-              Sport
-            </NavLink>
-            <NavLink to="/accessories" className="menuItem">
-              Accessories
-            </NavLink>
-            <NavLink to="/furnishing" className="menuItem">
-              Furnishing
-            </NavLink>
-            <NavLink to="/safety" className="menuItem">
-              Safety
-            </NavLink>
-            <NavLink to="/beauty" className="menuItem">
-              Beauty
-            </NavLink>
-            {/* Add more category links */}
+            {Object.keys(categories).map((categoryName) => (
+              <NavLink
+                key={categories[categoryName]}
+                to={`/${categoryName.replace(/\s+/g, "")}`}
+                className="menuItem"
+              >
+                {categoryName}
+              </NavLink>
+            ))}
           </div>
         </div>
         <div className="searchBox">

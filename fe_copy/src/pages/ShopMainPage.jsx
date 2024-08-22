@@ -7,26 +7,9 @@ import background_img from "../asserts/images/warmth_background.jpeg";
 
 function ShopMainPage() {
   const [products, setProducts] = useState([]);
-  const [userFavCategories, setUserFavCategories] = useState({
-    preferredCategories: "",
-  });
+  const [userFavCategories, setUserFavCategories] = useState([]);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("/shop/get-products");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-
-        const data = await response.json();
-        setProducts(data); // Assuming the backend returns an array of products directly
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-
     const fetchUserInfo = async () => {
       try {
         const response = await fetch("/userinfo/getUserInfo", {
@@ -37,9 +20,11 @@ function ShopMainPage() {
         });
         if (response.ok) {
           const data = await response.json();
-          setUserFavCategories({
-            preferredCategories: data.userInfo.preferredCategories,
-          });
+          const favData = data.userInfo.preferredCategories;
+          console.log("User's favorite categories:", favData);
+
+          // Parse the preferred categories as an array
+          setUserFavCategories(JSON.parse(favData) || []);
         } else {
           console.error("Failed to fetch user info");
         }
@@ -48,9 +33,41 @@ function ShopMainPage() {
       }
     };
 
-    fetchProducts();
     fetchUserInfo();
-  }, []);
+  }, []); // Only run once when the component mounts
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/shop/get-products", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+
+        const data = await response.json();
+
+        // Filter products based on the user's favorite categories
+        if (userFavCategories.length > 0) {
+          const filteredProducts = data.filter((product) =>
+            userFavCategories.includes(product.categoryNumber)
+          );
+          setProducts(filteredProducts);
+        } else {
+          setProducts(data); // If no favorite categories, display all products
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+      fetchProducts(); // Only fetch products once categories are fetched
+  }, [userFavCategories]); // Run when userFavCategories updates
 
   const getImagePath = (picturePath) => {
     try {

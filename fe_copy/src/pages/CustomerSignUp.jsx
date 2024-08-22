@@ -12,25 +12,25 @@ function CustomerSignUp() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const categories = [
-    "Toys",
-    "Clothing",
-    "Work Tools",
-    "Pet Supplies",
-    "Home Styling",
-    "Cleaning",
-    "Shoes",
-    "Sport",
-    "Accessories",
-    "Furnishing",
-    "Safety",
-    "Beauty",
-  ];
+  const categories = {
+    Toys: 1,
+    Clothing: 2,
+    "Work Tools": 3,
+    "Pet Supplies": 4,
+    "Home Styling": 5,
+    Cleaning: 6,
+    Shoes: 7,
+    Sport: 8,
+    Accessories: 9,
+    Furnishing: 10,
+    Safety: 11,
+    Beauty: 12,
+  };
 
-  const handleCategoryChange = (category) => {
-    const newSelectedCategories = selectedCategories.includes(category)
-      ? selectedCategories.filter((c) => c !== category)
-      : [...selectedCategories, category];
+  const handleCategoryChange = (categoryId) => {
+    const newSelectedCategories = selectedCategories.includes(categoryId)
+      ? selectedCategories.filter((id) => id !== categoryId)
+      : [...selectedCategories, categoryId];
     setSelectedCategories(newSelectedCategories);
   };
 
@@ -125,15 +125,15 @@ function CustomerSignUp() {
 
           <div className="category-list">
             <h3>Select Your Favorite Categories:</h3>
-            {categories.map((category) => (
-              <label key={category}>
+            {Object.entries(categories).map(([categoryName, categoryId]) => (
+              <label key={categoryId}>
                 <input
                   type="checkbox"
-                  value={category}
-                  checked={selectedCategories.includes(category)}
-                  onChange={() => handleCategoryChange(category)}
+                  value={categoryId}
+                  checked={selectedCategories.includes(categoryId)}
+                  onChange={() => handleCategoryChange(categoryId)}
                 />
-                {category}
+                {categoryName}
               </label>
             ))}
           </div>
