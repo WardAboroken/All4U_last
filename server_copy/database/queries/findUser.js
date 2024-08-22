@@ -4,8 +4,6 @@ const doQuery = require("../query");
 
 async function findUser(userInfo) {
   const { userName, psw } = userInfo;
-
-  
   try {
     const result = await doQuery(
       `

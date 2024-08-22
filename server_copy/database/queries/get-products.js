@@ -7,7 +7,7 @@ const doQuery = require("../query");
 async function getProducts() {
   sql = `SELECT catalogNumber,productName,amount,size,color,price,picturePath,categoryNumber ,userName ,description FROM products `;
   result = await doQuery(sql);
-  console.log(result, "🥱 in getProducts");
+  // console.log(result, "🥱 in getProducts");
   return result;
 }
 

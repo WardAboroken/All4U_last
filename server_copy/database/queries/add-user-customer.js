@@ -23,6 +23,7 @@ async function addCustomerUser(user) {
     if (existingUser.length > 0) {
       return { success: false, message: "User already exists" };
     }
+    console.log("user's selected categories ==>>> ",selectedCategories);
 
     // Insert new user into the database
     await doQuery(

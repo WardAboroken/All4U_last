@@ -11,7 +11,7 @@ router.get("/get-products", async (req, res, next) => {
   try {
     console.log("in /shop/products GET");
     const products = await getProducts();
-    console.log(products, "😂 in /shop/products GET");
+    // console.log(products, "😂 in /shop/products GET");
     // send response to FE as JSON
     res.json(products);
   } catch (error) {

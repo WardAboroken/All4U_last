@@ -17,6 +17,7 @@ async function getCustomerInfo(userInfo) {
     );
 
     if (results.length > 0) {
+      console.log(results[0])
       return results[0]; // Assuming 'users' table has fields like name, username, email, etc.
     } else {
       return null; // Return null if user is not found
