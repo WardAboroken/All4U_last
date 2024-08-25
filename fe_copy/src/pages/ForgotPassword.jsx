@@ -10,7 +10,7 @@ function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [userName, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   const handleEmailChange = (e) => setEmail(e.target.value);
@@ -26,12 +26,15 @@ function ForgotPassword() {
         userName,
         phoneNumber,
       });
-      setMessage(response.data.message);
+      
       if (response.status === 200) {
-        navigate("/ResetPass"); // Redirect to the success page
+        window.alert("you success to reset your password but you need to do that from your mail in gmail");
+        // setMessage("you success to reset your password but you need to do that from your mail in gmail");
+        navigate("/Login"); // Redirect to the success page
       }
     } catch (error) {
-      setMessage("An error occurred. Please try again.");
+      window.alert("An error occurred. Please try again.");
+      // setMessage("An error occurred. Please try again.");
       console.error("Error sending recovery email:", error);
     }
   };
@@ -77,7 +80,7 @@ function ForgotPassword() {
             Send Recovery Email
           </button>
         </form>
-        {message && <p className="message">{message}</p>}
+        {/* {message && <p className="message">{message}</p>} */}
       </div>
       <Footer />
     </div>

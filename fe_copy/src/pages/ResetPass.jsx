@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./css/login.css";
 import OutHeader from "../components/OutHeader";
 import Footer from "../components/Footer";
@@ -7,22 +7,26 @@ import Footer from "../components/Footer";
 function Login() {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
+  
 
   const handleLoginClick = async (event) => {
     event.preventDefault();
 
     // Extract username and password from form data
+    // Extract username, password, and confirmPassword from form data
     const formData = new FormData(event.target);
-    const userData = {
-      userName: formData.get("UserName"),
-      psw: formData.get("psw"),
-      confirmPsw: formData.get("confirmPassword"),
-    };
+    const userName = formData.get("UserName");
+    const psw = formData.get("psw");
+    const confirmPsw = formData.get("confirmPassword");
 
-     if (userData.password !== userData.confirmPassword) {
-       window.alert("Passwords do not match. Please try again.");
-       return;
-     }
+    // Check if passwords match
+    if (psw !== confirmPsw) {
+      setMessage("Passwords do not match. Please try again.");
+      return;
+    }
+
+    // Send only username and password to backend
+    const userData = { userName, psw };
 
     try {
       // Send login request to backend
@@ -40,14 +44,16 @@ function Login() {
 
       // Handle response based on server's success or failure
       if (response.ok) {
-        setMessage(data.message);
-        navigate(data.redirectUrl); // Redirect to the specified URL after successful login
+         window.alert(
+           "you success to reset your password , you can to login with your new password now"
+         );
+        navigate("/Login"); // Redirect to the specified URL after successful login
       } else {
-        setMessage(data.message);
+        window.alert("you failed to reset your password , please try again");
       }
     } catch (error) {
       console.error("Error checking user:", error.message);
-      setMessage("Invalid username or password");
+      window.alert("you failed to reset your password , please try again");
     }
   };
 
@@ -55,7 +61,7 @@ function Login() {
     <body>
       <OutHeader />
       <div className="container">
-        <h2>Sign In</h2>
+        <h2>Reset Password</h2>
         <form onSubmit={handleLoginClick}>
           <input
             className="UserName"
@@ -77,11 +83,8 @@ function Login() {
             required
           />
           <button className="menuItem_login" type="submit">
-            Login
+            RESET
           </button>
-          <NavLink to="/ForgotPassword" className="menuItem_forgotPassword" end>
-            Forgot Password?
-          </NavLink>
         </form>
         {message && <p>{message}</p>}
       </div>
