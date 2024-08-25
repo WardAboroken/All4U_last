@@ -4,10 +4,18 @@ async function findUser(userInfo) {
   const { email, userName, phoneNumber } = userInfo;
    try {
      const existingUser = await doQuery(
-       `SELECT * FROM users WHERE email=? AND username = ? AND  phoneNumber = ?`,
-       [email, userName, phoneNumber]
-     );
+       `SELECT email, username, phoneNumber 
+        FROM users 
+        WHERE email = ? AND username = ? AND phoneNumber = ? 
 
+        UNION
+
+        SELECT email, username, phoneNumber 
+        FROM businessowner 
+        WHERE email = ? AND username = ? AND phoneNumber = ?;`,
+       [email, userName, phoneNumber, email, userName, phoneNumber]
+     );
+     console.log("existinggggggggggggg" , existingUser)
      if (existingUser.length > 0) {
        return { success: true, message: "User found." };
      } else {

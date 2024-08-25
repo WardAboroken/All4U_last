@@ -5,30 +5,49 @@ const doQuery = require("../query");
  *@returns success/error
  */
 async function findUserForNewPsw(user) {
-  const { id, username, tel, email, newPassword } = user;
+  const { userName, psw } = user;
+  console.log("you check user ", psw);
   try {
     // Update the user's password
-    await doQuery(
-      `UPDATE users 
-       SET Psw = ?
-       WHERE id = ? 
-       AND username = ? 
-       AND phone_number = ? 
-       AND email = ?`,
-      [newPassword, id, username, tel, email]
+    const resultusers = await doQuery(
+      `SELECT username FROM users WHERE username = ?`,
+      [userName]
     );
+    const resultbis = await doQuery(
+      `SELECT username FROM businessowner WHERE username = ?`,
+      [userName]
+    );
+    if (resultusers.length > 0) {
+      await doQuery(
+        `UPDATE users 
+       SET psw = ?
+       WHERE username = ?`,
+        [psw, userName]
+      );
+    } else if (resultbis.length > 0) {
+      await doQuery(
+        `UPDATE businessowner 
+         SET psw = ?
+         WHERE username = ?`,
+        [psw, userName]
+      );
+    } else {
+      return { error: "User not found" };
+    }
 
     // Check if the user exists after updating the password
-    const result = await doQuery(
-      `SELECT * FROM users 
-       WHERE id = ? 
-       AND username = ? 
-       AND phone_number = ? 
-       AND email = ?`,
-      [id, username, tel, email]
-    );
+    // const result = await doQuery(
+    //   `SELECT username FROM users
+    //    WHERE username = ?
 
-    if (result.length > 0) {
+    //    UNION
+
+    //    SELECT username FROM businessowner
+    //    WHERE username = ?`,
+    //   [userName, userName]
+    // );
+
+    if (resultusers.length > 0 || resultbis.length > 0) {
       return { success: true }; // User found and password updated successfully
     } else {
       return { error: "User not found" };
