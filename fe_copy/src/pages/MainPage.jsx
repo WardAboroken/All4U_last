@@ -1,5 +1,5 @@
 import React from "react";
-import img from "../asserts/images/artist photographer photography david welch-1.jpeg";
+import img from "../assets/images/artist photographer photography david welch-1.jpeg";
 import "./css/outHeader.css";
 import "./css/index.css";
 import "./css/mainPage.css";
