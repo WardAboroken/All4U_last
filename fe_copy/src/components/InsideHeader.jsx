@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import basket_cart from "../asserts/images/shopping-cart.png";
-import user_profile from "../asserts/images/user_profile.jpeg"; // Adjust the path
+import basket_cart from "../assets/images/shopping-cart.png";
+import user_profile from "../assets/images/user_profile.jpeg"; // Adjust the path
 import "../pages/css/insideHeader.css"; // Adjust the path as per your project structure
 
 const InsideHeader = () => {
@@ -14,6 +14,21 @@ const InsideHeader = () => {
     phoneNumber: "",
     image: "", // Added image field
   });
+
+  const categories = {
+    Toys: 1,
+    Clothing: 2,
+    "Work Tools": 3,
+    "Pet Supplies": 4,
+    "Home Styling": 5,
+    Cleaning: 6,
+    Shoes: 7,
+    Sport: 8,
+    Accessories: 9,
+    Furnishing: 10,
+    Safety: 11,
+    Beauty: 12,
+  };
 
   useEffect(() => {
     fetchUserInfo();
@@ -48,22 +63,6 @@ const InsideHeader = () => {
     setShowCategoryDropdown(false);
   };
 
-  // Category list
-  const categories = {
-    Toys: 1,
-    Clothing: 2,
-    "Work Tools": 3,
-    "Pet Supplies": 4,
-    "Home Styling": 5,
-    Cleaning: 6,
-    Shoes: 7,
-    Sport: 8,
-    Accessories: 9,
-    Furnishing: 10,
-    Safety: 11,
-    Beauty: 12,
-  };
-
   return (
     <header className="header">
       <div className="left-section">
@@ -74,13 +73,14 @@ const InsideHeader = () => {
           <div
             className={`dropdownContent ${showCategoryDropdown ? "show" : ""}`}
           >
-            {Object.keys(categories).map((categoryName) => (
+            {Object.keys(categories).map((category) => (
               <NavLink
-                key={categories[categoryName]}
-                to={`/${categoryName.replace(/\s+/g, "")}`}
+                key={categories[category]}
+                to={`/ShopMainPage/${category.replace(/\s+/g, "")}`}
                 className="menuItem"
+                onClick={() => setShowCategoryDropdown(false)} // Auto-close dropdown on selection
               >
-                {categoryName}
+                {category}
               </NavLink>
             ))}
           </div>
@@ -132,7 +132,7 @@ const InsideHeader = () => {
           </div>
         </div>
         <div className="basketCart">
-          <NavLink to="/cart" className="menuItem">
+          <NavLink to="/BasketCart" className="menuItem">
             <img src={basket_cart} alt="Basket" />
           </NavLink>
         </div>
