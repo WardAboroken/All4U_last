@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom"; // Import NavLink
 import InsideHeader from "../components/InsideHeader";
 import Footer from "../components/Footer";
-import "./css/index.css";
 import "./css/shopMainPage.css";
-import background_img from "../asserts/images/warmth_background.jpeg";
+import "./css/index.css";
+
+import background_img from "../assets/images/warmth_background.jpeg";
 
 function ShopMainPage() {
   const [products, setProducts] = useState([]);
@@ -34,7 +36,7 @@ function ShopMainPage() {
     };
 
     fetchUserInfo();
-  }, []); // Only run once when the component mounts
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -52,7 +54,6 @@ function ShopMainPage() {
 
         const data = await response.json();
 
-        // Filter products based on the user's favorite categories
         if (userFavCategories.length > 0) {
           const filteredProducts = data.filter((product) =>
             userFavCategories.includes(product.categoryNumber)
@@ -66,15 +67,17 @@ function ShopMainPage() {
       }
     };
 
-      fetchProducts(); // Only fetch products once categories are fetched
-  }, [userFavCategories]); // Run when userFavCategories updates
+    if (userFavCategories.length > 0) {
+      fetchProducts();
+    }
+  }, [userFavCategories]);
 
   const getImagePath = (picturePath) => {
     try {
-      return require(`../asserts/images/${picturePath}`).default;
+      return require(`../assets/images/${picturePath}`).default;
     } catch (error) {
       console.error(`Image not found: ${picturePath}`);
-      return require("../asserts/images/map.png").default; // Fallback image if not found
+      return require("../assets/images/map.png").default;
     }
   };
 
@@ -82,30 +85,33 @@ function ShopMainPage() {
     <div>
       <InsideHeader />
       <main className="container">
-        <section className="section1">
+        <section className="sectionMain">
           <div className="hero-content">
             <h1>All4U</h1>
           </div>
           <img src={background_img} alt="backgroundImg" />
         </section>
-        <section className="section2">
+        <section className="sectionProducts">
           <h2>Products</h2>
           <ul>
             {products.map((product) => (
               <li key={product.productId}>
-                <img
-                  src={getImagePath(product.picture_path)}
-                  alt={product.productName}
-                />
-                <h3>{product.productName}</h3>
-                <p>Price: ${product.price}</p>
-                <ul>
-                  <li>Description: {product.description}</li>
-                  <li>Catalog Number: {product.catalogNumber}</li>
-                  <li>Amount: {product.amount}</li>
-                  <li>Size: {product.size}</li>
-                  <li>Color: {product.color}</li>
-                </ul>
+                <NavLink to={`/Product/${product.catalogNumber}`}>
+                  <img
+                    src="http://localhost:5000/uploads"
+                    // src={getImagePath(product.picture_path)}
+                    alt={product.productName}
+                  />
+                  <h3>{product.productName}</h3>
+                  <p>Price: ${product.price}</p>
+                  <ul>
+                    <li>Description: {product.description}</li>
+                    <li>Catalog Number: {product.catalogNumber}</li>
+                    <li>Amount: {product.amount}</li>
+                    <li>Size: {product.size}</li>
+                    <li>Color: {product.color}</li>
+                  </ul>
+                </NavLink>
               </li>
             ))}
           </ul>
