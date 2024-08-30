@@ -10,7 +10,8 @@ import CustomerOrdersHistory from "./pages/CustomerOrdersHistory";
 import EditProfile from "./pages/EditProfile";
 import ShopOwnerMainPage from "./pages/ShopOwnerMainPage";
 import ResetPass from "./pages/ResetPass";
-
+import CategoryPage from "./pages/CategoryPage";
+import ProductPage from "./pages/ProductPage";
 
 function App() {
   const projectName = "Test Project";
@@ -26,11 +27,13 @@ function App() {
         <Route path="/ShopMainPage" element={<ShopMainPage />} />
         <Route path="/ResetPass" element={<ResetPass />} />
         <Route path="/ShopOwnerMainPage" element={<ShopOwnerMainPage />} />
+        <Route path="/ShopMainPage/:categoryName" element={<CategoryPage />} />
         <Route
           path="/CustomerOrdersHistory"
           element={<CustomerOrdersHistory />}
         />
         <Route path="/EditProfile" element={<EditProfile />} />
+        <Route path="/Product/:catalogNumber" element={<ProductPage />} />
       </Routes>
     </div>
   );

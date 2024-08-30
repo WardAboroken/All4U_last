@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import gmail from "../asserts/images/gmail-svgrepo-com.svg";
-import facebook from "../asserts/images/facebook-svgrepo-com.svg";
-import whatsapp from "../asserts/images/whatsapp-svgrepo-com.svg";
-import instagram from "../asserts/images/instagram-167-svgrepo-com.svg";
+import gmail from "../assets/images/gmail-svgrepo-com.svg";
+import facebook from "../assets/images/facebook-svgrepo-com.svg";
+import whatsapp from "../assets/images/whatsapp-svgrepo-com.svg";
+import instagram from "../assets/images/instagram-167-svgrepo-com.svg";
 function Footer() {
   return (
     <footer>

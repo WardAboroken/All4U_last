@@ -3,7 +3,7 @@ import "./css/index.css";
 import "./css/insideHeader.css";
 import InsideHeader from "../components/InsideHeader";
 import Footer from "../components/Footer";
-import user_profile from "../asserts/images/user_profile.jpeg";
+import user_profile from "../assets/images/user_profile.jpeg";
 
 function EditProfile() {
   const [name, setName] = useState("");
