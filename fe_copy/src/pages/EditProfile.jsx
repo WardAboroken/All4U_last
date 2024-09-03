@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./css/index.css";
-import "./css/insideHeader.css";
-import InsideHeader from "../components/InsideHeader";
+import "./css/customerHeader.css";
+import CustomerHeader from "../components/CustomerHeader";
 import Footer from "../components/Footer";
-import user_profile from "../asserts/images/user_profile.jpeg";
+import user_profile from "../assets/images/user_profile.jpeg";
 
 function EditProfile() {
   const [name, setName] = useState("");
@@ -103,7 +103,7 @@ function EditProfile() {
 
   return (
     <div>
-      <InsideHeader />
+      <CustomerHeader />
       <div className="container">
         <h1>All4U</h1>
         <h2>Customer Profile Edit</h2>

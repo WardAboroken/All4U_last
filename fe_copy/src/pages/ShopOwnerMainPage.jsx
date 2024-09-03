@@ -1,13 +1,13 @@
 import React from "react";
-import InsideHeader from "../components/InsideHeader"; // Make sure to import the InsideHeader component
+import CustomerHeader from "../components/CustomerHeader"; // Make sure to import the CustomerHeader component
 import Footer from "../components/Footer";
 import "./css/index.css";
-import background_img from "../asserts/images/warmth_background.jpeg"; // Ensure the path is correct
+import background_img from "../assets/images/warmth_background.jpeg"; // Ensure the path is correct
 
 function ShopMainPage() {
   return (
     <body>
-      <InsideHeader />
+      <CustomerHeader />
       <main>
         <section className="section1">
           <img src={background_img} alt="backgroundImg" />
