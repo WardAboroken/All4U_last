@@ -11,6 +11,8 @@ async function addShopOwnerUser(user) {
     businessName,
     businessAddress,
     typeOfUser,
+    description,
+    status = 2,
   } = user;
 
   try {
@@ -29,7 +31,7 @@ async function addShopOwnerUser(user) {
     // Insert new user into the database
     await doQuery(
       `
-      INSERT INTO businessowner (name, userName, email, phoneNumber, psw, subscriptionType, businessName, businessAddress, typeOfUser) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      INSERT INTO businessowner (name, userName, email, phoneNumber, psw, subscriptionType, businessName, businessAddress, typeOfUser , description , status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ?)`,
       [
         name,
         userName,
@@ -40,6 +42,8 @@ async function addShopOwnerUser(user) {
         businessName,
         businessAddress,
         typeOfUser,
+        description,
+        status,
       ]
     );
 

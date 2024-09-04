@@ -34,6 +34,7 @@ const updateProfileRoutes = require("./routes/updateProfile");
 const shopRoutes = require("./routes/shop");
 const recoveryPswRoutes = require("./routes/recoveryPsw");
 const cartRoutes = require("./routes/cart"); // Import the cart route
+const admin = require("./routes/admin");
 
 app.use("/login", loginRoutes);
 app.use("/userInfo", userInfoRoutes);
@@ -42,6 +43,7 @@ app.use("/updateProfile", updateProfileRoutes);
 app.use("/shop", shopRoutes);
 app.use("/recoveryPsw", recoveryPswRoutes);
 app.use("/cart", cartRoutes); // Use the cart route
+app.use("/admin", admin);
 
 const port = 5000;
 app.listen(port, () => {
