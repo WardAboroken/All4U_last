@@ -44,7 +44,6 @@ function CustomerSignUp() {
       phoneNumber: formData.get("phoneNumber"),
       email: formData.get("email"),
       confirmPassword: formData.get("confirmPassword"),
-      typeOfUser: "customer",
       selectedCategories: selectedCategories,
     };
 
