@@ -1,12 +1,12 @@
 import "./css/index.css";
-import "./css/insideHeader.css";
-import InsideHeader from "../components/InsideHeader";
+import "./css/customerHeader.css";
+import CustomerHeader from "../components/CustomerHeader";
 import Footer from "../components/Footer";
 
 function CustomerOrdersHistory() {
   return (
     <body>
-      <InsideHeader />
+      <CustomerHeader />
 
       <Footer />
     </body>
