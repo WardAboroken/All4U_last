@@ -44,7 +44,6 @@ function CustomerSignUp() {
       phoneNumber: formData.get("phoneNumber"),
       email: formData.get("email"),
       confirmPassword: formData.get("confirmPassword"),
-      typeOfUser: "customer",
       selectedCategories: selectedCategories,
     };
 
@@ -66,7 +65,7 @@ function CustomerSignUp() {
       const data = await response.json();
       if (response.ok) {
         setMessage(data.message);
-        navigate("/ShopMainPage");
+        navigate("/Login");
         window.alert("User added successfully!");
       } else {
         window.alert("Failed to sign up. Please try again.");
