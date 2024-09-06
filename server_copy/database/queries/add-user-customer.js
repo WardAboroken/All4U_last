@@ -2,15 +2,8 @@
 const doQuery = require("../query");
 
 async function addCustomerUser(user) {
-  const {
-    userName,
-    name,
-    password,
-    email,
-    phoneNumber,
-    typeOfUser,
-    selectedCategories,
-  } = user;
+  const { userName, name, password, email, phoneNumber, selectedCategories } =
+    user;
 
   try {
     // Check if the user already exists
@@ -23,19 +16,18 @@ async function addCustomerUser(user) {
     if (existingUser.length > 0) {
       return { success: false, message: "User already exists" };
     }
-    console.log("user's selected categories ==>>> ",selectedCategories);
+    console.log("user's selected categories ==>>> ", selectedCategories);
 
     // Insert new user into the database
     await doQuery(
       `
-      INSERT INTO users (userName, name, psw, email, phoneNumber, typeOfUser, preferredCategories) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      INSERT INTO users (userName, name, psw, email, phoneNumber, preferredCategories) VALUES (?, ?, ?, ?, ?, ?)`,
       [
         userName,
         name,
         password,
         email,
         phoneNumber,
-        typeOfUser,
         JSON.stringify(selectedCategories),
       ]
     );

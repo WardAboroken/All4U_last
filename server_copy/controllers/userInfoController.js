@@ -23,7 +23,7 @@ const getUserInfo = async (req, res) => {
       if (customerInfo) {
         userInfo = { ...userInfo, ...customerInfo };
       }
-    } else if (userType === "worker") {
+    } else if (userType === "worker" || userType === "admin") {
       const workerInfo = await getWorkerInfo(userInfo);
       if (workerInfo) {
         userInfo = { ...userInfo, ...workerInfo };

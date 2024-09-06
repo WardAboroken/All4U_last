@@ -1,33 +1,63 @@
 const doQuery = require("../query");
 
 /**
- * A shop function which add a new product to the products table if product does not exist already and returns success if succeeded, else returns error
- * @param {*} product 
- * @returns success/error
+ * A shop function that adds a new product to the products table if the product does not exist already and returns success if succeeded; otherwise, returns an error.
+ * @param {*} product
+ * @returns {Object} success or error message
  */
 async function addProduct(product) {
-  const { catalogNumber, productName, Amount, size, color, price , category , picture_path , Description } = product;
+  // Destructure product properties, ensuring all variables are provided correctly
+  const {
+    catalogNumber,
+    productName,
+    amount, // Ensure correct variable name
+    size,
+    color,
+    price,
+    categoryNumber, // Use categoryNumber instead of category
+    userName, // Ensure userName is provided
+    picturePath,
+    description, // Ensure correct variable name
+  } = product;
 
   try {
-    // Check if the user already exists
-    const existingUser = await doQuery(
-      `SELECT * FROM products WHERE Catalog_Number = ?`,
+    // Check if the product already exists
+    const existingProduct = await doQuery(
+      `SELECT * FROM products WHERE catalogNumber = ?`,
       [catalogNumber]
     );
-    if (existingUser.length > 0) {
-      return { error: "product already exists in the database" }; // Return an error message
+
+    if (existingProduct.length > 0) {
+      return { error: "Product already exists in the database." }; // Return an error message
     }
 
-    // Insert the user into the database
-    const insertSql = `INSERT INTO products (Catalog_Number, productName, Amount, Size, Color, Price,Category,picture_path , Description) VALUES (?, ?, ?, ?, ?, ? , ? , ? , ?)`;
-    const params = [catalogNumber, productName, Amount, size, color, price , category , picture_path , Description];
+    // Insert the product into the database
+    const insertSql = `
+      INSERT INTO products (catalogNumber, productName, amount, size, color, price, categoryNumber, userName, picturePath, description) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    const params = [
+      catalogNumber,
+      productName,
+      amount,
+      size,
+      color,
+      price,
+      categoryNumber, // Use categoryNumber in the query
+      userName, // Ensure userName is provided
+      picturePath,
+      description,
+    ];
+
     const result = await doQuery(insertSql, params);
+
     // Log the result for debugging (optional)
     console.log("Insert result:", result);
-    return { success: "New product has been added to the database" }; // Return a success message
+
+    return { success: "New product has been added to the database." }; // Return a success message
   } catch (error) {
     console.error("Error adding product:", error); // Log the error for debugging
-    return { error: "Error adding product to the database" }; // Return an error message
+    return { error: "Error adding product to the database." }; // Return an error message
   }
 }
 
