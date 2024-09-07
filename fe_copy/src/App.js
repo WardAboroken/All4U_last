@@ -7,7 +7,7 @@ import UserTypeSelection from "./pages/UserTypeSelection";
 import ShopOwnerSignUp from "./pages/ShopOwnerSignUp";
 import ShopMainPage from "./pages/ShopMainPage";
 import CustomerOrdersHistory from "./pages/CustomerOrdersHistory";
-import EditProfile from "./pages/EditProfile";
+import EditCustomerProfile from "./pages/EditCustomerProfile";
 import ShopOwnerMainPage from "./pages/ShopOwnerMainPage";
 import ResetPass from "./pages/ResetPass";
 import CategoryPage from "./pages/CategoryPage";
@@ -16,6 +16,7 @@ import BasketCart from "./pages/BasketCart";
 import AdminMainPage from "./pages/AdminMainPage";
 import ShopOwnerOrdersPage from "./pages/ShopOwnerOrdersPage.jsx"
 import ShopOwnerProductsPage from "./pages/ShopOwnerProductsPage.jsx";
+import EditShopOwnerProfile from "./pages/EditShopOwnerProfile";
 
 function App() {
   const projectName = "Test Project";
@@ -42,9 +43,13 @@ function App() {
           path="/CustomerOrdersHistory"
           element={<CustomerOrdersHistory />}
         />
-        <Route path="/EditProfile" element={<EditProfile />} />
+        <Route path="/EditCustomerProfile" element={<EditCustomerProfile />} />
         <Route path="/Product/:catalogNumber" element={<ProductPage />} />
         <Route path="/BasketCart" element={<BasketCart />} />
+        <Route
+          path="/EditShopOwnerProfile"
+          element={<EditShopOwnerProfile />}
+        />
       </Routes>
       <link
         rel="stylesheet"

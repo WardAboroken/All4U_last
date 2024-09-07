@@ -1,0 +1,105 @@
+/* adminMainPage.css */
+
+/* Style the table container */
+.table-container {
+  padding: 20px;
+  overflow-x: auto; /* Allows horizontal scrolling if table is too wide */
+}
+
+/* Style the table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse; /* Combine borders for cleaner look */
+  margin: 20px 0;
+  font-size: 1em;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border: 1px solid #ddd; /* Add border around table */
+}
+
+/* Table headers */
+.data-table thead th {
+  background-color: #4CAF50; /* Header background color */
+  color: #fff; /* Header text color */
+  text-align: left;
+  padding: 10px;
+  border-right: 1px solid #ddd; /* Line between columns */
+  border-bottom: 2px solid #ddd; /* Line between header and rows */
+}
+
+/* Last header column without right border */
+.data-table thead th:last-child {
+  border-right: none;
+}
+
+/* Table body rows */
+.data-table tbody tr {
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+/* Table body cells */
+.data-table tbody td {
+  padding: 10px;
+  text-align: left;
+  border-right: 1px solid #ddd; /* Line between columns */
+}
+
+/* Last column without right border */
+.data-table tbody td:last-child {
+  border-right: none;
+}
+
+/* Hover effect for table rows */
+.data-table tbody tr:hover {
+  background-color: #f2f2f2; /* Row hover color */
+}
+
+/* Style for buttons in the Actions column */
+.data-table tbody td button {
+  background-color: #4CAF50; /* Button background color */
+  color: white; /* Button text color */
+  border: none;
+  padding: 5px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+  border-radius: 4px;
+}
+
+/* Hover effect for buttons */
+.data-table tbody td button:hover {
+  background-color: #45a049; /* Button hover color */
+}
+
+/* Style for the filter buttons section */
+.filter-buttons {
+  margin-top: 20px;
+  text-align: center; /* Center-align buttons */
+}
+
+/* Style for each filter button */
+.filter-buttons button {
+  background-color: #4CAF50; /* Button background color */
+  color: white; /* Button text color */
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+  border-radius: 4px;
+}
+
+/* Hover effect for filter buttons */
+.filter-buttons button:hover {
+  background-color: #45a049; /* Button hover color */
+}
+
+/* Style for "There are no data" message */
+.no-data-message {
+  text-align: center; /* Center align the text */
+  font-size: 1.2em; /* Larger font size */
+  font-weight: bold; /* Bold text */
+  color: #666; /* Grey text color */
+  margin-top: 20px; /* Space above the message */
+}

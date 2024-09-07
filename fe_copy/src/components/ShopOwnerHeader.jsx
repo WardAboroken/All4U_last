@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import user_profile from "../assets/images/user_profile.jpeg"; // Ensure the path is correct
-import "../pages/css//shopOwnerHeader.css"; // Ensure the path to your CSS file is correct
+import "../pages/css/shopOwnerHeader.css"; // Ensure the path to your CSS file is correct
 
 const ShopOwnerHeader = () => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -107,7 +107,7 @@ const ShopOwnerHeader = () => {
                 </tr>
               </tbody>
             </table>
-            <NavLink to="/EditProfile" className="editProfileBtn">
+            <NavLink to="/EditShopOwnerProfile" className="editProfileBtn">
               Edit Profile
             </NavLink>
             <NavLink to="/CustomerOrdersHistory" className="ordersHistoryBtn">

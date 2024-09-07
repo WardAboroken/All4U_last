@@ -120,7 +120,7 @@ const InsideHeader = () => {
                 </tr>
               </tbody>
             </table>
-            <NavLink to="/EditProfile" className="editProfileBtn">
+            <NavLink to="/EditCustomerProfile" className="editProfileBtn">
               Edit Profile
             </NavLink>
             <NavLink to="/CustomerOrdersHistory" className="ordersHistoryBtn">

@@ -45,10 +45,6 @@ const AdminHeader = () => {
     <header className="header">
       <div className="left-section">
         <div className="menu"></div>
-        <div className="searchBox">
-          <input type="text" placeholder="Search..." />
-          <button type="button">Search</button>
-        </div>
       </div>
       <div className="right-section">
         <div className="profileInfo">
@@ -80,7 +76,7 @@ const AdminHeader = () => {
                 </tr>
               </tbody>
             </table>
-            <NavLink to="/EditProfile" className="editProfileBtn">
+            <NavLink to="/EditShopOwnerProfile" className="editProfileBtn">
               Edit Profile
             </NavLink>
             <NavLink to="/CustomerOrdersHistory" className="ordersHistoryBtn">

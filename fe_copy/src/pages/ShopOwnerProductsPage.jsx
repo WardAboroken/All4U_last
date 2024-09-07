@@ -72,7 +72,7 @@ const ShopOwnerProductsPage = () => {
         setLoading(true);
         try {
           const response = await fetch(
-            `/shop/get-products?userName=${userName}`,
+           ` /shop/get-products?userName=${userName}`,
             { method: "GET", headers: { "Content-Type": "application/json" } }
           );
           if (response.ok) {
