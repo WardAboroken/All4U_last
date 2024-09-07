@@ -6,20 +6,35 @@ const router = express.Router();
 router.use(express.json());
 
 router.post("/updateCustomerProfile", async (req, res, next) => {
-  console.log("Adding new user:", req.body);
   try {
     const user = req.body;
     const result = await updateCustomerProfile(user);
 
     // Sending a response to the client
     if (result.success) {
-      res.status(200).json({ message: "add User success!" }); // Sending success message if addition is successful
+      res.status(200).json({ message: "Update success!" }); // Sending success message if addition is successful
     } else {
-      res.status(400).json({ message: "User already exist." }); // Sending error message if user already exists
+      res.status(400).json({ message: "Update faild" }); // Sending error message if user already exists
     }
   } catch (error) {
-    console.error("Error adding user:", error);
-    res.status(500).json({ error: "An error occurred while adding the user" });
+    res.status(500).json({ error: "An error occurred while update the user" });
+  }
+});
+
+// updateShopOwnerProfile
+router.post("/updateShopOwnerProfile", async (req, res, next) => {
+  try {
+    const user = req.body;
+    const result = await updateShopOwnerProfile(user);
+
+    // Sending a response to the client
+    if (result.success) {
+      res.status(200).json({ message: "Update success!" }); // Sending success message if addition is successful
+    } else {
+      res.status(400).json({ message: "Update faild." }); // Sending error message if user already exists
+    }
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while update the user" });
   }
 });
 

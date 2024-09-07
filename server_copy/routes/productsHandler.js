@@ -58,7 +58,7 @@ router.put(
         size,
         amount,
         price,
-        categoryNumber, // Updated to use `categoryNumber` as in backend
+        categoryNumber, // Updated to use categoryNumber as in backend
       } = req.body;
 
       // Parse categoryNumber to ensure it is an integer
