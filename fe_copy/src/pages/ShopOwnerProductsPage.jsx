@@ -385,14 +385,15 @@ const AddProductForm = ({
         />
         <input
           type="file"
-          name="picture"
+          name="picturePath" // This should match the field name Multer expects
           accept="image/*"
           onChange={(e) =>
             handleInputChange({
-              target: { name: "imageLink", value: e.target.files[0] },
+              target: { name: "picturePath", value: e.target.files[0] }, // Update to 'picturePath' to match the backend
             })
           }
         />
+
         <select
           name="categoryNumber"
           value={newProduct.categoryNumber}
