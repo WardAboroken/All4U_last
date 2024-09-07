@@ -16,11 +16,8 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp and file extension
   },
 });
-
 const upload = multer({ storage });
-
-// Route to add a new product
-router.post("/addProduct", upload.single("picture"), async (req, res) => {
+router.post("/addProduct", upload.single("picturePath"), async (req, res) => {
   try {
     console.log("Adding new product:", req.body);
     const product = req.body;
@@ -44,24 +41,7 @@ router.post("/addProduct", upload.single("picture"), async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-// Route to delete a product
-router.delete("/deleteProduct/:catalogNumber", async (req, res) => {
-  try {
-    const { catalogNumber } = req.params; // Use catalogNumber from URL parameter
-    console.log("Deleting product with catalog number:", catalogNumber);
-    
-    const result = await deleteProduct({ catalogNumber });
 
-    if (result.success) {
-      res.status(200).json({ message: "Product deleted successfully!" });
-    } else {
-      res.status(400).json({ message: "Product does not exist." });
-    }
-  } catch (error) {
-    console.error("Error deleting product:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 
 // Route to update a product
