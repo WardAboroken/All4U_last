@@ -12,7 +12,7 @@ async function checkUserType(userInfo) {
       FROM users
       WHERE userName = ? AND psw = ?
       UNION
-      SELECT 'worker' AS userType
+      SELECT typeOfUser AS userType
       FROM businessowner
       WHERE userName = ? AND psw = ?
    `,
