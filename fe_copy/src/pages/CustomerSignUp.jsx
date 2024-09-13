@@ -44,7 +44,6 @@ function CustomerSignUp() {
       phoneNumber: formData.get("phoneNumber"),
       email: formData.get("email"),
       confirmPassword: formData.get("confirmPassword"),
-      typeOfUser: "customer",
       selectedCategories: selectedCategories,
     };
 
@@ -69,8 +68,15 @@ function CustomerSignUp() {
         navigate("/ShopMainPage");
         window.alert("User added successfully!");
       } else {
-        window.alert("Failed to sign up. Please try again.");
-        setMessage(data.error || "Something went wrong");
+        if (data.message === "User already exist.") {
+          window.alert(
+            "This username or email is already registered. Please use a different one."
+          );
+          window.location.reload();
+        } else {
+          window.alert("Failed to sign up. Please try again.");
+          window.location.reload();
+        }
       }
     } catch (error) {
       console.error("Error checking user: ", error.message);

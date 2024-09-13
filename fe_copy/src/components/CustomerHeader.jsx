@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
-import basket_cart from "../asserts/images/shopping-cart.png";
-import user_profile from "../asserts/images/user_profile.jpeg"; // Adjust the path
-import "../pages/css/insideHeader.css"; // Adjust the path as per your project structure
+import { NavLink, useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import basket_cart from "../assets/images/shopping-cart.png";
+import user_profile from "../assets/images/user_profile.jpeg"; // Adjust the path
+import "../pages/css/customerHeader.css"; // Adjust the path as per your project structure
 
-const InsideHeader = () => {
+const CustomerHeader = () => {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [userInfo, setUserInfo] = useState({
@@ -14,6 +14,23 @@ const InsideHeader = () => {
     phoneNumber: "",
     image: "", // Added image field
   });
+  const [searchTerm, setSearchTerm] = useState(""); // State for search input
+  const navigate = useNavigate(); // Hook for navigation
+
+  const categories = {
+    Toys: 1,
+    Clothing: 2,
+    "Work Tools": 3,
+    "Pet Supplies": 4,
+    "Home Styling": 5,
+    Cleaning: 6,
+    Shoes: 7,
+    Sport: 8,
+    Accessories: 9,
+    Furnishing: 10,
+    Safety: 11,
+    Beauty: 12,
+  };
 
   useEffect(() => {
     fetchUserInfo();
@@ -38,6 +55,23 @@ const InsideHeader = () => {
     }
   };
 
+  const handleSearch = () => {
+    if (searchTerm.trim()) {
+      // Navigate to ShopMainPage with search term as a query parameter
+      navigate(`/ShopMainPage?search=${encodeURIComponent(searchTerm.trim())}`);
+    }
+  };
+
+  const handleSearchInputChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSearchKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(); // Trigger search on Enter key press
+    }
+  };
+
   const toggleCategoryDropdown = () => {
     setShowCategoryDropdown(!showCategoryDropdown);
     setShowProfileDropdown(false);
@@ -46,22 +80,6 @@ const InsideHeader = () => {
   const toggleProfileDropdown = () => {
     setShowProfileDropdown(!showProfileDropdown);
     setShowCategoryDropdown(false);
-  };
-
-  // Category list
-  const categories = {
-    Toys: 1,
-    Clothing: 2,
-    "Work Tools": 3,
-    "Pet Supplies": 4,
-    "Home Styling": 5,
-    Cleaning: 6,
-    Shoes: 7,
-    Sport: 8,
-    Accessories: 9,
-    Furnishing: 10,
-    Safety: 11,
-    Beauty: 12,
   };
 
   return (
@@ -74,21 +92,35 @@ const InsideHeader = () => {
           <div
             className={`dropdownContent ${showCategoryDropdown ? "show" : ""}`}
           >
-            {Object.keys(categories).map((categoryName) => (
+            {Object.keys(categories).map((category) => (
               <NavLink
-                key={categories[categoryName]}
-                to={`/${categoryName.replace(/\s+/g, "")}`}
+                key={categories[category]}
+                to={`/ShopMainPage/${category.replace(/\s+/g, "")}`}
                 className="menuItem"
+                onClick={() => setShowCategoryDropdown(false)} // Auto-close dropdown on selection
               >
-                {categoryName}
+                {category}
               </NavLink>
             ))}
           </div>
         </div>
         <div className="searchBox">
-          <input type="text" placeholder="Search..." />
-          <button type="button">Search</button>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={handleSearchInputChange}
+            onKeyPress={handleSearchKeyPress} // Handle Enter key press
+          />
+          <button type="button" onClick={handleSearch}>
+            Search
+          </button>
         </div>
+      </div>
+      <div>
+        <NavLink to="/ShopMainPage" className="shopMainPage-button">
+          All4U
+        </NavLink>
       </div>
       <div className="right-section">
         <div className="profileInfo">
@@ -132,7 +164,7 @@ const InsideHeader = () => {
           </div>
         </div>
         <div className="basketCart">
-          <NavLink to="/cart" className="menuItem">
+          <NavLink to="/BasketCart" className="menuItem">
             <img src={basket_cart} alt="Basket" />
           </NavLink>
         </div>
@@ -141,4 +173,4 @@ const InsideHeader = () => {
   );
 };
 
-export default InsideHeader;
+export default CustomerHeader;
