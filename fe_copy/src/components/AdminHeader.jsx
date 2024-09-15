@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import basket_cart from "../asserts/images/shopping-cart.png";
-import user_profile from "../asserts/images/user_profile.jpeg"; // Adjust the path
+import user_profile from "../assets/images/user_profile.jpeg"; // Adjust the path
 import "../pages/css/insideHeader.css"; // Adjust the path as per your project structure
 
-const InsideHeader = () => {
+const AdminHeader = () => {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [userInfo, setUserInfo] = useState({
@@ -37,58 +36,15 @@ const InsideHeader = () => {
       console.error("Error fetching user info:", error);
     }
   };
-
-  const toggleCategoryDropdown = () => {
-    setShowCategoryDropdown(!showCategoryDropdown);
-    setShowProfileDropdown(false);
-  };
-
   const toggleProfileDropdown = () => {
     setShowProfileDropdown(!showProfileDropdown);
     setShowCategoryDropdown(false);
   };
 
-  // Category list
-  const categories = {
-    Toys: 1,
-    Clothing: 2,
-    "Work Tools": 3,
-    "Pet Supplies": 4,
-    "Home Styling": 5,
-    Cleaning: 6,
-    Shoes: 7,
-    Sport: 8,
-    Accessories: 9,
-    Furnishing: 10,
-    Safety: 11,
-    Beauty: 12,
-  };
-
   return (
     <header className="header">
       <div className="left-section">
-        <div className="menu">
-          <button className="toggleButton" onClick={toggleCategoryDropdown}>
-            Categories
-          </button>
-          <div
-            className={`dropdownContent ${showCategoryDropdown ? "show" : ""}`}
-          >
-            {Object.keys(categories).map((categoryName) => (
-              <NavLink
-                key={categories[categoryName]}
-                to={`/${categoryName.replace(/\s+/g, "")}`}
-                className="menuItem"
-              >
-                {categoryName}
-              </NavLink>
-            ))}
-          </div>
-        </div>
-        <div className="searchBox">
-          <input type="text" placeholder="Search..." />
-          <button type="button">Search</button>
-        </div>
+        <div className="menu"></div>
       </div>
       <div className="right-section">
         <div className="profileInfo">
@@ -120,7 +76,7 @@ const InsideHeader = () => {
                 </tr>
               </tbody>
             </table>
-            <NavLink to="/EditCustomerProfile" className="editProfileBtn">
+            <NavLink to="/EditShopOwnerProfile" className="editProfileBtn">
               Edit Profile
             </NavLink>
             <NavLink to="/CustomerOrdersHistory" className="ordersHistoryBtn">
@@ -131,14 +87,9 @@ const InsideHeader = () => {
             </NavLink>
           </div>
         </div>
-        <div className="basketCart">
-          <NavLink to="/cart" className="menuItem">
-            <img src={basket_cart} alt="Basket" />
-          </NavLink>
-        </div>
       </div>
     </header>
   );
 };
 
-export default InsideHeader;
+export default AdminHeader;

@@ -1,0 +1,217 @@
+/* General Page Styling */
+body {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f8f8f8; /* Light background color */
+}
+
+.main-content {
+  padding: 20px;
+  margin-top: 20px;
+}
+
+/* Section Title Styling */
+.section-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+/* Out Of Stock Products Section */
+.out-of-stock-products {
+  margin: 40px 20px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative; /* Position relative for arrows */
+}
+
+.out-of-stock-products .section-title {
+  color: #b03a2e; /* Dark red color */
+}
+
+/* New Orders Section */
+.new-orders-section {
+  margin: 40px 20px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative; /* Position relative for arrows */
+}
+
+.new-orders-section .section-title {
+  color: #8e5c2b; /* Brown color */
+}
+
+/* Flexbox Containers */
+.products-container,
+.orders-container {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  padding-bottom: 20px; /* Add space for the scrollbar */
+  position: relative; /* Needed for arrow buttons to be positioned correctly */
+}
+
+/* Product Card */
+.product-card,
+.order-card {
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  width: 230px; /* Fixed width for cards */
+  flex: 0 0 auto; /* Prevent shrinking */
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.product-card:hover,
+.order-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.catalog-number {
+  font-size: 14px;
+  color: #555555; /* Dark gray */
+  margin-bottom: 5px;
+}
+
+.product-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #b03a2e; /* Dark red for product name */
+  margin-bottom: 15px;
+}
+
+.order-total-cost {
+  color: #8e5c2b; /* Brown color for total cost */
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Image Styling */
+.product-image {
+  max-width: 100%;
+  height: 150px; /* Fixed height */
+  object-fit: cover;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+/* Replenish Button */
+.replenish-button {
+  background-color: #b03a2e; /* Dark red background */
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px; /* Spacing above the button */
+  width: 100%; /* Full width for better alignment */
+}
+
+.replenish-button:hover {
+  background-color: #943126; /* Slightly darker red on hover */
+}
+
+/* Select Button */
+.select-button {
+  background-color: #8e5c2b; /* Brown background */
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px; /* Spacing above the button */
+  width: 100%; /* Full width for better alignment */
+}
+
+.select-button:hover {
+  background-color: #6f4a20; /* Slightly darker brown on hover */
+}
+
+/* Export Link Styling */
+.export-link {
+  text-align: right;
+  font-size: 14px;
+  color: #b03a2e; /* Dark red color */
+  margin-top: 10px;
+  display: block;
+  text-decoration: none;
+}
+
+.export-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .products-container,
+  .orders-container {
+    flex-wrap: wrap; /* Enable wrapping on smaller screens */
+    justify-content: center; /* Center items */
+  }
+
+  .product-card,
+  .order-card {
+    width: 90%; /* Full width for smaller screens */
+    margin-bottom: 20px; /* Spacing between items */
+  }
+}
+
+/* Arrow Navigation Styling */
+.arrow-container {
+  position: relative;
+  width: 100%;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1000;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.arrow-left {
+  left: -30px; /* Position outside the product or order card */
+}
+
+.arrow-right {
+  right: -30px; /* Position outside the product or order card */
+}
