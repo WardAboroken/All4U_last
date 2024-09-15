@@ -5,7 +5,24 @@ const doQuery = require("../query");
  * @returns result of query
  */
 async function getProducts() {
-  sql = `SELECT catalogNumber,productName,amount,size,color,price,picturePath,categoryNumber ,userName ,description FROM products `;
+  sql = `SELECT 
+  p.catalogNumber,
+  p.productName,
+  p.amount,
+  p.size,
+  p.color,
+  p.price,
+  p.picturePath,
+  p.categoryNumber,
+  p.userName,
+  p.description
+FROM 
+  products p
+JOIN 
+  businessowner b ON p.userName = b.userName
+WHERE 
+  p.amount != 0
+  AND b.status = 1;`;
   result = await doQuery(sql);
   // console.log(result, "🥱 in getProducts");
   return result;
