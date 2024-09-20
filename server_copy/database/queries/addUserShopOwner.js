@@ -1,3 +1,4 @@
+const bcrypt = require("bcryptjs"); // Import bcryptjs for password hashing
 const doQuery = require("../query");
 
 async function addShopOwnerUser(user) {
@@ -5,20 +6,21 @@ async function addShopOwnerUser(user) {
     name,
     userName,
     email,
-    phoneNumber, // Ensure this matches the key from the frontend
-    password,
+    phoneNumber,
+    password, // Plain text password from the user
     subscriptionType,
     businessName,
     businessAddress,
     typeOfUser,
+    description,
+    status = 2, // Default status
   } = user;
 
   try {
     console.log("User data in addShopOwnerUser:", user); // Log the user data to check
     // Check if the user already exists
     const existingUser = await doQuery(
-      `
-      SELECT * FROM businessowner WHERE userName = ?`,
+      `SELECT * FROM businessowner WHERE userName = ?`,
       [userName]
     );
 
@@ -26,20 +28,26 @@ async function addShopOwnerUser(user) {
       return { success: false, message: "User already exists" };
     }
 
-    // Insert new user into the database
+    // Hash the password before storing it
+    const salt = await bcrypt.genSalt(10); // Generate a salt
+    const hashedPassword = await bcrypt.hash(password, salt); // Hash the password
+
+    // Insert the new user into the database with the hashed password
     await doQuery(
-      `
-      INSERT INTO businessowner (name, userName, email, phoneNumber, psw, subscriptionType, businessName, businessAddress, typeOfUser) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO businessowner (name, userName, email, phoneNumber, psw, subscriptionType, businessName, businessAddress, typeOfUser, description, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         name,
         userName,
         email,
-        phoneNumber, // Ensure this matches the key used in the query
-        password,
+        phoneNumber,
+        hashedPassword, // Store the hashed password
         subscriptionType,
         businessName,
         businessAddress,
         typeOfUser,
+        description,
+        status,
       ]
     );
 
