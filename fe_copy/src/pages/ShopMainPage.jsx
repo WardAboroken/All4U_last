@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from "react";
-import InsideHeader from "../components/InsideHeader";
+import { NavLink, useLocation } from "react-router-dom"; // Import NavLink and useLocation
+import CustomerHeader from "../components/CustomerHeader.jsx";
 import Footer from "../components/Footer";
-import "./css/index.css";
 import "./css/shopMainPage.css";
-import background_img from "../asserts/images/warmth_background.jpeg";
+import "./css/index.css";
+import { API_URL } from "../constans.js";
+
+import background_img from "../assets/images/warmth_background.jpeg";
 
 function ShopMainPage() {
   const [products, setProducts] = useState([]);
   const [userFavCategories, setUserFavCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const location = useLocation(); // Hook to access the query parameter in the URL
 
+  // Extract search term from URL query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const searchTerm = queryParams.get("search");
+
+  // Fetch user info and set favorite categories
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -34,10 +44,12 @@ function ShopMainPage() {
     };
 
     fetchUserInfo();
-  }, []); // Only run once when the component mounts
+  }, []);
 
+  // Fetch products based on user favorites or search term
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       try {
         const response = await fetch("/shop/get-products", {
           method: "GET",
@@ -52,63 +64,104 @@ function ShopMainPage() {
 
         const data = await response.json();
 
-        // Filter products based on the user's favorite categories
-        if (userFavCategories.length > 0) {
+        // Filter products based on search term if provided
+        if (searchTerm) {
+          const searchResults = data.filter((product) =>
+            product.productName.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+          setProducts(searchResults);
+        }
+        // Filter products based on user's favorite categories if there are any
+        else if (userFavCategories.length > 0) {
           const filteredProducts = data.filter((product) =>
             userFavCategories.includes(product.categoryNumber)
           );
           setProducts(filteredProducts);
         } else {
-          setProducts(data); // If no favorite categories, display all products
+          setProducts(data); // If no favorite categories or search term, display all products
         }
       } catch (error) {
         console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-      fetchProducts(); // Only fetch products once categories are fetched
-  }, [userFavCategories]); // Run when userFavCategories updates
-
-  const getImagePath = (picturePath) => {
-    try {
-      return require(`../asserts/images/${picturePath}`).default;
-    } catch (error) {
-      console.error(`Image not found: ${picturePath}`);
-      return require("../asserts/images/map.png").default; // Fallback image if not found
-    }
-  };
+    fetchProducts();
+  }, [userFavCategories, searchTerm]); // Fetch whenever favorites or search term changes
 
   return (
     <div>
-      <InsideHeader />
+      <CustomerHeader />
       <main className="container">
-        <section className="section1">
+        <section className="sectionMain">
           <div className="hero-content">
             <h1>All4U</h1>
+            <p>An Online Shop That Is Made Just 4U.</p>
           </div>
-          <img src={background_img} alt="backgroundImg" />
+          <img
+            src={background_img}
+            alt="backgroundImg"
+            className="hero-image"
+          />
         </section>
-        <section className="section2">
-          <h2>Products</h2>
-          <ul>
-            {products.map((product) => (
-              <li key={product.productId}>
-                <img
-                  src={getImagePath(product.picture_path)}
-                  alt={product.productName}
-                />
-                <h3>{product.productName}</h3>
-                <p>Price: ${product.price}</p>
-                <ul>
-                  <li>Description: {product.description}</li>
-                  <li>Catalog Number: {product.catalogNumber}</li>
-                  <li>Amount: {product.amount}</li>
-                  <li>Size: {product.size}</li>
-                  <li>Color: {product.color}</li>
-                </ul>
-              </li>
-            ))}
-          </ul>
+
+        {/* Products Section */}
+        <section className="sectionProducts">
+          <h2>Suggestions</h2>
+          {loading ? (
+            <p>Loading...</p>
+          ) : products.length > 0 ? (
+            <ul>
+              {products.map((product) => (
+                <li key={product.productId}>
+                  <NavLink to={`/Product/${product.catalogNumber}`}>
+                    <img
+                      src={`${API_URL}/uploads/${product.picturePath}`}
+                      alt={product.productName}
+                    />
+                    <h3>{product.productName}</h3>
+                    <p>Price: ${product.price}</p>
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>
+              No products found. Try a different search or explore all products.
+            </p>
+          )}
+        </section>
+
+        {/* Best Sellers Section */}
+        <section className="sectionProducts">
+          <h2>Best Sellers</h2>
+          {loading ? (
+            <p>Loading...</p>
+          ) : products.length > 0 ? (
+            <ul>
+              {products.slice(0, 6).map(
+                (
+                  product // Example for showing best sellers
+                ) => (
+                  <li key={product.productId}>
+                    <NavLink to={`/Product/${product.catalogNumber}`}>
+                      <img
+                        src={`${API_URL}/uploads/${product.picturePath}`}
+                        alt={product.productName}
+                      />
+                      <h3>{product.productName}</h3>
+                      <p>Price: ${product.price}</p>
+                    </NavLink>
+                  </li>
+                )
+              )}
+            </ul>
+          ) : (
+            <p>
+              No products found. Try a different search or explore all products.
+            </p>
+          )}
         </section>
       </main>
       <Footer />

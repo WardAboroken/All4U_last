@@ -15,6 +15,7 @@ function ShopOwnerSignUp() {
   const [name, setName] = useState("");
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
+  const [paypalEmail, setPaypalEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -24,8 +25,8 @@ function ShopOwnerSignUp() {
   const [streets, setStreets] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedStreet, setSelectedStreet] = useState("");
+  const [description, setDescription] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
   const getData = useCallback((resource_id, q = "", limit = "100") => {
@@ -99,7 +100,8 @@ function ShopOwnerSignUp() {
       !subscriptionType ||
       !businessName ||
       !selectedCity ||
-      !selectedStreet
+      !selectedStreet ||
+      !description
     ) {
       setErrorMessage("Please fill in all fields.");
       return;
@@ -123,6 +125,7 @@ function ShopOwnerSignUp() {
         businessName,
         businessAddress: `city: ${selectedCity} / street: ${selectedStreet}`,
         typeOfUser: "businessowner",
+        description,
       };
 
       // Log formData to verify it's correct
@@ -137,26 +140,19 @@ function ShopOwnerSignUp() {
 
       // Check if response is successful
       if (response.status === 200) {
-        // Display success message to the user
-        setSuccessMessage("User added successfully!");
-
         // Navigate to another page upon successful submission
-        navigate("/ShopMainPage");
+
+        navigate("/Login");
 
         // Show an alert box for success (you can customize this as needed)
-        window.alert("User added successfully!");
+        window.alert(
+          "User added successfully! you need to wait the accept from the admin"
+        );
       } else {
-        // Handle other status codes or errors
-        setErrorMessage("Failed to sign up. Please try again.");
-
         // Show an alert box for failure (you can customize this as needed)
         window.alert("Failed to sign up. Please try again.");
       }
     } catch (error) {
-      // Handle network error or server error
-      console.error("Error signing up:", error);
-      setErrorMessage("Failed to sign up. Please try again.");
-
       // Show an alert box for failure (you can customize this as needed)
       window.alert("Failed to sign up. Please try again.");
     }
@@ -169,7 +165,6 @@ function ShopOwnerSignUp() {
         <h1>All4U</h1>
         <h2>Shop Owner Sign Up</h2>
         {errorMessage && <p className="error">{errorMessage}</p>}
-        {successMessage && <p className="success">{successMessage}</p>}
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -189,6 +184,13 @@ function ShopOwnerSignUp() {
             type="email"
             placeholder="Email"
             value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="PayPal Email"
+            value={paypalEmail}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
@@ -218,6 +220,13 @@ function ShopOwnerSignUp() {
             placeholder="Business Name"
             value={businessName}
             onChange={(e) => setBusinessName(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             required
           />
           <div className="form-field" id="city-selection">

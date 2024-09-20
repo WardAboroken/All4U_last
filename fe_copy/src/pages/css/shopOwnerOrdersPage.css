@@ -1,0 +1,95 @@
+.orders-page {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.search-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-filter input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.filter-button {
+  padding: 8px 20px;
+  background-color: #8B4513; /* Brown color for button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 40px;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 12px 20px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.orders-table th {
+  background-color: #f8f8f8;
+  font-weight: bold;
+}
+
+.orders-table select {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.details-button {
+  background-color: #8B4513; /* Brown color for button */
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.details-button .arrow {
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+.order-details {
+  margin-top: 10px; /* Space below details button */
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f8f8f8;
+}
+
+.details-button:hover + .order-details {
+  display: block; /* Show details on hover */
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  border-top: 1px solid #ddd;
+  margin-top: 40px;
+}
+
+footer a {
+  color: #8B4513; /* Brown color for link */
+  text-decoration: none;
+  font-size: 16px;
+}

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./css/login.css";
 import "./css/index.css";
@@ -7,9 +8,18 @@ import "./css/customerSignup.css";
 import OutHeader from "../components/OutHeader";
 import Footer from "../components/Footer";
 
+const api_url = "https://data.gov.il/api/3/action/datastore_search";
+const cities_resource_id = "5c78e9fa-c2e2-4771-93ff-7f400a12f7ba";
+const streets_resource_id = "a7296d1a-f8c9-4b70-96c2-6ebb4352f8e3";
+const city_name_key = "שם_ישוב";
+const street_name_key = "שם_רחוב";
+
 function CustomerSignUp() {
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [message, setMessage] = useState("");
+  const [cities, setCities] = useState([]);
+  const [streets, setStreets] = useState([]);
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedStreet, setSelectedStreet] = useState("");
   const navigate = useNavigate();
 
   const categories = {
@@ -26,6 +36,64 @@ function CustomerSignUp() {
     Safety: 11,
     Beauty: 12,
   };
+
+  // Fetch Cities and Streets from API
+  const getData = useCallback((resource_id, q = "", limit = "100") => {
+    return axios.get(api_url, {
+      params: { resource_id, q, limit },
+      responseType: "json",
+    });
+  }, []);
+
+  const parseResponse = useCallback((records = [], field_name) => {
+    return records.map((record) => record[field_name].trim()).filter(Boolean);
+  }, []);
+
+  const populateDataList = useCallback(
+    (resource_id, field_name, query = {}) => {
+      return getData(resource_id, query, 32000)
+        .then((response) =>
+          parseResponse(response?.data?.result?.records, field_name)
+        )
+        .catch((error) => {
+          console.log("Error fetching data:", error);
+          return [];
+        });
+    },
+    [getData, parseResponse]
+  );
+
+  const populateCities = useCallback(async () => {
+    try {
+      const citiesList = await populateDataList(
+        cities_resource_id,
+        city_name_key
+      );
+      setCities(citiesList);
+    } catch (error) {
+      console.log("Error populating cities:", error);
+    }
+  }, [populateDataList]);
+
+  const populateStreets = useCallback(
+    async (city) => {
+      try {
+        const streetsList = await populateDataList(
+          streets_resource_id,
+          street_name_key,
+          JSON.stringify({ [city_name_key]: city })
+        );
+        setStreets(streetsList);
+      } catch (error) {
+        console.log("Error populating streets:", error);
+      }
+    },
+    [populateDataList]
+  );
+
+  useEffect(() => {
+    populateCities(); // Fetch cities on component mount
+  }, [populateCities]);
 
   const handleCategoryChange = (categoryId) => {
     const newSelectedCategories = selectedCategories.includes(categoryId)
@@ -44,8 +112,8 @@ function CustomerSignUp() {
       phoneNumber: formData.get("phoneNumber"),
       email: formData.get("email"),
       confirmPassword: formData.get("confirmPassword"),
-      typeOfUser: "customer",
       selectedCategories: selectedCategories,
+      address: `City: ${selectedCity}, Street: ${selectedStreet}`,
     };
 
     // Check if password and confirm password match
@@ -65,16 +133,20 @@ function CustomerSignUp() {
 
       const data = await response.json();
       if (response.ok) {
-        setMessage(data.message);
         navigate("/ShopMainPage");
         window.alert("User added successfully!");
       } else {
-        window.alert("Failed to sign up. Please try again.");
-        setMessage(data.error || "Something went wrong");
+        if (data.message === "User already exist.") {
+          window.alert(
+            "This username or email is already registered. Please use a different one."
+          );
+          window.location.reload();
+        } else {
+          window.alert("Failed to sign up. Please try again.");
+          window.location.reload();
+        }
       }
     } catch (error) {
-      console.error("Error checking user: ", error.message);
-      setMessage("Network error: " + error.message);
       window.alert("Failed to sign up. Please try again.");
     }
   };
@@ -123,6 +195,51 @@ function CustomerSignUp() {
             required
           />
 
+          {/* City selection */}
+          <div className="form-field" id="city-selection">
+            <label htmlFor="city-choice">Select City:</label>
+            <input
+              list="cities"
+              name="selectedCity"
+              id="city-choice"
+              value={selectedCity}
+              onChange={(e) => {
+                setSelectedCity(e.target.value);
+                setSelectedStreet(""); // Reset streets when city changes
+                populateStreets(e.target.value);
+              }}
+              required
+            />
+            <datalist id="cities">
+              {cities.map((city, index) => (
+                <option key={index} value={city} />
+              ))}
+            </datalist>
+          </div>
+
+          {/* Street selection */}
+          <div className="form-field" id="street-selection">
+            <select
+              id="street-choice"
+              name="selectedStreet"
+              value={selectedStreet}
+              onChange={(e) => setSelectedStreet(e.target.value)}
+              required
+            >
+              <option value="">Choose Street</option>
+              {streets.length === 0 && (
+                <option disabled>
+                  No streets available for the selected city
+                </option>
+              )}
+              {streets.map((street, index) => (
+                <option key={index} value={street}>
+                  {street}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* Category selection */}
           <div className="category-list">
             <h3>Select Your Favorite Categories:</h3>
             {Object.entries(categories).map(([categoryName, categoryId]) => (
@@ -137,9 +254,9 @@ function CustomerSignUp() {
               </label>
             ))}
           </div>
+
           <button type="submit">Sign Up</button>
         </form>
-        {message && <p>{message}</p>}
       </div>
       <Footer />
     </body>
