@@ -1,4 +1,6 @@
 const express = require("express");
+const router = express.Router();
+const paypal = require("@paypal/checkout-server-sdk");
 const cors = require("cors");
 const path = require("path");
 const session = require("express-session");
@@ -7,6 +9,7 @@ const app = express();
 
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static("uploads"));
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 // CORS
@@ -32,7 +35,10 @@ const addNewUserRoutes = require("./routes/addNewUser");
 const updateProfileRoutes = require("./routes/updateProfile");
 const shopRoutes = require("./routes/shop");
 const recoveryPswRoutes = require("./routes/recoveryPsw");
-
+const cartRoutes = require("./routes/cart"); // Import the cart route
+const admin = require("./routes/admin");
+const productsHandler = require("./routes/productsHandler");
+const order = require("./routes/order");
 
 app.use("/login", loginRoutes);
 app.use("/userInfo", userInfoRoutes);
@@ -40,7 +46,10 @@ app.use("/addNewUser", addNewUserRoutes);
 app.use("/updateProfile", updateProfileRoutes);
 app.use("/shop", shopRoutes);
 app.use("/recoveryPsw", recoveryPswRoutes);
-
+app.use("/cart", cartRoutes); // Use the cart route
+app.use("/admin", admin);
+app.use("/productsHandler", productsHandler);
+app.use("/order", order);
 
 const port = 5000;
 app.listen(port, () => {
