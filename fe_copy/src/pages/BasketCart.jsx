@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import React, { useState, useEffect, useMemo } from "react";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { API_URL } from "../constans.js";
 import CustomerHeader from "../components/CustomerHeader.jsx";
 import Footer from "../components/Footer";
+import PayPalCheckoutButton from "../components/PayPalCheckoutButton.jsx";
 import "./css/index.css";
 import "./css/shopMainPage.css";
 import background_img from "../assets/images/warmth_background.jpeg";
-import "./css/basketCart.css"; // Import the CSS file for styling
+import "./css/basketCart.css";
 
 const BasketCart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -18,15 +19,18 @@ const BasketCart = () => {
     email: "",
     phoneNumber: "",
     image: "",
+    address: "",
   });
   const [shopOwnerPaypalEmails, setShopOwnerPaypalEmails] = useState({});
-  const [paidGroups, setPaidGroups] = useState([]); // State to track paid groups
+  const [paidGroups, setPaidGroups] = useState([]);
 
+  // Fetch customer info and cart items when component mounts
   useEffect(() => {
     fetchCustomerInfo();
     fetchCartItems();
   }, []);
 
+  // Fetch shop owner PayPal emails when cart items or PayPal emails change
   useEffect(() => {
     const groupedItems = groupItemsByShopOwner(cartItems);
     Object.keys(groupedItems).forEach((userName) => {
@@ -40,9 +44,7 @@ const BasketCart = () => {
     try {
       const response = await fetch("/userinfo/getUserInfo", {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
       if (response.ok) {
         const data = await response.json();
@@ -61,12 +63,9 @@ const BasketCart = () => {
         `/userInfo/getWorkerInfoByUserName/${encodeURIComponent(userName)}`,
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
-
       if (response.ok) {
         const data = await response.json();
         setShopOwnerPaypalEmails((prevEmails) => ({
@@ -108,7 +107,7 @@ const BasketCart = () => {
     }, {});
   };
 
-  const updateCartItemAmount = async (catalogNumber, newQuantity) => {
+  const updateCartItemQuantity = async (catalogNumber, newQuantity) => {
     const item = cartItems.find((item) => item.catalogNumber === catalogNumber);
     if (!item) {
       console.error("Item not found in the cart");
@@ -176,18 +175,15 @@ const BasketCart = () => {
   };
 
   const handleCheckout = () => {
-    const groupedItems = groupItemsByShopOwner(cartItems);
-    // console.log("groupedItems: ", groupedItems);
-    const orders = Object.keys(groupedItems).map((userName) => {
+    const orders = Object.keys(checkoutGroups).map((userName) => {
       const paypalEmail =
         shopOwnerPaypalEmails[userName] || "no-paypal@example.com";
-      // console.log("paypalEmail: ", paypalEmail);
       return {
         paypalEmail,
-        items: groupedItems[userName],
+        items: checkoutGroups[userName],
+        userName, // Add userName here
       };
     });
-    //  console.log("orders: ", orders);
     return orders;
   };
 
@@ -204,6 +200,7 @@ const BasketCart = () => {
 
     const orderPayload = {
       userName: customerInfo.userName,
+      shippingAddress: customerInfo.address,
       cartItems: preparedCartItems,
     };
 
@@ -227,11 +224,18 @@ const BasketCart = () => {
         `Order placed successfully for ${order.paypalEmail}! Order Number: ${result.orderNumber}`
       );
 
-      // Clear cart and update state
-      setCartItems([]);
+      // Remove only the paid items from the cart
+      setCartItems((prevItems) =>
+        prevItems.filter(
+          (cartItem) =>
+            !order.items.some(
+              (paidItem) => paidItem.catalogNumber === cartItem.catalogNumber
+            )
+        )
+      );
 
       // Mark the group as paid
-      const userName = order.items[0]?.userName;
+      const userName = order.userName;
       if (userName) {
         setPaidGroups((prevPaid) => [...prevPaid, userName]);
       }
@@ -240,8 +244,13 @@ const BasketCart = () => {
       console.error("Error details:", error);
     }
   };
-  // Refactor to store the checkout data once before rendering the JSX
-  const checkoutGroups = handleCheckout();
+
+  // Memoizing the grouped cart items to avoid re-calculating on each render
+  const checkoutGroups = useMemo(
+    () => groupItemsByShopOwner(cartItems),
+    [cartItems]
+  );
+  const orders = handleCheckout(); // Reintroducing handleCheckout properly
 
   return (
     <div>
@@ -251,7 +260,6 @@ const BasketCart = () => {
           <div className="hero-content">
             <h1>Your Cart</h1>
           </div>
-          <img src={background_img} alt="backgroundImg" />
         </section>
 
         <div className="basket-cart-container">
@@ -260,223 +268,80 @@ const BasketCart = () => {
               <p>Your cart is empty. Start shopping now!</p>
             </div>
           ) : (
-            <div>
-              <p>
-                You have {cartItems.length}{" "}
-                {cartItems.length === 1 ? "item" : "items"} in your cart.
-              </p>
+            orders.map((order) => {
+              const { paypalEmail, items } = order;
+              const userName = items[0]?.userName;
 
-              {checkoutGroups.map((order) => {
-                const { paypalEmail, items } = order;
-                const userName = items[0]?.userName;
-                console.log(
-                  "returned handleCheckout paypalEmail >>> ",
-                  paypalEmail
-                );
+              if (!userName) {
+                return <div>Error: Missing user information</div>;
+              }
 
-                if (!userName) {
-                  console.error("No userName found for items:", items);
-                  return null;
-                }
+              const totalAmountForGroup = items
+                .reduce((total, item) => total + item.price * item.quantity, 0)
+                .toFixed(2);
 
-                // Calculate total amount for this group of items
-                const totalAmountForGroup = items
-                  .reduce(
-                    (total, item) => total + item.price * item.quantity,
-                    0
-                  )
-                  .toFixed(2);
-
-                return (
-                  <div className="group-container" key={userName}>
-                    {/* Left side: Shopping Cart for this shop owner */}
-                    <div className="cart-section">
-                      <h3>Items from {userName}:</h3>
-                      {items.map((item, index) => (
-                        <div
-                          key={item.catalogNumber || index}
-                          className="cart-item"
-                        >
-                          <img
-                            src={`${API_URL}/uploads/${item.picturePath}`}
-                            alt={item.productName}
-                            className="cart-item-image"
-                          />
-                          <div className="cart-item-controls">
-                            <input
-                              type="number"
-                              value={item.quantity}
-                              min="1"
-                              max={item.amount}
-                              onChange={(e) => {
-                                const newQuantity = Number(e.target.value);
-                                if (newQuantity <= item.amount) {
-                                  updateCartItemAmount(
-                                    item.catalogNumber,
-                                    newQuantity
-                                  );
-                                } else {
-                                  alert(
-                                    "Quantity cannot exceed available stock."
-                                  );
-                                }
-                              }}
-                            />
-                            <span>${item.price}</span>
-                            <button
-                              onClick={() => removeCartItem(item.catalogNumber)}
-                              className="remove-button"
-                            >
-                              🗑️
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Right side: Payment options for this group */}
-                    {userName && items.length > 0 && (
-                      <div className="checkout-section">
-                        <h4>Checkout for {userName}</h4>
-                        <p>
-                          Total for {userName}: ${totalAmountForGroup}
-                        </p>{" "}
-                        {/* Display total for this group */}
-                        <PayPalScriptProvider
-                          options={{
-                            "client-id":
-                              "Abyy9Z-JZx5mZiqXweLUvTFt5Ccg48FzSSeVCvo1MJmucY3Xfv_IiY75rwI9rkLbXzMuHoWMQTjvDv8D",
-                          }}
-                        >
-                          <div className="paypal-button-container">
-                            <PayPalButtons
-                              createOrder={async (data, actions) => {
-                                try {
-                                  console.log(
-                                    "createOrder paypalEmail >>> ",
-                                    paypalEmail
-                                  );
-                                  // Validate PayPal email before proceeding
-                                  if (
-                                    !paypalEmail ||
-                                    paypalEmail === "no-paypal@example.com"
-                                  ) {
-                                    alert(
-                                      "Invalid PayPal email for this merchant."
-                                    );
-                                    return;
-                                  }
-
-                                  console.log(
-                                    "paypalEmail before order creation:",
-                                    paypalEmail
-                                  );
-
-                                  // If email is invalid, stop execution
-                                  if (
-                                    !paypalEmail ||
-                                    paypalEmail === "no-paypal@example.com"
-                                  ) {
-                                    alert(
-                                      "Invalid PayPal email for this merchant."
-                                    );
-                                    return; // Important: stop further execution
-                                  }
-
-                                  const orderID = await actions.order.create({
-                                    purchase_units: [
-                                      {
-                                        amount: {
-                                          value: totalAmountForGroup,
-                                        },
-                                        payee: {
-                                          email_address: paypalEmail,
-                                        },
-                                      },
-                                    ],
-                                  });
-
-                                  console.log(
-                                    "Order created successfully, ID:",
-                                    orderID
-                                  );
-                                  return orderID; // Make sure you return the order ID here
-                                } catch (error) {
-                                  console.error("Error creating order:", error);
-                                  throw new Error("Order creation failed");
-                                }
-                              }}
-                              onApprove={async (data, actions) => {
-                                try {
-                                  const details = await actions.order.capture();
-                                  alert(
-                                    "Transaction completed by " +
-                                      details.payer.name.given_name
-                                  );
-
-                                  // Handle order placement after payment
-                                  console.log(
-                                    "before handlePlaceOrder paypalEmail >>> ",
-                                    paypalEmail
-                                  );
-                                  console.log(
-                                    "before handlePlaceOrder items >>> ",
-                                    items
-                                  );
-
-                                  await handlePlaceOrder({
-                                    paypalEmail: paypalEmail,
-                                    items: items,
-                                  });
-
-                                  console.log(
-                                    "after handlePlaceOrder paypalEmail >>> ",
-                                    paypalEmail
-                                  );
-                                  console.log(
-                                    "after handlePlaceOrder items >>> ",
-                                    items
-                                  );
-
-                                  // Update cart by removing paid items
-                                  setCartItems((prevItems) =>
-                                    prevItems.filter(
-                                      (cartItem) =>
-                                        !items.some(
-                                          (paidItem) =>
-                                            paidItem.catalogNumber ===
-                                            cartItem.catalogNumber
-                                        )
-                                    )
-                                  );
-
-                                  // Mark the user group as paid
-                                  setPaidGroups((prevPaid) => [
-                                    ...prevPaid,
-                                    userName,
-                                  ]);
-                                } catch (error) {
-                                  console.error("PayPal Checkout Error", error);
-                                  setError(
-                                    "An error occurred during the PayPal checkout process."
-                                  );
-                                }
-                              }}
-                              onError={(err) => {
-                                console.error("PayPal Checkout Error", err);
-                                setError(
-                                  "An error occurred during the PayPal checkout process."
+              return (
+                <div className="group-container" key={userName}>
+                  <div className="cart-section">
+                    <h3>Items from {userName}:</h3>
+                    {items.map((item, index) => (
+                      <div
+                        key={item.catalogNumber || index}
+                        className="cart-item"
+                      >
+                        <img
+                          src={`${API_URL}/uploads/${item.picturePath}`}
+                          alt={item.productName}
+                          className="cart-item-image"
+                        />
+                        <div className="cart-item-controls">
+                          <input
+                            type="number"
+                            value={item.quantity}
+                            min="1"
+                            max={item.amount}
+                            onChange={(e) => {
+                              const newQuantity = Number(e.target.value);
+                              if (newQuantity <= item.amount) {
+                                updateCartItemQuantity(
+                                  item.catalogNumber,
+                                  newQuantity
                                 );
-                              }}
-                            />
-                          </div>
-                        </PayPalScriptProvider>
+                              } else {
+                                alert(
+                                  "Quantity cannot exceed available stock."
+                                );
+                              }
+                            }}
+                          />
+                          <span>${item.price}</span>
+                          <button
+                            onClick={() => removeCartItem(item.catalogNumber)}
+                          >
+                            🗑
+                          </button>
+                        </div>
                       </div>
-                    )}
+                    ))}
                   </div>
-                );
-              })}
-            </div>
+
+                  <div className="checkout-section">
+                    <h4>Checkout for {userName}</h4>
+                    <p>
+                      Total for {userName}: ${totalAmountForGroup}
+                    </p>
+
+                    {/* PayPal Button Component */}
+                    <PayPalCheckoutButton
+                      totalAmount={totalAmountForGroup}
+                      paypalEmail={paypalEmail}
+                      items={items}
+                      handlePlaceOrder={handlePlaceOrder}
+                    />
+                  </div>
+                </div>
+              );
+            })
           )}
         </div>
       </main>

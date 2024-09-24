@@ -119,6 +119,7 @@ function ShopOwnerSignUp() {
         name,
         userName,
         email,
+        paypalEmail,
         phoneNumber,
         password,
         subscriptionType,
@@ -191,9 +192,10 @@ function ShopOwnerSignUp() {
             type="email"
             placeholder="PayPal Email"
             value={paypalEmail}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setPaypalEmail(e.target.value)} // update the correct state
             required
           />
+
           <input
             type="tel"
             placeholder="Phone Number"

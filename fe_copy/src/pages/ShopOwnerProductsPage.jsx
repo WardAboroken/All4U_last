@@ -35,6 +35,7 @@ const ShopOwnerProductsPage = () => {
     description: "",
     color: "",
     size: "",
+    status:"",
     amount: 0,
     price: 0,
     imageLink: "",
@@ -77,6 +78,7 @@ const ShopOwnerProductsPage = () => {
           );
           if (response.ok) {
             const data = await response.json();
+            
             setProducts(data);
             setFilteredProducts(data);
           } else {
@@ -292,6 +294,7 @@ const ShopOwnerProductsPage = () => {
                 <th>Amount</th>
                 <th>Picture</th>
                 <th>Price</th>
+                <th>Activity</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -316,6 +319,7 @@ const ShopOwnerProductsPage = () => {
                       />
                     </td>
                     <td>${product.price}</td>
+                    <td>{product.status}</td>
                     <td>
                       <div className="table-actions">
                         <button

@@ -221,3 +221,36 @@ body {
 .done-orders-section .arrow , .done-orders-section .arrow:hover {
   background-color: rgba(28, 179, 38, 0.8); 
 }
+
+.graph-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px; /* Space between graphs */
+  margin-top: 20px;
+}
+
+.graph-box {
+  width: 30%;
+  min-width: 300px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+.chart-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Gap between the charts */
+  width: 100%;
+  padding: 10px;
+}
+
+.chart-item {
+  flex: 1;
+  min-width: 200px; /* Ensure charts don't get too small */
+  text-align: center;
+}
+

@@ -5,20 +5,41 @@ import "./css/index.css";
 import "./css/shopOwnerMainPage.css";
 import { API_URL } from "../constans.js";
 import { useNavigate } from "react-router-dom";
+import { Line, Bar, Pie } from "react-chartjs-2";
+import { Chart, registerables } from "chart.js";
+import SalesReport from "../components/SalesReportComponent.jsx";
+
+// ChartJS.register(
+//   CategoryScale,
+//   LinearScale,
+//   PointElement,
+//   LineElement,
+//   Title,
+//   Tooltip,
+//   Legend
+// );
+Chart.register(...registerables);
 
 function ShopOwnerMainPage() {
   const [outOfStockProducts, setOutOfStockProducts] = useState([]);
   const [newOrders, setNewOrders] = useState([]);
-  const [doneOrders, setDoneOrders] = useState([]);
-  const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState("");
   const [error, setError] = useState(null);
-
   const productsContainerRef = useRef(null);
   const ordersContainerRef = useRef(null);
-  const doneOrdersContainerRef = useRef(null);
-
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [errorProducts, setErrorProducts] = useState(null);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [errorOrders, setErrorOrders] = useState(null);
+  const [graphData, setGraphData] = useState(null);
+  const [loadingGraph, setLoadingGraph] = useState(true);
+  const [errorGraph, setErrorGraph] = useState(null);
   const navigate = useNavigate();
+  const [barGraphData, setBarGraphData] = useState({});
+  const [pieGraphData, setPieGraphData] = useState({});
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // Fetch user info to get the logged-in business owner's username
   useEffect(() => {
@@ -54,66 +75,160 @@ function ShopOwnerMainPage() {
         );
         if (response.ok) {
           const data = await response.json();
+          console.log("Out of Stock Products: ", data); // Log the fetched data
           setOutOfStockProducts(data || []);
-          setLoading(false);
-          setError(null);
+          setLoadingProducts(false);
         } else {
-          setError("Failed to fetch out-of-stock products");
-          setLoading(false);
+          console.error("Failed to fetch out-of-stock products");
+          setErrorProducts("Failed to fetch out-of-stock products.");
+          setLoadingProducts(false);
         }
       } catch (error) {
         console.error("Error fetching out-of-stock products:", error);
-        setError("Error fetching out-of-stock products");
-        setLoading(false);
+        setErrorProducts("Error fetching out-of-stock products.");
+        setLoadingProducts(false);
       }
     };
 
     fetchOutOfStockProducts();
   }, [userName]);
 
-  // Fetch New Orders
+  // Fetch new orders
   useEffect(() => {
-    if (!userName) return;
     const fetchNewOrders = async () => {
       try {
-        const response = await fetch(`/order/get-business-orders2/${userName}`);
+        const response = await fetch(
+          `/order/get-business-new-orders/${userName}`
+        );
         if (response.ok) {
           const data = await response.json();
+          console.log("Business new orders >> ", data);
           setNewOrders(data);
-          setError(null);
         } else {
-          setError("Failed to fetch new orders");
+          setErrorOrders("Failed to fetch new orders.");
         }
       } catch (error) {
-        console.error("Error fetching new orders:", error);
-        setError("Error fetching new orders");
+        setErrorOrders("Error fetching new orders.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchNewOrders();
+    if (userName) {
+      fetchNewOrders();
+    }
   }, [userName]);
 
-  // Fetch Done Orders
+  // Helper function to get the first day of the current month and today's date
+  const getCurrentMonthDateRange = () => {
+    const now = new Date();
+    const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const today = new Date();
+    return {
+      startDate: firstDayCurrentMonth.toISOString().split("T")[0],
+      endDate: today.toISOString().split("T")[0],
+    };
+  };
+
+  // Declare default dates outside of useEffect
+  const { startDate: defaultStartDate, endDate: defaultEndDate } =
+    getCurrentMonthDateRange();
+
+  // Automatically fetch graph data based on date range
   useEffect(() => {
+    const fetchStartDate = startDate || defaultStartDate;
+    const fetchEndDate = endDate || defaultEndDate;
+
     if (!userName) return;
-    const fetchDoneOrders = async () => {
+
+    const fetchGraphData = async () => {
+      setLoadingGraph(true);
+      setErrorGraph(null);
+
       try {
-        const response = await fetch(`/order/get-completed-orders/${userName}`);
+        const isSameDay = fetchStartDate === fetchEndDate;
+
+        const response = await fetch(
+          `/order/get-been-provided-orders/${userName}?startDate=${encodeURIComponent(
+            fetchStartDate
+          )}&endDate=${encodeURIComponent(fetchEndDate)}`
+        );
+
         if (response.ok) {
           const data = await response.json();
-          setDoneOrders(data);
-          setError(null);
+
+          const filteredData = data.filter((order) => {
+            const orderDate = new Date(order.date);
+            const start = new Date(fetchStartDate);
+            const end = new Date(fetchEndDate);
+
+            if (isSameDay) {
+              return orderDate.toDateString() === start.toDateString();
+            }
+
+            return orderDate >= start && orderDate <= end;
+          });
+
+          const labels = filteredData.map((order) =>
+            new Date(order.date).toLocaleDateString()
+          );
+          const totalAmounts = filteredData.map((order) => order.totalCost);
+
+          setGraphData({
+            labels,
+            datasets: [
+              {
+                label: "Sales ($)",
+                data: totalAmounts,
+                borderColor: "rgba(75,192,192,1)",
+                backgroundColor: "rgba(75,192,192,0.2)",
+              },
+            ],
+          });
+
+          setBarGraphData({
+            labels,
+            datasets: [
+              {
+                label: "Sales ($)",
+                data: totalAmounts,
+                backgroundColor: "rgba(54, 162, 235, 0.6)",
+              },
+            ],
+          });
+
+          setPieGraphData({
+            labels,
+            datasets: [
+              {
+                label: "Sales Distribution",
+                data: totalAmounts,
+                backgroundColor: [
+                  "#FF6384",
+                  "#36A2EB",
+                  "#FFCE56",
+                  "#4BC0C0",
+                  "#9966FF",
+                  "#FF9F40",
+                ],
+              },
+            ],
+          });
+
+          setLoadingGraph(false);
         } else {
-          setError("Failed to fetch done orders");
+          setErrorGraph("Failed to fetch graph data.");
+          setLoadingGraph(false);
         }
       } catch (error) {
-        console.error("Error fetching done orders:", error);
-        setError("Error fetching done orders");
+        setErrorGraph("Error fetching graph data.");
+        setLoadingGraph(false);
       }
     };
 
-    fetchDoneOrders();
-  }, [userName]);
+    fetchGraphData();
+  }, [userName, startDate, endDate, defaultStartDate, defaultEndDate]);
+
 
   // Navigate to Orders page and show order details
   const handleSelectOrder = (orderNumber) => {
@@ -133,134 +248,147 @@ function ShopOwnerMainPage() {
       <ShopOwnerHeader />
       <main>
         {/* Out of Stock Products Section */}
-        <section className="out-of-stock-products">
-          <h2 className="section-title">Out Of Stock Products</h2>
-          {loading ? (
-            <p>Loading...</p>
-          ) : error ? (
-            <p>{error}</p>
-          ) : (
+        {outOfStockProducts.length > 0 && (
+          <section className="out-of-stock-products">
+            <h2 className="section-title">Out Of Stock Products</h2>
+            {loadingProducts ? (
+              <p>Loading...</p>
+            ) : errorProducts ? (
+              <p>{errorProducts}</p>
+            ) : (
+              <div className="arrow-container">
+                <button
+                  className="arrow arrow-left"
+                  onClick={() => scroll("left", productsContainerRef)}
+                >
+                  &lt;
+                </button>
+                <div className="products-container" ref={productsContainerRef}>
+                  {outOfStockProducts.map((product) => (
+                    <div key={product.catalogNumber} className="product-card">
+                      <p className="catalog-number">
+                        Catalogue number: {product.catalogNumber}
+                      </p>
+                      <h3 className="product-name">{product.productName}</h3>
+                      <img
+                        src={`${API_URL}/uploads/${product.picturePath}`}
+                        alt={product.productName}
+                        className="product-image"
+                      />
+                      <button className="replenish-button">Replenish</button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  className="arrow arrow-right"
+                  onClick={() => scroll("right", productsContainerRef)}
+                >
+                  &gt;
+                </button>
+              </div>
+            )}
+          </section>
+        )}
+        {/* New Orders Section */}
+        {(loading || newOrders.length > 0) && (
+          <section className="new-orders-section">
+            <h2 className="section-title">New Orders</h2>
             <div className="arrow-container">
               <button
                 className="arrow arrow-left"
-                onClick={() => scroll("left", productsContainerRef)}
+                onClick={() => scroll("left", ordersContainerRef)}
               >
                 &lt;
               </button>
-              <div className="products-container" ref={productsContainerRef}>
-                {outOfStockProducts.map((product) => (
-                  <div key={product.catalogNumber} className="product-card">
-                    <p className="catalog-number">
-                      Catalogue number: {product.catalogNumber}
-                    </p>
-                    <h3 className="product-name">{product.productName}</h3>
-                    <img
-                      src={`${API_URL}/uploads/${product.picturePath}`}
-                      alt={product.productName}
-                      className="product-image"
-                    />
-                    <button className="replenish-button">Replenish</button>
-                  </div>
-                ))}
+              <div className="orders-container" ref={ordersContainerRef}>
+                {loading ? (
+                  <p>Loading...</p>
+                ) : errorOrders ? (
+                  <p>{errorOrders}</p>
+                ) : newOrders.length === 0 ? (
+                  <p>No new orders available.</p>
+                ) : (
+                  newOrders.map((order) => (
+                    <div key={order.orderNumber} className="order-card">
+                      <h4>Order number {order.orderNumber}</h4>
+                      <p className="order-total-cost">
+                        ${order.totalCost} TOTAL COST
+                      </p>
+                      <ul className="order-items-list">
+                        <li>
+                          Order Date:{" "}
+                          {new Date(order.date).toLocaleDateString()}
+                        </li>
+                      </ul>
+                      <button
+                        className="select-button"
+                        onClick={() => handleSelectOrder(order.orderNumber)}
+                      >
+                        Select
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
               <button
                 className="arrow arrow-right"
-                onClick={() => scroll("right", productsContainerRef)}
+                onClick={() => scroll("right", ordersContainerRef)}
               >
                 &gt;
               </button>
             </div>
+          </section>
+        )}
+
+        {/* Date Range Picker */}
+        <div className="date-range-picker">
+          <label htmlFor="startDate">Start Date:</label>
+          <input
+            type="date"
+            id="startDate"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+
+          <label htmlFor="endDate">End Date:</label>
+          <input
+            type="date"
+            id="endDate"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
+
+        {/* Graph Section */}
+        <section className="graph-section">
+          <h2 className="section-title">Sales Overview</h2>
+          {loadingGraph ? (
+            <p>Loading graph...</p>
+          ) : errorGraph ? (
+            <p>{errorGraph}</p>
+          ) : (
+            <div className="chart-container">
+              <div className="chart-item">
+                <h3>Line Chart</h3>
+                <Line data={graphData} width={200} height={200} />
+              </div>
+              <div className="chart-item">
+                <h3>Bar Chart</h3>
+                <Bar data={barGraphData} width={200} height={200} />
+              </div>
+              <div className="chart-item">
+                <h3>Pie Chart</h3>
+                <Pie data={pieGraphData} width={200} height={200} />
+              </div>
+
+              {/* Pass the filtered data to the SalesReport component */}
+              <SalesReport
+                filteredData={graphData?.datasets?.[0]?.data || []}
+                fetchStartDate={startDate || defaultStartDate}
+                fetchEndDate={endDate || defaultEndDate}
+              />
+            </div>
           )}
-        </section>
-
-        {/* New Orders Section */}
-        <section className="new-orders-section">
-          <h2 className="section-title">New Orders</h2>
-          <div className="arrow-container">
-            <button
-              className="arrow arrow-left"
-              onClick={() => scroll("left", ordersContainerRef)}
-            >
-              &lt;
-            </button>
-            <div className="orders-container" ref={ordersContainerRef}>
-              {newOrders.length === 0 ? (
-                <p>No new orders available.</p>
-              ) : (
-                newOrders.map((order) => (
-                  <div key={order.orderNumber} className="order-card">
-                    <h4>Order number {order.orderNumber}</h4>
-                    <p className="order-total-cost">
-                      ${order.totalCost} TOTAL COST
-                    </p>
-                    <ul className="order-items-list">
-                      <li>
-                        Order Date: {new Date(order.date).toLocaleDateString()}
-                      </li>{" "}
-                      {/* Display Order Date */}
-                    </ul>
-                    <button
-                      className="select-button"
-                      onClick={() => handleSelectOrder(order.orderNumber)}
-                    >
-                      Select
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-            <button
-              className="arrow arrow-right"
-              onClick={() => scroll("right", ordersContainerRef)}
-            >
-              &gt;
-            </button>
-          </div>
-        </section>
-
-        {/* Done Orders Section */}
-        <section className="done-orders-section">
-          <h2 className="section-title">Done Orders</h2>
-          <div className="arrow-container">
-            <button
-              className="arrow arrow-left"
-              onClick={() => scroll("left", doneOrdersContainerRef)}
-            >
-              &lt;
-            </button>
-            <div className="orders-container" ref={doneOrdersContainerRef}>
-              {doneOrders.length === 0 ? (
-                <p>No done orders available.</p>
-              ) : (
-                doneOrders.map((order) => (
-                  <div key={order.orderNumber} className="order-card">
-                    <h4>Order number {order.orderNumber}</h4>
-                    <p className="order-total-cost">
-                      ${order.totalCost} TOTAL COST
-                    </p>
-                    <ul className="order-items-list">
-                      <li>
-                        Order Date: {new Date(order.date).toLocaleDateString()}
-                      </li>{" "}
-                      {/* Display Order Date */}
-                    </ul>
-                    <button
-                      className="select-button"
-                      onClick={() => handleSelectOrder(order.orderNumber)}
-                    >
-                      Select
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-            <button
-              className="arrow arrow-right"
-              onClick={() => scroll("right", doneOrdersContainerRef)}
-            >
-              &gt;
-            </button>
-          </div>
         </section>
       </main>
 

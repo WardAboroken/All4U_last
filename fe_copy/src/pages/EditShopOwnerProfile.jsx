@@ -16,6 +16,7 @@ function EditShopOwnerProfile() {
   const [businessName, setBusinessName] = useState("");
   const [businessAddress, setBusinessAddress] = useState("");
   const [description, setDescription] = useState("");
+  const [paypalEmail, setPaypalEmail] = useState(""); // New state for PayPal email
   const [error, setError] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(user_profile);
@@ -28,6 +29,7 @@ function EditShopOwnerProfile() {
     businessName: "",
     businessAddress: "",
     description: "",
+    paypalEmail: "", // Add paypalEmail to initial user info
   });
 
   useEffect(() => {
@@ -51,6 +53,7 @@ function EditShopOwnerProfile() {
         setBusinessName(data.userInfo.businessName);
         setBusinessAddress(data.userInfo.businessAddress);
         setDescription(data.userInfo.description);
+        setPaypalEmail(data.userInfo.paypalEmail); // Fetch PayPal email
         setImagePreview(data.userInfo.profileImage || user_profile);
       } catch (error) {
         setError("Error fetching shop owner info: " + error.message);
@@ -88,6 +91,7 @@ function EditShopOwnerProfile() {
       businessName: businessName || userInfo.businessName,
       businessAddress: businessAddress || userInfo.businessAddress,
       description: description || userInfo.description,
+      paypalEmail: paypalEmail || userInfo.paypalEmail, // Include PayPal email
       profileImage: image ? image.name : userInfo.profileImage,
     };
 
@@ -174,6 +178,13 @@ function EditShopOwnerProfile() {
             placeholder={userInfo.description}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="PayPal Email"
+            value={paypalEmail}
+            onChange={(e) => setPaypalEmail(e.target.value)}
             required
           />
           <input
