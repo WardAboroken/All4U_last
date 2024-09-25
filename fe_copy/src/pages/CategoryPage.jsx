@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
-import CustomerHeader from "../components/CustomerHeader";
-import Footer from "../components/Footer";
 import { useParams, NavLink } from "react-router-dom"; // Import NavLink
-import "./css/index.css";
 import "./css/shopMainPage.css";
 import background_img from "../assets/images/warmth_background.jpeg";
 import { API_URL } from "../constans.js";
-
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
@@ -14,6 +10,7 @@ const CategoryPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Category mapping
   const categories = {
     Toys: 1,
     Clothing: 2,
@@ -33,12 +30,14 @@ const CategoryPage = () => {
     const categoryNum = categories[categoryName];
     setCategoryNumber(categoryNum);
 
+    // If the category does not exist, stop loading
     if (!categoryNum) {
-      setLoading(false); // Stop loading if category doesn't exist
+      setLoading(false);
       console.error(`Category "${categoryName}" does not exist.`);
       return;
     }
 
+    // Fetch products
     const fetchProducts = async () => {
       try {
         const response = await fetch("/shop/get-products", {
@@ -54,6 +53,7 @@ const CategoryPage = () => {
 
         const data = await response.json();
 
+        // Filter products by category
         const filteredProducts = data.filter(
           (product) => product.categoryNumber === categoryNum
         );
@@ -61,13 +61,14 @@ const CategoryPage = () => {
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
-        setLoading(false); // Stop loading when fetching is done
+        setLoading(false); // Stop loading after fetching
       }
     };
 
     fetchProducts();
   }, [categoryName]);
 
+  // Function to handle image paths safely
   const getImagePath = (picturePath) => {
     try {
       return require(`../assets/images/${picturePath}`).default;
@@ -77,13 +78,32 @@ const CategoryPage = () => {
     }
   };
 
+  // Reusable Product List component for both Best Sellers and Suggestions
+  const renderProductsList = (productsList, limit) => (
+    <ul>
+      {productsList.slice(0, limit).map((product) => (
+        <li key={product.productId}>
+          <NavLink to={`/Product/${product.catalogNumber}`}>
+            <img
+              src={`${API_URL}/uploads/${product.picturePath}`}
+              alt={product.productName}
+            />
+            <h3>{product.productName}</h3>
+            <p>Price: ${product.price}</p>
+          </NavLink>
+        </li>
+      ))}
+    </ul>
+  );
+
+  // Loading state
   if (loading) return <p>Loading products...</p>;
 
+  // Handle category not found
   if (!categoryNumber)
     return (
-      <div>
-        <CustomerHeader />
-        <main className="container">
+      <div className="shopMainPage-body">
+        <main className="shopMainPage-container">
           <section className="sectionMain">
             <div className="hero-content">
               <h1>Category Not Found</h1>
@@ -92,51 +112,44 @@ const CategoryPage = () => {
             <img src={background_img} alt="backgroundImg" />
           </section>
         </main>
-        <Footer />
       </div>
     );
 
   return (
-    <div>
-      <CustomerHeader />
-      <main className="container">
+    <div className="shopMainPage-body">
+      <main className="shopMainPage-container">
+        {/* Hero Section */}
         <section className="sectionMain">
           <div className="hero-content">
             <h1>{categoryName}</h1>
           </div>
-          <img src={background_img} alt="backgroundImg" />
+          <img src={background_img} alt="Category Background" />
         </section>
+
+        {/* Best Sellers Section */}
+        <section className="sectionBestSellers">
+          <h2>Best Sellers</h2>
+          {products.length > 0 ? (
+            renderProductsList(products, 4) // Show top 4 products
+          ) : (
+            <p>
+              No products found. Try a different search or explore all products.
+            </p>
+          )}
+        </section>
+
+        {/* Suggestions Section */}
         <section className="sectionProducts">
-          <h2>Products</h2>
-          <ul>
-            {products.length > 0 ? (
-              products.map((product) => (
-                <li key={product.productId}>
-                  {/* Wrap each product in a NavLink */}
-                  <NavLink to={`/Product/${product.catalogNumber}`}>
-                    <img
-                      src={`${API_URL}/uploads/${product.picturePath}`}
-                      alt={product.productName}
-                    />
-                    <h3>{product.productName}</h3>
-                    <p>Price: ${product.price}</p>
-                    <ul>
-                      <li>Description: {product.description}</li>
-                      <li>Catalog Number: {product.catalogNumber}</li>
-                      <li>Amount: {product.amount}</li>
-                      <li>Size: {product.size}</li>
-                      <li>Color: {product.color}</li>
-                    </ul>
-                  </NavLink>
-                </li>
-              ))
-            ) : (
-              <p>No products found for the category "{categoryName}".</p>
-            )}
-          </ul>
+          <h2>Suggestions</h2>
+          {products.length > 0 ? (
+            renderProductsList(products, products.length) // Show all products
+          ) : (
+            <p>
+              No products found. Try a different search or explore all products.
+            </p>
+          )}
         </section>
       </main>
-      <Footer />
     </div>
   );
 };

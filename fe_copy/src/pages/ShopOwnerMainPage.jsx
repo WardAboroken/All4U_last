@@ -7,7 +7,6 @@ import { API_URL } from "../constans.js";
 import { useNavigate } from "react-router-dom";
 import { Line, Bar, Pie } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
-import SalesReport from "../components/SalesReportComponent.jsx";
 
 // ChartJS.register(
 //   CategoryScale,
@@ -229,7 +228,6 @@ function ShopOwnerMainPage() {
     fetchGraphData();
   }, [userName, startDate, endDate, defaultStartDate, defaultEndDate]);
 
-
   // Navigate to Orders page and show order details
   const handleSelectOrder = (orderNumber) => {
     navigate(`/ShopOwnerOrdersPage?orderNumber=${orderNumber}`); // Navigate with orderNumber in query
@@ -380,13 +378,6 @@ function ShopOwnerMainPage() {
                 <h3>Pie Chart</h3>
                 <Pie data={pieGraphData} width={200} height={200} />
               </div>
-
-              {/* Pass the filtered data to the SalesReport component */}
-              <SalesReport
-                filteredData={graphData?.datasets?.[0]?.data || []}
-                fetchStartDate={startDate || defaultStartDate}
-                fetchEndDate={endDate || defaultEndDate}
-              />
             </div>
           )}
         </section>

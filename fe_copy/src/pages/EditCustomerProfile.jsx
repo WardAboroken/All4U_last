@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { API_URL } from "../constans.js";
 import axios from "axios";
-import "./css/index.css";
-import "./css/customerHeader.css";
-import CustomerHeader from "../components/CustomerHeader";
-import Footer from "../components/Footer";
-import user_profile from "../assets/images/user_profile.jpeg";
+import "./css/editProfile.css"
+import "./css/customerSignup.css"
 
+
+// Constants for API endpoints
 const api_url = "https://data.gov.il/api/3/action/datastore_search";
 const cities_resource_id = "5c78e9fa-c2e2-4771-93ff-7f400a12f7ba";
 const streets_resource_id = "a7296d1a-f8c9-4b70-96c2-6ebb4352f8e3";
@@ -13,6 +13,8 @@ const city_name_key = "שם_ישוב";
 const street_name_key = "שם_רחוב";
 
 function EditProfile() {
+  /* #region State Variables */
+  // User information state variables
   const [name, setName] = useState("");
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,22 +23,31 @@ function EditProfile() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState("");
+
+  // Image handling state variables
   const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(user_profile);
+  const [imagePreview, setImagePreview] = useState("");
+
+  // Category selection state
   const [selectedCategories, setSelectedCategories] = useState([]);
+
+  // User info state object
   const [userInfo, setUserInfo] = useState({
     name: "",
     userName: "",
     email: "",
     phoneNumber: "",
-    profileImage: "",
+    profilePicturePath: "",
   });
 
+  // Address state variables
   const [cities, setCities] = useState([]);
   const [streets, setStreets] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedStreet, setSelectedStreet] = useState("");
+  /* #endregion */
 
+  /* #region Constants */
   const categories = {
     Toys: 1,
     Clothing: 2,
@@ -51,8 +62,10 @@ function EditProfile() {
     Safety: 11,
     Beauty: 12,
   };
+  /* #endregion */
 
-  // Handle category change
+  /* #region Handlers */
+  // Handle category selection change
   const handleCategoryChange = (categoryId) => {
     const newSelectedCategories = selectedCategories.includes(categoryId)
       ? selectedCategories.filter((id) => id !== categoryId)
@@ -60,7 +73,20 @@ function EditProfile() {
     setSelectedCategories(newSelectedCategories);
   };
 
-  // Fetch cities and streets from the API
+  // Handle image selection and preview
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setError("Please select a valid image file.");
+    }
+  };
+  /* #endregion */
+
+  /* #region API Calls */
+  // Fetch data from external APIs
   const getData = useCallback((resource_id, q = "", limit = "100") => {
     return axios.get(api_url, {
       params: { resource_id, q, limit },
@@ -68,10 +94,12 @@ function EditProfile() {
     });
   }, []);
 
+  // Parse API response
   const parseResponse = useCallback((records = [], field_name) => {
     return records.map((record) => record[field_name].trim()).filter(Boolean);
   }, []);
 
+  // Populate cities from the API
   const populateCities = useCallback(async () => {
     try {
       const citiesList = await getData(cities_resource_id);
@@ -81,6 +109,7 @@ function EditProfile() {
     }
   }, [getData, parseResponse]);
 
+  // Populate streets based on selected city
   const populateStreets = useCallback(
     async (city) => {
       try {
@@ -98,7 +127,7 @@ function EditProfile() {
     [getData, parseResponse]
   );
 
-  // Fetch user info when the component mounts
+  // Fetch user information on component mount
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -108,11 +137,9 @@ function EditProfile() {
             "Content-Type": "application/json",
           },
         });
-        if (!response.ok) {
-          throw new Error("Failed to fetch user info");
-        }
-        const data = await response.json();
+        if (!response.ok) throw new Error("Failed to fetch user info");
 
+        const data = await response.json();
         const categories = Array.isArray(data.userInfo.preferredCategories)
           ? data.userInfo.preferredCategories
           : JSON.parse(data.userInfo.preferredCategories || "[]");
@@ -122,8 +149,9 @@ function EditProfile() {
         setUserName(data.userInfo.userName);
         setEmail(data.userInfo.email);
         setNumber(data.userInfo.phoneNumber);
-        setImagePreview(data.userInfo.profileImage || user_profile);
-
+        setImagePreview(
+          `${API_URL}/uploads/${data.userInfo.profilePicturePath}`
+        );
         setSelectedCategories(categories);
         setSelectedCity(data.userInfo.city || "");
         setSelectedStreet(data.userInfo.street || "");
@@ -135,20 +163,15 @@ function EditProfile() {
     fetchUserInfo();
     populateCities();
   }, [populateCities]);
+  /* #endregion */
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
-
+  /* #region Form Submission */
+  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (newPassword !== confirmNewPassword) {
-      window.alert("New passwords do not match , Please try again");
+      window.alert("New passwords do not match. Please try again.");
       return;
     }
 
@@ -159,9 +182,9 @@ function EditProfile() {
       phoneNumber: number || userInfo.phoneNumber,
       password,
       newPassword,
-      profileImage: image ? image.name : userInfo.profileImage,
+      profilePicturePath: image || userInfo.profilePicturePath,
       preferredCategories: selectedCategories,
-      address:` City: ${selectedCity}, Street: ${selectedStreet}`, // Send the address
+      address: `City: ${selectedCity}, Street: ${selectedStreet}`,
     };
 
     try {
@@ -175,31 +198,31 @@ function EditProfile() {
 
       if (!response.ok) {
         const errorData = await response.text();
-        window.alert("YOUR UPDATE IS NOT SUCCESS");
+        window.alert("Update unsuccessful.");
         throw new Error(`Error: ${response.statusText}, ${errorData}`);
       }
-      window.alert("YOUR UPDATE IS SUCCESS");
+      window.alert("Profile updated successfully!");
     } catch (error) {
-      window.alert("YOUR UPDATE IS NOT SUCCESS");
+      window.alert("Update unsuccessful.");
     }
   };
+  /* #endregion */
 
   return (
-    <div>
-      <CustomerHeader />
-      <div className="container">
-        <h1>All4U</h1>
+    <div className="editCustomerProfile-body" >
+      <main className="editCustomerProfile-container">
         <h2>Customer Profile Edit</h2>
-        <form onSubmit={handleSubmit}>
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-          {imagePreview && (
+        <form onSubmit={handleSubmit}>{imagePreview && (
             <img
               src={imagePreview}
               alt="User Profile"
               className="imagePreview"
             />
           )}
+          <input type="file" accept="image/*" onChange={handleImageChange} />
+          
           <input
+            className="name"
             type="text"
             placeholder={userInfo.name}
             value={name}
@@ -207,6 +230,7 @@ function EditProfile() {
             required
           />
           <input
+            className="UserName"
             type="text"
             placeholder={userInfo.userName}
             value={userName}
@@ -214,6 +238,7 @@ function EditProfile() {
             required
           />
           <input
+            className="email"
             type="email"
             placeholder={userInfo.email}
             value={email}
@@ -221,6 +246,7 @@ function EditProfile() {
             required
           />
           <input
+            className="phoneNumber"
             type="tel"
             placeholder={userInfo.phoneNumber}
             value={number}
@@ -228,6 +254,7 @@ function EditProfile() {
             required
           />
           <input
+            className="psw"
             type="password"
             placeholder="Current Password"
             value={password}
@@ -235,12 +262,14 @@ function EditProfile() {
             required
           />
           <input
+            className="confirmPassword"
             type="password"
             placeholder="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
           <input
+            className="confirmPassword"
             type="password"
             placeholder="Confirm New Password"
             value={confirmNewPassword}
@@ -252,6 +281,7 @@ function EditProfile() {
           <div className="form-field">
             <label>Select City:</label>
             <input
+              name="selectedCity"
               list="cities"
               value={selectedCity}
               onChange={(e) => {
@@ -269,9 +299,11 @@ function EditProfile() {
           </div>
 
           {/* Street Selection */}
-          <div className="form-field">
+          <div className="form-field" id="street-selection">
             <label>Select Street:</label>
             <select
+              id="street-choice"
+              name="selectedStreet"
               value={selectedStreet}
               onChange={(e) => setSelectedStreet(e.target.value)}
               required
@@ -302,8 +334,7 @@ function EditProfile() {
 
           <button type="submit">Update Profile</button>
         </form>
-      </div>
-      <Footer />
+      </main>
     </div>
   );
 }

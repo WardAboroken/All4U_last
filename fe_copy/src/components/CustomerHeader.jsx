@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 import basket_cart from "../assets/images/shopping-cart.png";
-import user_profile from "../assets/images/user_profile.jpeg"; // Adjust the path
 import "../pages/css/customerHeader.css"; // Adjust the path as per your project structure
+import { API_URL } from "../constans.js";
 
 const CustomerHeader = () => {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
@@ -12,7 +12,7 @@ const CustomerHeader = () => {
     userName: "",
     email: "",
     phoneNumber: "",
-    image: "", // Added image field
+    profilePicturePath: "", // Added image field
   });
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
   const navigate = useNavigate(); // Hook for navigation
@@ -82,6 +82,9 @@ const CustomerHeader = () => {
     setShowCategoryDropdown(false);
   };
 
+  // Destructure userInfo properties
+  const { name, userName, email, phoneNumber, profilePicturePath } = userInfo;
+
   return (
     <header className="header">
       <div className="left-section">
@@ -125,7 +128,11 @@ const CustomerHeader = () => {
       <div className="right-section">
         <div className="profileInfo">
           <button className="menuItem" onClick={toggleProfileDropdown}>
-            <img src={userInfo.image || user_profile} alt="User Profile" />
+            <img
+              src={`${API_URL}/uploads/${profilePicturePath}`}
+              alt={userName}
+              width="50"
+            />
           </button>
           <div
             className={`profileDropdownContent ${
@@ -136,19 +143,19 @@ const CustomerHeader = () => {
               <tbody>
                 <tr>
                   <th>Name</th>
-                  <td>{userInfo.name}</td>
+                  <td>{name}</td>
                 </tr>
                 <tr>
                   <th>User Name</th>
-                  <td>{userInfo.userName}</td>
+                  <td>{userName}</td>
                 </tr>
                 <tr>
                   <th>Email</th>
-                  <td>{userInfo.email}</td>
+                  <td>{email}</td>
                 </tr>
                 <tr>
                   <th>Phone Number</th>
-                  <td>{userInfo.phoneNumber}</td>
+                  <td>{phoneNumber}</td>
                 </tr>
               </tbody>
             </table>
@@ -156,7 +163,7 @@ const CustomerHeader = () => {
               Edit Profile
             </NavLink>
             <NavLink to="/CustomerOrdersHistory" className="ordersHistoryBtn">
-              Orders History =&gt;
+              Orders History
             </NavLink>
             <NavLink to="/" className="logoutBtn">
               LogOut

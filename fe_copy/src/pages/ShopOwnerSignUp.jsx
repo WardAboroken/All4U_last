@@ -2,8 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./css/login.css";
-import Footer from "../components/Footer";
-import OutHeader from "../components/OutHeader";
 
 const api_url = "https://data.gov.il/api/3/action/datastore_search";
 const cities_resource_id = "5c78e9fa-c2e2-4771-93ff-7f400a12f7ba";
@@ -160,10 +158,8 @@ function ShopOwnerSignUp() {
   };
 
   return (
-    <body>
-      <OutHeader />
-      <div className="container">
-        <h1>All4U</h1>
+    <div className="login-body">
+      <main className="login-container">
         <h2>Shop Owner Sign Up</h2>
         {errorMessage && <p className="error">{errorMessage}</p>}
         <form onSubmit={handleSubmit}>
@@ -286,9 +282,8 @@ function ShopOwnerSignUp() {
           </select>
           <button type="submit">Continue</button>
         </form>
-      </div>
-      <Footer />
-    </body>
+      </main>
+    </div>
   );
 }
 

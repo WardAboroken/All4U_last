@@ -1,13 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { API_URL } from "../constans.js";
-import CustomerHeader from "../components/CustomerHeader.jsx";
-import Footer from "../components/Footer";
 import PayPalCheckoutButton from "../components/PayPalCheckoutButton.jsx";
-import "./css/index.css";
-import "./css/shopMainPage.css";
-import background_img from "../assets/images/warmth_background.jpeg";
 import "./css/basketCart.css";
+import background_img from "../assets/images/warmth_background.jpeg";
 
 const BasketCart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -49,6 +45,7 @@ const BasketCart = () => {
       if (response.ok) {
         const data = await response.json();
         setCustomerInfo(data.userInfo);
+        console.log("userrrrrrr onfoooo", data.userInfo);
       } else {
         console.error("Failed to fetch user info");
       }
@@ -60,7 +57,8 @@ const BasketCart = () => {
   const fetchShopOwnerInfo = async (userName) => {
     try {
       const response = await fetch(
-        `/userInfo/getWorkerInfoByUserName/${encodeURIComponent(userName)}`,
+        `
+        /userInfo/getWorkerInfoByUserName/${encodeURIComponent(userName)}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -122,14 +120,15 @@ const BasketCart = () => {
 
     if (newQuantity > item.amount) {
       alert(
-        `The maximum quantity available for this product is ${item.amount}.`
+        ` The maximum quantity available for this product is ${item.amount}.`
       );
       return;
     }
 
     try {
       const response = await fetch(
-        `http://localhost:5000/cart/${encodeURIComponent(catalogNumber)}`,
+        `
+        http://localhost:5000/cart/${encodeURIComponent(catalogNumber)}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -140,7 +139,7 @@ const BasketCart = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error(
-          `Failed to update item amount. Status: ${response.status}, Message: ${errorText}`
+          ` Failed to update item amount. Status: ${response.status}, Message: ${errorText}`
         );
         throw new Error("Failed to update item amount.");
       }
@@ -156,7 +155,7 @@ const BasketCart = () => {
   const removeCartItem = async (catalogNumber) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/cart/${encodeURIComponent(catalogNumber)}`,
+        ` http://localhost:5000/cart/${encodeURIComponent(catalogNumber)}`,
         {
           method: "DELETE",
         }
@@ -178,8 +177,10 @@ const BasketCart = () => {
     const orders = Object.keys(checkoutGroups).map((userName) => {
       const paypalEmail =
         shopOwnerPaypalEmails[userName] || "no-paypal@example.com";
+      const merchantID = "MG44X9L3T5CEE";
       return {
         paypalEmail,
+        merchantID,
         items: checkoutGroups[userName],
         userName, // Add userName here
       };
@@ -193,16 +194,48 @@ const BasketCart = () => {
       return;
     }
 
+    // Fetch customer information explicitly before placing the order
+    let customerInfoData;
+    try {
+      const response = await fetch("/userinfo/getUserInfo", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        customerInfoData = data.userInfo;
+        console.log("Fetched customer info:", customerInfoData);
+      } else {
+        console.error("Failed to fetch user info");
+        alert("Unable to fetch user information. Please try again.");
+        return;
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      return;
+    }
+
+    // Ensure we have the correct userName and shippingAddress
+    if (!customerInfoData.userName || !customerInfoData.address) {
+      console.error("Customer information missing:", customerInfoData);
+      alert("Customer information is incomplete. Cannot place the order.");
+      return;
+    }
+
+    console.log("Proceeding with order for user:", customerInfoData.userName);
+
     const preparedCartItems = order.items.map((item) => ({
       catalogNumber: item.catalogNumber,
       quantity: item.quantity,
     }));
 
     const orderPayload = {
-      userName: customerInfo.userName,
-      shippingAddress: customerInfo.address,
+      userName: customerInfoData.userName,
+      shippingAddress: customerInfoData.address,
       cartItems: preparedCartItems,
     };
+
+    console.log("Order payload being sent:", orderPayload);
 
     try {
       const response = await fetch(`http://localhost:5000/order/addOrder`, {
@@ -213,16 +246,14 @@ const BasketCart = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(
-          `Failed to place order. Status: ${response.status}, Message: ${errorText}`
-        );
+        console.error(`
+          Failed to place order. Status: ${response.status}, Message: ${errorText}`);
         throw new Error("Failed to place order.");
       }
 
       const result = await response.json();
-      alert(
-        `Order placed successfully for ${order.paypalEmail}! Order Number: ${result.orderNumber}`
-      );
+      alert(`
+        Order placed successfully for ${order.paypalEmail}! Order Number: ${result.orderNumber}`);
 
       // Remove only the paid items from the cart
       setCartItems((prevItems) =>
@@ -244,7 +275,6 @@ const BasketCart = () => {
       console.error("Error details:", error);
     }
   };
-
   // Memoizing the grouped cart items to avoid re-calculating on each render
   const checkoutGroups = useMemo(
     () => groupItemsByShopOwner(cartItems),
@@ -253,15 +283,21 @@ const BasketCart = () => {
   const orders = handleCheckout(); // Reintroducing handleCheckout properly
 
   return (
-    <div>
-      <CustomerHeader />
-      <main className="container">
+    <div className="basketCart-body">
+      <main className="basketCart-container">
+        {/* Header Section */}
         <section className="sectionMain">
           <div className="hero-content">
             <h1>Your Cart</h1>
           </div>
+          <img
+            src={background_img}
+            alt="backgroundImg"
+            className="hero-image"
+          />
         </section>
 
+        {/* Cart Items Container */}
         <div className="basket-cart-container">
           {cartItems.length === 0 ? (
             <div className="empty-cart-message">
@@ -282,6 +318,7 @@ const BasketCart = () => {
 
               return (
                 <div className="group-container" key={userName}>
+                  {/* Cart Items Section */}
                   <div className="cart-section">
                     <h3>Items from {userName}:</h3>
                     {items.map((item, index) => (
@@ -316,6 +353,7 @@ const BasketCart = () => {
                           />
                           <span>${item.price}</span>
                           <button
+                            className="remove-button"
                             onClick={() => removeCartItem(item.catalogNumber)}
                           >
                             🗑
@@ -325,12 +363,12 @@ const BasketCart = () => {
                     ))}
                   </div>
 
+                  {/* Checkout Section */}
                   <div className="checkout-section">
                     <h4>Checkout for {userName}</h4>
                     <p>
                       Total for {userName}: ${totalAmountForGroup}
                     </p>
-
                     {/* PayPal Button Component */}
                     <PayPalCheckoutButton
                       totalAmount={totalAmountForGroup}
@@ -345,7 +383,6 @@ const BasketCart = () => {
           )}
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

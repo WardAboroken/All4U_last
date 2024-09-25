@@ -1,48 +1,23 @@
-/* shopMainPage.css*/
-/* Reset and General styling */
-body,
-html {
-  margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f5f5; /* Light background color */
-  color: #333; /* Default text color */
+/* #region Main container for the shop page */
+/* Styling for the main content container of the shop page */
+.shopMainPage-container {
+  width: 90%; /* Set the container width to 90% of the viewport */
+  max-width: 1200px; /* Maximum width of the container */
+  margin: 0 auto; /* Center the container horizontally */
+  padding: 40px 0; /* Vertical padding for spacing */
 }
+/* #endregion Main container for the shop page */
 
-/* Global container */
-.container {
-  width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-
-}
-
-/* Section 1 - Hero banner */
+/* #region Hero section */
+/* Styling for the main hero section */
 .sectionMain {
   position: relative;
-  height: 50vh; /* Adjust height as needed */
+  height: 400px; /* Adjust height as needed */
   overflow: hidden;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("../../assets/images/warmth_background.jpeg");
-  background-size: cover;
-  background-position: center;
+  background-color: #f0f0f0;
+  border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.sectionMain .hero-content {
-  position: absolute;
-  top: 50%; /* Center vertically */
-  left: 50%; /* Center horizontally */
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: #fff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  z-index: 1;
-}
-
-.sectionMain h1 {
-  font-size: 3rem;
+  margin-bottom: 40px;
 }
 
 .sectionMain img {
@@ -52,75 +27,162 @@ html {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   z-index: 0;
+  border-radius: 15px;
 }
 
-/* Section 2 - Product list */
-.sectionMain {
-  background-color: #fff; /* White background */
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Hero content styling */
+.hero-content {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Improved text shadow for readability */
+  text-align: center;
 }
 
+.hero-content h1 {
+  font-size: 3rem; /* Adjust font size as needed */
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Styling for the hero slogan */
+.hero-content .shopMainPage-slogan {
+  font-size: 1.8rem; /* Font size for the slogan */
+  margin-bottom: 20px; /* Space below the slogan */
+  color: rgba(232, 194, 137, 0.9); /* Light golden color */
+}
+/* #endregion Hero section */
+
+/* #region Product Section */
+/* General styling for product sections like "Suggestions" and "Best Sellers" */
+.sectionProducts {
+  margin-bottom: 50px; /* Space below the section */
+  margin-top: 10px; /* Space above the section */
+}
+
+/* Heading styling for product sections */
 .sectionProducts h2 {
-  text-align: center;
-  margin-bottom: 20px;
+  font-size: 2.4rem; /* Larger font size for headings */
+  font-weight: bold; /* Bold text */
   color: #333; /* Darker text color */
-  font-size: 2rem;
+  margin-bottom: 20px; /* Space below the heading */
 }
 
+/* Styling for the product grid */
 .sectionProducts ul {
-  list-style: none;
-  padding: 0;
-  display: grid;
+  list-style: none; /* Remove default list styling */
+  display: grid; /* Grid layout */
   grid-template-columns: repeat(
-    auto-fit,
-    minmax(280px, 1fr)
-  ); /* Responsive grid with min width of 280px */
-  gap: 20px; /* Gap between grid items */
+    auto-fill,
+    minmax(220px, 1fr)
+  ); /* Responsive grid */
+  gap: 30px; /* Space between grid items */
+  padding: 0; /* Remove default padding */
 }
 
+/* Styling for individual product items */
 .sectionProducts li {
-  background: #fff; /* White background for each product */
+  background-color: #fff; /* White background */
   border: 1px solid #ddd; /* Light border */
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  border-radius: 10px; /* Rounded corners */
+  overflow: hidden; /* Hide overflowing content */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: transform 0.3s ease; /* Smooth hover effect */
+  text-align: center; /* Center the text */
 }
 
+/* Hover effect for product items */
 .sectionProducts li:hover {
-  transform: translateY(-5px); /* Lift up slightly on hover */
+  transform: translateY(-5px); /* Lift the item slightly on hover */
 }
 
-.sectionProducts li img {
-  width: 100%;
-  height: auto;
-  border-bottom: 1px solid #ddd; /* Light border at bottom of image */
-  border-radius: 8px 8px 0 0; /* Rounded corners at top */
+/* Styling for product images */
+.sectionProducts img {
+  width: 100%; /* Full width */
+  height: 200px; /* Fixed height */
+  object-fit: cover; /* Cover the entire image area */
+  border-bottom: 1px solid #ddd; /* Border below the image */
 }
 
-.sectionProducts li h3 {
-  margin: 10px;
-  color: #333; /* Darker text */
-  font-size: 1.5rem;
-  text-align: center;
+/* Styling for product titles */
+.sectionProducts h3 {
+  font-size: 1.6rem; /* Font size for product titles */
+  margin: 10px 0; /* Space above and below the title */
+  color: #333; /* Darker text color */
 }
 
-.sectionProducts li p {
-  color: #666; /* Darker text color for price */
-  margin: 5px 10px;
-  text-align: center;
+/* Styling for product prices */
+.sectionProducts p {
+  font-size: 1.4rem; /* Font size for product prices */
+  color: #666; /* Slightly muted text color */
+  margin-bottom: 10px; /* Space below the price */
+}
+/* #endregion Product Section */
+
+/* #region Best Sellers Section */
+/* General styling for the "Best Sellers" section */
+.sectionBestSellers {
+  margin-top: 10px; /* Space above the section */
 }
 
-.sectionProducts li ul {
-  text-align: left;
-  padding: 0 10px;
+/* Heading styling for the "Best Sellers" section */
+.sectionBestSellers h2 {
+  font-size: 2.4rem; /* Larger font size for headings */
+  color: #333; /* Darker text color */
+  font-weight: bold; /* Bold text */
+  margin-bottom: 10px; /* Space below the heading */
 }
 
-.sectionProducts li ul li {
-  color: #777; /* Darker text color for properties */
-  margin-bottom: 5px;
-  text-align: center;
+/* Styling for the product grid in "Best Sellers" */
+.sectionBestSellers ul {
+  display: grid; /* Grid layout */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(250px, 1fr)
+  ); /* Responsive grid */
+  gap: 20px; /* Space between grid items */
+  padding: 10px; /* Padding for the grid */
 }
+
+/* Styling for individual product items in "Best Sellers" */
+.sectionBestSellers li {
+  background-color: rgb(165, 67, 42); /* Custom background color */
+  border: 1px solid #ddd; /* Light border */
+  border-radius: 10px; /* Rounded corners */
+  overflow: hidden; /* Hide overflowing content */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: transform 0.3s ease; /* Smooth hover effect */
+  padding: 10px; /* Padding inside the product item */
+}
+
+/* Hover effect for product items in "Best Sellers" */
+.sectionBestSellers li:hover {
+  transform: translateY(-5px); /* Lift the item slightly on hover */
+}
+
+/* Styling for product images in "Best Sellers" */
+.sectionBestSellers img {
+  width: 100%; /* Full width */
+  height: 200px; /* Fixed height */
+  object-fit: cover; /* Cover the entire image area */
+  border-radius: 10px; /* Rounded corners for images */
+}
+
+/* Styling for product titles in "Best Sellers" */
+.sectionBestSellers h3 {
+  font-size: 1.6rem; /* Font size for product titles */
+  margin: 10px 0; /* Space above and below the title */
+  color: #fff; /* White text color for contrast */
+}
+
+/* Styling for product prices in "Best Sellers" */
+.sectionBestSellers p {
+  font-size: 1.4rem; /* Font size for product prices */
+  color: #b1b1b1; /* Light gray text color */
+}
+/* #endregion Best Sellers Section */

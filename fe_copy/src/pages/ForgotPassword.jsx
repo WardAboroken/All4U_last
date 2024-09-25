@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./css/login.css";
 import "./css/forgotPassword.css";
-import Footer from "../components/Footer";
-import OutHeader from "../components/OutHeader"; // Ensure this import is correct
+
 import { useNavigate } from "react-router-dom";
 
 function ForgotPassword() {
@@ -40,10 +39,8 @@ function ForgotPassword() {
   };
 
   return (
-    <div>
-      <OutHeader />
-      <div className="container">
-        <h1>All4U</h1>
+    <div className="login-body">
+      <main className="login-container">
         <h2>Password Recovery</h2>
         <h3>
           To restore your password you need to verify your personal details:
@@ -81,8 +78,7 @@ function ForgotPassword() {
           </button>
         </form>
         {/* {message && <p className="message">{message}</p>} */}
-      </div>
-      <Footer />
+      </main>
     </div>
   );
 }
