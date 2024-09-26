@@ -7,7 +7,6 @@ const paypal = require("@paypal/checkout-server-sdk"); // Import PayPal SDK
 const doQuery = require("../database/query"); // Ensure this is the correct import for your query function
 const updateOrderStatus = require("./../database/queries/updateOrderStatusInDB");
 
-
 // Function to get PayPal emails for products
 async function getPaypalEmailForProducts(products) {
   const db = await getDbConnection();
@@ -19,7 +18,7 @@ async function getPaypalEmailForProducts(products) {
      WHERE p.catalogNumber IN (?)`,
     [catalogNumbers]
   );
-console.log("resultsssssssssssssssssssssssss", results);
+  console.log("resultsssssssssssssssssssssssss", results);
   const emailMap = results.reduce((map, row) => {
     map[row.catalogNumber] = row.paypalEmail;
     return map;
@@ -113,7 +112,6 @@ router.post("/captureOrders", async (req, res) => {
   }
 });
 
-
 // Endpoint to get completed orders for a specific business owner
 router.get("/get-completed-orders/:userName", async (req, res) => {
   const { userName } = req.params;
@@ -137,7 +135,9 @@ router.get("/get-completed-orders/:userName", async (req, res) => {
     );
 
     if (!completedOrdersResult || completedOrdersResult.length === 0) {
-      return res.status(404).json({ message: "No completed orders found for this business owner." });
+      return res.status(404).json({
+        message: "No completed orders found for this business owner.",
+      });
     }
 
     res.json(completedOrdersResult);
@@ -209,21 +209,21 @@ router.get("/get-catalog-numbers/:orderNumber/:userName", async (req, res) => {
 // Route to get out-of-stock products for a specific business owner
 router.get("/get-out-of-stock-products/:userName", async (req, res) => {
   const { userName } = req.params;
-
+  console.log(
+    `Received request for out-of-stock products for user: ${userName}`
+  );
   try {
-    // SQL query to fetch products where amount is 0 for the given userName
     const outOfStockQuery = `
       SELECT catalogNumber, productName, picturePath, amount
-      FROM PRODUCTS
+      FROM products
       WHERE userName = ? AND amount = 0;
     `;
 
     const outOfStockProducts = await doQuery(outOfStockQuery, [userName]);
+    console.log("Out of stock products.length: ", outOfStockProducts.length); // Log the result
 
-    if (!outOfStockProducts.length) {
-      return res
-        .status(404)
-        .json({ message: "No out-of-stock products found." });
+    if (outOfStockProducts.length === 0) {
+      return res.json({ message: "No out-of-stock products found." });
     }
 
     res.json(outOfStockProducts);
@@ -234,37 +234,26 @@ router.get("/get-out-of-stock-products/:userName", async (req, res) => {
 });
 
 // Route to get all orders for a specific business owner (new orders)
-router.get("/get-business-orders2/:userName", async (req, res) => {
+router.get("/get-business-new-orders/:userName", async (req, res) => {
   const { userName } = req.params;
 
   try {
-    // Query to get all the 'Received' orders for the business owner
     const ordersQuery = `
-      SELECT 
-        o.orderNumber,                  
-        o.orderDate AS date,             
-        ocp.orderStatus AS status,        
-        SUM(p.price * ocp.productQuantity) AS totalCost  
-      FROM 
-        orderscontainsproducts ocp        
-      JOIN 
-        orders o ON ocp.orderNumber = o.orderNumber  
-      JOIN 
-        products p ON ocp.catalogNumber = p.catalogNumber  
-      WHERE 
-        p.userName = ? AND ocp.orderStatus = 'Received'  
-      GROUP BY 
-        o.orderNumber, ocp.orderStatus, o.orderDate
-      ORDER BY 
-        o.orderDate DESC;
+      SELECT o.orderNumber, o.orderDate AS date, ocp.orderStatus AS status, 
+             SUM(p.price * ocp.productQuantity) AS totalCost
+      FROM orderscontainsproducts ocp
+      JOIN orders o ON ocp.orderNumber = o.orderNumber
+      JOIN products p ON ocp.catalogNumber = p.catalogNumber
+      WHERE p.userName = ? AND ocp.orderStatus = 'Received'
+      GROUP BY o.orderNumber, ocp.orderStatus, o.orderDate
+      ORDER BY o.orderDate DESC;
     `;
 
     const orders = await doQuery(ordersQuery, [userName]);
-
-    if (!orders.length) {
+    console.log(`Received orders to  ${userName} >> `, orders);
+    if (orders.length === 0) {
       return res.status(404).json({
-        message:
-          "No new orders with status 'Received' found for this business owner.",
+        message: "No new orders found for this business owner.",
       });
     }
 
@@ -281,34 +270,32 @@ router.get("/get-business-orders/:userName", async (req, res) => {
   const { userName } = req.params;
 
   try {
-    // Query to get all the 'WAITING' orders for the business owner
     const ordersQuery = `
-      SELECT 
-        o.orderNumber,                  
-        o.orderDate AS date,             
-        ocp.orderStatus AS status,        
+      SELECT
+        o.orderNumber,
+        o.orderDate AS date,
+        ocp.orderStatus AS status,
         SUM(p.price * ocp.productQuantity) AS totalCost,  -- Calculate the total cost
         GROUP_CONCAT(p.catalogNumber) AS catalogNumbers  -- Concatenate catalog numbers
-      FROM 
-        orderscontainsproducts ocp        
-      JOIN 
-        orders o ON ocp.orderNumber = o.orderNumber  
-      JOIN 
-        products p ON ocp.catalogNumber = p.catalogNumber  
-      WHERE 
-        p.userName = ? AND ocp.orderStatus != 'Been Provided'  -- Ensure the order status is 'WAITING'
-      GROUP BY 
+      FROM
+        orderscontainsproducts ocp
+      JOIN
+        orders o ON ocp.orderNumber = o.orderNumber
+      JOIN
+        products p ON ocp.catalogNumber = p.catalogNumber
+      WHERE
+        p.userName = ?
+      GROUP BY
         o.orderNumber, ocp.orderStatus, o.orderDate
-      ORDER BY 
+      ORDER BY
         o.orderDate DESC;
     `;
 
     const orders = await doQuery(ordersQuery, [userName]);
 
-    if (!orders.length) {
+    if (orders.length === 0) {
       return res.status(404).json({
-        message:
-          "No new orders with status 'WAITING' found for this business owner.",
+        message: "No orders found for this business owner.",
       });
     }
 
@@ -321,8 +308,100 @@ router.get("/get-business-orders/:userName", async (req, res) => {
   }
 });
 
+
+// router.get("/get-been-provided-orders/:userName", async (req, res) => {
+//   const { userName } = req.params;
+
+//   try {
+//     const ordersQuery = `
+//       SELECT o.orderNumber, o.orderDate AS date, ocp.orderStatus AS status, 
+//              SUM(p.price * ocp.productQuantity) AS totalCost
+//       FROM orderscontainsproducts ocp
+//       JOIN orders o ON ocp.orderNumber = o.orderNumber
+//       JOIN products p ON ocp.catalogNumber = p.catalogNumber
+//       WHERE p.userName = ? AND ocp.orderStatus = 'Been Provided'
+//       GROUP BY o.orderNumber, ocp.orderStatus, o.orderDate
+//       ORDER BY o.orderDate DESC;
+//     `;
+
+//     const orders = await doQuery(ordersQuery, [userName]);
+//     console.log(`Been Provided orders to  ${userName} >> `, orders);
+//     if (orders.length === 0) {
+//       return res.status(404).json({
+//         message: "No 'Been Provided' orders found for this business owner.",
+//       });
+//     }
+
+//     res.json(orders);
+//   } catch (error) {
+//     console.error("Error fetching 'Been Provided' orders:", error);
+//     res.status(500).json({ message: "Error fetching 'Been Provided' orders." });
+//   }
+// });
+
 // פונקציה לעדכון סטטוס ההזמנה עבור מוצר ספציפי
 // Route to update order status for a specific product within an order
+
+router.get("/get-been-provided-orders/:userName", async (req, res) => {
+  const { userName } = req.params;
+  const { startDate, endDate } = req.query; // Receive startDate and endDate as query parameters
+console.log("Received startDate:", startDate);
+console.log("Received endDate:", endDate);
+
+
+  try {
+    // Base query
+    let ordersQuery = `
+  SELECT o.orderNumber, DATE(o.orderDate) AS date, ocp.orderStatus AS status, 
+         SUM(p.price * ocp.productQuantity) AS totalCost
+  FROM orderscontainsproducts ocp
+  JOIN orders o ON ocp.orderNumber = o.orderNumber
+  JOIN products p ON ocp.catalogNumber = p.catalogNumber
+  WHERE p.userName = ? AND ocp.orderStatus = 'Been Provided'
+`;
+
+    const queryParams = [userName];
+    console.log("Query Params:", queryParams);
+    // Optional date range filter
+    // Modify the WHERE clause to ignore the time component when filtering by date
+    // Filter by date using the DATE() function in SQL to exclude orders before or after the date range
+    if (startDate) {
+      ordersQuery += ` AND DATE(o.orderDate) >= ?`;
+      queryParams.push(startDate);
+    }
+    if (endDate) {
+      ordersQuery += ` AND DATE(o.orderDate) <= ?`;
+      queryParams.push(endDate);
+    }
+
+    // Add GROUP BY and ORDER BY clauses
+    ordersQuery += `
+  GROUP BY o.orderNumber, ocp.orderStatus, DATE(o.orderDate)
+  ORDER BY DATE(o.orderDate) DESC;
+`;
+
+    // Run query with dynamic parameters
+    const orders = await doQuery(ordersQuery, queryParams);
+    console.log(
+      `Been Provided orders to ${userName} between ${startDate} and ${endDate} >> `,
+      orders
+    );
+
+    if (!orders) {
+      return res.status(404).json({
+        message:
+          "No 'Been Provided' orders found for this business owner within the given date range.",
+      });
+    }
+
+    res.json(orders);
+  } catch (error) {
+    console.error("Error fetching 'Been Provided' orders:", error);
+    res.status(500).json({ message: "Error fetching 'Been Provided' orders." });
+  }
+});
+
+
 router.put("/update-order-status/:orderNumber", async (req, res) => {
   const { orderNumber } = req.params;
   const { catalogNumbers, status } = req.body; // Get catalog numbers and status from the request body
@@ -373,9 +452,11 @@ router.post("/get-order-details", async (req, res) => {
          p.userName = ?`, // Ensure products belong to the logged-in user (business owner)
       [orderNumber, userName]
     );
-
-    if (!orderDetailsResult.length) {
-      return res.status(404).json({ message: "No details found for this order." });
+    console.log(" Order details >> ", orderDetailsResult);
+    if (!orderDetailsResult) {
+      return res
+        .status(404)
+        .json({ message: "No details found for this order." });
     }
 
     res.json(orderDetailsResult);
@@ -420,28 +501,136 @@ const handleError = (res, error, message = "An error occurred") => {
 //   }
 // });
 // Example: /order/addOrder route
-router.post("/addOrder", (req, res) => {
-  const user = req.session.user; // Access user info from session
-console.log("add orderrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
-  if (!user) {
-    return res.status(401).json({ message: "User not logged in" });
-  }
 
-  const { cartItems } = req.body;
-  const userName = user.userName; // Use session-stored user info
-const shippingAddress=user.address;
-  // Proceed to add the order
-  addOrder({ userName,shippingAddress, cartItems })
-    .then((result) => {
-      res.status(201).json({ success: true, message: "Order added" });
-    })
-    .catch((error) => {
-      console.error("Error adding order:", error);
-      res.status(500).json({ error: "Failed to add order" });
+
+// router.post("/addOrder", (req, res) => {
+// const { userName, shippingAddress, cartItems } = req.body; // Access user info from session
+// console.log("add orderrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr", userName);
+//   // if (!userName) {
+//   //   return res.status(401).json({ message: "User not logged in" });
+//   // }
+//   // Proceed to add the order
+//   addOrder({ userName, shippingAddress, cartItems })
+//     .then((result) => {
+//       res.status(201).json({ success: true, message: "Order added" });
+//     })
+//     .catch((error) => {
+//       console.error("Error adding order:", error);
+//       res.status(500).json({ error: "Failed to add order" });
+//     });
+// }); 
+router.post("/addOrder", async (req, res) => {
+  const { userName, shippingAddress, cartItems } = req.body;
+
+  try {
+    console.log("Received order data:", {
+      userName,
+      shippingAddress,
+      cartItems,
     });
+
+    // Step 1: Add the order to the database and update the product stock
+    const result = await addOrder({ userName, shippingAddress, cartItems });
+
+    if (result.error) {
+      console.error("Error while adding the order:", result.error);
+      return res.status(500).json({ success: false, message: result.error });
+    }
+
+    // Step 2: Delete each ordered item from the cart after successfully adding the order
+    for (let item of cartItems) {
+      const deleteCartItemResponse = await fetch(
+        `http://localhost:5000/cart/${encodeURIComponent(item.catalogNumber)}`,
+        { method: "DELETE" }
+      );
+
+      if (!deleteCartItemResponse.ok) {
+        console.error(
+          `Failed to delete cart item with catalogNumber: ${item.catalogNumber}`
+        );
+      } else {
+        console.log(
+          `Deleted item with catalogNumber ${item.catalogNumber} from the cart.`
+        );
+      }
+    }
+
+    // Step 3: Return a success response to the client
+    res.status(201).json({ success: true, message: result.success });
+  } catch (error) {
+    console.error("Error while processing the order:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to process the order" });
+  }
+});
+
+// Route to get all orders for a specific user
+router.get('/getUserOrders/:userName', async (req, res) => {
+  const { userName } = req.params;
+
+  console.log("Fetching orders for username:", userName);
+
+  try {
+    // Get the database connection
+    const db = await getDbConnection();
+
+    // Query the database to find orders by userName
+    const [orders] = await db.query(
+      'SELECT orderNumber, shippingAddress, orderDate FROM orders WHERE userName = ?',
+      [userName]
+    );
+
+    // Check if any orders are found
+    if (orders.length === 0) {
+      return res.status(404).json({ message: 'No orders found for this user' });
+    }
+
+    // Return the list of orders
+    res.json(orders);
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    res.status(500).json({ message: 'Failed to fetch user orders' });
+  }
 });
 
 
 
+// Route to get order details
+router.get("/getOrderDetails/:orderNumber", async (req, res) => {
+  const { orderNumber } = req.params;
 
+  console.log("im in detailssssss", orderNumber);
+
+  try {
+    const db = await getDbConnection(); // Get the database connection
+    const query = `
+     SELECT 
+        p.productName, 
+        ocp.productQuantity, 
+        ocp.orderStatus, 
+        p.price, 
+        p.picturePath,  -- Fetch picturePath
+        p.catalogNumber
+      FROM 
+        orderscontainsproducts ocp 
+      JOIN 
+        products p ON ocp.catalogNumber = p.catalogNumber
+      WHERE 
+        ocp.orderNumber = ?
+    `;
+
+    const [orderDetails] = await db.query(query, [orderNumber]);
+    if (orderDetails.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No products found for this order." });
+    }
+
+    res.json(orderDetails);
+  } catch (error) {
+    console.error("Error fetching order details:", error);
+    res.status(500).json({ message: "Failed to fetch order details." });
+  }
+});
 module.exports = router;

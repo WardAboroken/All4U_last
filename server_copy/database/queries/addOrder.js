@@ -41,11 +41,11 @@ async function addOrder(order) {
     const result = await doQuery(insertOrderSql, orderParams);
 
     // Get the newly inserted order ID (orderNumber)
-    const orderNumber = result.insertId; // Ensure this matches the auto-increment ID from your `orders` table
+    const orderNumber = result.insertId; // Ensure this matches the auto-increment ID from your orders table
     console.log("Order inserted with orderNumber:", orderNumber);
 
     // Insert the order items into the orderscontainsproducts table
-    const insertOrderItemsSql = `INSERT INTO orderscontainsproducts (catalogNumber, orderStatus,productQuantity ) VALUES (?, ?, ?)`;
+    const insertOrderItemsSql = `INSERT INTO orderscontainsproducts (catalogNumber, orderStatus,productQuantity,orderNumber ) VALUES (?, ?, ?, ?)`;
 
     for (const item of cartItems) {
       const { catalogNumber, quantity } = item;
@@ -54,10 +54,11 @@ async function addOrder(order) {
         item.catalogNumber,
         "Received",
         item.quantity, // Using item-specific productQuantity
+        orderNumber
       ];
       await doQuery(insertOrderItemsSql, orderItemParams);
       console.log(
-        `Inserted item with catalogNumber ${catalogNumber} into orderscontainsproducts with orderNumber ${orderNumber}`
+       ` Inserted item with catalogNumber ${catalogNumber} into orderscontainsproducts with orderNumber ${orderNumber}`
       );
 
       // Update the amount of the product in the products table
@@ -65,7 +66,7 @@ async function addOrder(order) {
       const updateProductParams = [item.quantity, item.catalogNumber]; // Reduce stock by the ordered productQuantity
       await doQuery(updateProductAmountSql, updateProductParams);
       console.log(
-        `Updated product with catalogNumber ${catalogNumber}, reducing amount by ${quantity}`
+       ` Updated product with catalogNumber ${catalogNumber}, reducing amount by ${quantity}`
       );
     }
 
@@ -74,7 +75,7 @@ async function addOrder(order) {
     );
 
     return {
-      success: `Order has been added to the database with orderNumber: ${orderNumber}`,
+      success:` Order has been added to the database with orderNumber: ${orderNumber}`,
     }; // Return a success message with the new order ID
   } catch (error) {
     console.error("Error adding order:", error); // Log the error for debugging

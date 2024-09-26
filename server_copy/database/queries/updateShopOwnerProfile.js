@@ -10,6 +10,7 @@ async function updateShopOwnerProfile(shopOwner) {
     businessName,
     businessAddress,
     description,
+    paypalEmail,
   } = shopOwner;
 
   try {
@@ -31,6 +32,7 @@ async function updateShopOwnerProfile(shopOwner) {
         businessName = ?, 
         businessAddress = ?, 
         description = ? 
+        paypalEmail = ? 
       WHERE userName = ?
     `;
 
@@ -41,6 +43,7 @@ async function updateShopOwnerProfile(shopOwner) {
       businessName,
       businessAddress,
       description,
+      paypalEmail,
       shopOwner.userName, // This is used only for the WHERE clause and not modified
     ];
 

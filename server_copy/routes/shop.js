@@ -18,7 +18,7 @@ router.get("/get-products", async (req, res) => {
     if (userName) {
       products = products.filter((product) => product.userName === userName);
     }
-
+    console.log("Getting products from this business >> ", products);
     res.json(products); // Send filtered or all products as JSON
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -49,5 +49,25 @@ router.get("/search", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// Route to fetch random products
+router.get("/random-products", async (req, res) => {
+  const limit = req.query.limit || 10; // Set default limit to 5 if not provided
+  
+  try {
+    const products = await getProducts(); // Fetch all products
+    
+    // Shuffle the products array and take a subset based on the limit
+    const randomProducts = products
+      .sort(() => 0.5 - Math.random())
+      .slice(0, limit); // Limit the number of random products
+    
+    res.status(200).json(randomProducts);
+  } catch (error) {
+    console.error("Error fetching random products:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 module.exports = router;

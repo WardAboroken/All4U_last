@@ -6,6 +6,7 @@ async function addShopOwnerUser(user) {
     name,
     userName,
     email,
+    paypalEmail,
     phoneNumber,
     password, // Plain text password from the user
     subscriptionType,
@@ -34,12 +35,13 @@ async function addShopOwnerUser(user) {
 
     // Insert the new user into the database with the hashed password
     await doQuery(
-      `INSERT INTO businessowner (name, userName, email, phoneNumber, psw, subscriptionType, businessName, businessAddress, typeOfUser, description, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO businessowner (name, userName, email, paypalEmail,phoneNumber, psw, subscriptionType, businessName, businessAddress, typeOfUser, description, status)
+      VALUES (?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?)`,
       [
         name,
         userName,
         email,
+        paypalEmail,
         phoneNumber,
         hashedPassword, // Store the hashed password
         subscriptionType,

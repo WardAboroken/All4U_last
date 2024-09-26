@@ -44,8 +44,7 @@ router.post("/addProduct", upload.single("picturePath"), async (req, res) => {
 });
 
 // Route to update a product
-router.put(
-  "/updateProduct/:catalogNumber",
+router.put("/updateProduct/:catalogNumber",
   upload.single("picture"),
   async (req, res) => {
     try {
