@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./css/login.css";
-import OutHeader from "../components/OutHeader";
-import Footer from "../components/Footer";
 
 function Login() {
   const navigate = useNavigate();
@@ -28,14 +26,12 @@ function Login() {
         body: JSON.stringify(userData),
       });
 
-      // Parse response JSON data
       const data = await response.json();
       console.log("Login response:", data); // Log response for debugging
 
-      // Handle response based on server's success or failure
       if (response.ok) {
         setMessage(data.message);
-        navigate(data.redirectUrl); // Redirect to the specified URL after successful login
+        navigate(data.redirectUrl); // Redirect on successful login
       } else {
         setMessage(data.message);
       }
@@ -46,10 +42,9 @@ function Login() {
   };
 
   return (
-    <body>
-      <OutHeader />
-      <div className="container">
-        <h2>Sign In</h2>
+    <div className="login-body">
+      <main className="login-container">
+        <h2>Login</h2>
         <form onSubmit={handleLoginClick}>
           <input
             className="UserName"
@@ -71,9 +66,8 @@ function Login() {
           </NavLink>
         </form>
         {message && <p>{message}</p>}
-      </div>
-      <Footer />
-    </body>
+      </main>
+    </div>
   );
 }
 

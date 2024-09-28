@@ -1,119 +1,155 @@
-/* Reset and General styling */
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f5f5; /* Light background color */
-  color: #333; /* Default text color */
-}
-
-/* Global container */
-.container {
- width: 1200px;
+/* #region Main container for the shop page */
+/* Styling for the main content container of the shop page */
+.shopMainPage-container {
+  width: 90%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px 0;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
+/* #endregion Main container for the shop page */
 
-/* Section 1 - Hero banner */
-.section1 {
+/* #region Hero section */
+.sectionMain {
   position: relative;
-  height: 50vh; /* Adjust height as needed */
+  height: 400px;
   overflow: hidden;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../../asserts/images/warmth_background.jpeg');
-  background-size: cover;
-  background-position: center;
+  background-color: #f0f0f0;
+  border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
-.section1 .hero-content {
-  position: absolute;
-  top: 50%; /* Center vertically */
-  left: 50%; /* Center horizontally */
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: #fff;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-  z-index: 1;
-}
-
-.section1 h1 {
-  font-size: 3rem;
-}
-
-.section1 img {
+.sectionMain img {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   z-index: 0;
+  border-radius: 15px;
 }
 
-/* Section 2 - Product list */
-.section2 {
-  background-color: #fff; /* White background */
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.section2 h2 {
+.hero-content {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
   text-align: center;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.hero-content .shopMainPage-slogan {
+  font-size: 1.8rem;
   margin-bottom: 20px;
-  color: #333; /* Darker text color */
-  font-size: 2rem;
+  color: rgba(232, 194, 137, 0.9);
+}
+/* #endregion Hero section */
+
+/* #region Product Section */
+.sectionProducts,
+.sectionBestSellers {
+  margin-bottom: 50px;
+  margin-top: 10px;
 }
 
-.section2 ul {
+.sectionProducts h2,
+.sectionBestSellers h2 {
+  font-size: 2.4rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.sectionProducts ul,
+.sectionBestSellers ul {
   list-style: none;
-  padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid with min width of 280px */
-  gap: 20px; /* Gap between grid items */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 30px;
+  padding: 0;
 }
 
-.section2 li {
-  background: #fff; /* White background for each product */
-  border: 1px solid #ddd; /* Light border */
-  border-radius: 8px;
+.sectionProducts li,
+.sectionBestSellers li {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
+  text-align: center;
 }
 
-.section2 li:hover {
-  transform: translateY(-5px); /* Lift up slightly on hover */
+.sectionProducts li:hover,
+.sectionBestSellers li:hover {
+  transform: translateY(-5px);
 }
 
-.section2 li img {
+.sectionProducts img,
+.sectionBestSellers img {
   width: 100%;
-  height: auto;
-  border-bottom: 1px solid #ddd; /* Light border at bottom of image */
-  border-radius: 8px 8px 0 0; /* Rounded corners at top */
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid #ddd;
 }
 
-.section2 li h3 {
-  margin: 10px;
-  color: #333; /* Darker text */
-  font-size: 1.5rem;
-  text-align: center;
+.sectionProducts h3,
+.sectionBestSellers h3 {
+  font-size: 1.6rem;
+  margin: 10px 0;
+  color: #333;
 }
 
-.section2 li p {
-  color: #666; /* Darker text color for price */
-  margin: 5px 10px;
-  text-align: center;
+.sectionProducts p,
+.sectionBestSellers p {
+  font-size: 1.4rem;
+  color: #666;
+  margin-bottom: 10px;
 }
 
-.section2 li ul {
-  text-align: left;
-  padding: 0 10px;
+/* #region Best Sellers Specific Styling */
+.sectionBestSellers li {
+  background-color: rgb(165, 67, 42); /* Adjusted color for contrast */
 }
 
-.section2 li ul li {
-  color: #777; /* Darker text color for properties */
-  margin-bottom: 5px;
-  text-align: center;
+.sectionBestSellers h3 {
+  color: #fff; /* White text color for better contrast */
 }
+
+.sectionBestSellers p {
+  color: #b1b1b1;
+}
+/* #endregion Best Sellers Specific Styling */
+
+/* Remove underline from product links */
+.sectionProducts li a,
+.sectionBestSellers li a {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Use the inherited color */
+}
+
+/* Styling for product titles */
+.sectionProducts h3 a,
+.sectionBestSellers h3 a {
+  text-decoration: none; /* Ensure underline is removed for the titles */
+  color: #333; /* Color for product titles */
+}
+
+.sectionProducts p a,
+.sectionBestSellers p a {
+  text-decoration: none; /* Ensure underline is removed for the prices */
+  color: #666; /* Color for product prices */
+}
+
+/* #endregion Product Section */

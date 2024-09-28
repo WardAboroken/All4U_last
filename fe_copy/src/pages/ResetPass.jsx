@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./css/login.css";
-import OutHeader from "../components/OutHeader";
-import Footer from "../components/Footer";
 
-function Login() {
+
+function ResetPass() {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   
@@ -58,9 +57,8 @@ function Login() {
   };
 
   return (
-    <body>
-      <OutHeader />
-      <div className="container">
+    <div div className="login-body">
+      <main className="login-container">
         <h2>Reset Password</h2>
         <form onSubmit={handleLoginClick}>
           <input
@@ -87,10 +85,9 @@ function Login() {
           </button>
         </form>
         {message && <p>{message}</p>}
-      </div>
-      <Footer />
-    </body>
+      </main>
+    </div>
   );
 }
 
-export default Login;
+export default ResetPass;
