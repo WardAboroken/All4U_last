@@ -19,11 +19,7 @@
 /* General Header Styling */
 .header {
   display: flex;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  justify-content: space-between;
+  justify-content: space-between; /* Distribute space between left, center, and right sections */
   align-items: center;
   padding: var(--padding-large) 30px;
   background-color: var(--primary-bg);
@@ -33,9 +29,16 @@
   transition: all 0.3s ease; /* Smooth transition for hover and resize */
 }
 
+/* Center Section for the Main Page Button */
+.center-section {
+  flex: 1; /* Allow the center section to grow and take available space */
+  display: flex;
+  justify-content: center; /* Center the button within this section */
+}
+
 /* Push Main Content Below Header */
 .main-content {
-  margin-top: 12%; /* Adjusted for a bit more space */
+  /* margin-top: 12%; Adjusted for a bit more space */
 }
 /* #endregion Header Styling */
 
@@ -45,6 +48,7 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  flex: 1; /* Allow the left section to grow and take space */
 }
 
 .menu {
@@ -175,6 +179,13 @@
 
 /* #region Right Section Styling */
 /* Right Section: Profile and Basket */
+.right-section {
+  display: flex;
+  align-items: center;
+  flex: 1; /* Allow the right section to grow and take space */
+  justify-content: flex-end; /* Align items to the end */
+}
+
 .profileInfo,
 .basketCart {
   display: inline-flex;
@@ -261,7 +272,6 @@
   background-color: #cdbcac;
   transform: scale(1.02);
 }
-
 /* #endregion Profile Dropdown Menu */
 
 /* #region Media Queries for Responsiveness */

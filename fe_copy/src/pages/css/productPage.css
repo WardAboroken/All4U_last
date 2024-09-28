@@ -14,6 +14,8 @@
   flex-direction: column; /* Layout in a vertical direction */
   gap: 40px; /* Gap between sections */
   background-color: #f9f9f9; /* Light background color */
+  margin-top: 30px; /* Adds spacing from the top */
+  margin-bottom: 30px;
 }
 /* #endregion Main Container for Product Page */
 
@@ -29,6 +31,8 @@
   width: 100%; /* Full width of container */
   margin: 0 auto;
   gap: 40px; /* Space between image and product details */
+  margin-top: 30px; /* Adds spacing from the top */
+  margin-bottom: 30px;
 }
 /* #endregion Chosen Product Section */
 
@@ -57,7 +61,6 @@
 }
 
 .product-details p {
-  font-size: 1.2rem;
   color: #444; /* Slightly lighter color for product details */
   line-height: 1.8; /* Line height for readability */
 }
@@ -73,7 +76,7 @@
   background-color: #000; /* Black background */
   color: white;
   padding: 15px 30px; /* Padding for button */
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   border: none;
   border-radius: 6px; /* Rounded corners */
   cursor: pointer;

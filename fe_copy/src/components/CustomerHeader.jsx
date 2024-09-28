@@ -120,7 +120,7 @@ const CustomerHeader = () => {
           </button>
         </div>
       </div>
-      <div>
+      <div className="center-section">
         <NavLink to="/ShopMainPage" className="shopMainPage-button">
           All4U
         </NavLink>

@@ -3,7 +3,6 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { API_URL } from "../constans.js";
 import PayPalCheckoutButton from "../components/PayPalCheckoutButton.jsx";
 import "./css/basketCart.css";
-import background_img from "../assets/images/warmth_background.jpeg";
 
 const BasketCart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -110,21 +109,14 @@ const BasketCart = () => {
     if (!item) {
       console.error("Item not found in the cart");
       setError("Item not found in the cart.");
-      return;
-    }
-
+      return;}
     if (newQuantity < 1) {
       alert("Quantity must be at least 1.");
-      return;
-    }
-
+      return;}
     if (newQuantity > item.amount) {
       alert(
         ` The maximum quantity available for this product is ${item.amount}.`
-      );
-      return;
-    }
-
+      );return; }
     try {
       const response = await fetch(
         `
@@ -135,7 +127,6 @@ const BasketCart = () => {
           body: JSON.stringify({ quantity: newQuantity }),
         }
       );
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error(
@@ -143,7 +134,6 @@ const BasketCart = () => {
         );
         throw new Error("Failed to update item amount.");
       }
-
       const updatedCart = await response.json();
       setCartItems(updatedCart);
     } catch (error) {
@@ -286,15 +276,10 @@ const BasketCart = () => {
     <div className="basketCart-body">
       <main className="basketCart-container">
         {/* Header Section */}
-        <section className="sectionMain">
+        <section className="basketCart-sectionMain">
           <div className="hero-content">
             <h1>Your Cart</h1>
           </div>
-          <img
-            src={background_img}
-            alt="backgroundImg"
-            className="hero-image"
-          />
         </section>
 
         {/* Cart Items Container */}
@@ -312,7 +297,7 @@ const BasketCart = () => {
                 return <div>Error: Missing user information</div>;
               }
 
-              const totalAmountForGroup = items
+              let totalAmountForGroup = items
                 .reduce((total, item) => total + item.price * item.quantity, 0)
                 .toFixed(2);
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink, Link } from "react-router-dom";
-import "../pages/css/header.css"
+import "../pages/css/outHeader.css"
 
 
 function OutHeader() {

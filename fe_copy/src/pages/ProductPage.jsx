@@ -128,12 +128,6 @@ const ProductPage = () => {
               <span>Description:</span> {product.description}
             </p>
             <p>
-              <span>Catalog Number:</span> {product.catalogNumber}
-            </p>
-            <p>
-              <span>Amount:</span> {product.amount}
-            </p>
-            <p>
               <span>Size:</span> {product.size}
             </p>
             <p>

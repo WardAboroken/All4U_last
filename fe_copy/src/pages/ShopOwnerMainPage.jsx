@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import ShopOwnerHeader from "../components/ShopOwnerHeader";
-import Footer from "../components/Footer";
 import "./css/index.css";
 import "./css/shopOwnerMainPage.css";
 import { API_URL } from "../constans.js";
@@ -23,13 +21,12 @@ function ShopOwnerMainPage() {
   const [outOfStockProducts, setOutOfStockProducts] = useState([]);
   const [newOrders, setNewOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState("");
+  const [userInfo, setUserInfo] = useState("");
   const [error, setError] = useState(null);
   const productsContainerRef = useRef(null);
   const ordersContainerRef = useRef(null);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [errorProducts, setErrorProducts] = useState(null);
-  const [loadingOrders, setLoadingOrders] = useState(true);
   const [errorOrders, setErrorOrders] = useState(null);
   const [graphData, setGraphData] = useState(null);
   const [loadingGraph, setLoadingGraph] = useState(true);
@@ -50,7 +47,7 @@ function ShopOwnerMainPage() {
         });
         if (response.ok) {
           const data = await response.json();
-          setUserName(data.userInfo.userName);
+          setUserInfo(data.userInfo);
           setError(null);
         } else {
           setError("Failed to fetch user info");
@@ -66,11 +63,11 @@ function ShopOwnerMainPage() {
 
   // Fetch out-of-stock products
   useEffect(() => {
-    if (!userName) return;
+    if (!userInfo.userName) return;
     const fetchOutOfStockProducts = async () => {
       try {
         const response = await fetch(
-          `/order/get-out-of-stock-products/${userName}`
+          `/order/get-out-of-stock-products/${userInfo.userName}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -90,14 +87,14 @@ function ShopOwnerMainPage() {
     };
 
     fetchOutOfStockProducts();
-  }, [userName]);
+  }, [userInfo.userName]);
 
   // Fetch new orders
   useEffect(() => {
     const fetchNewOrders = async () => {
       try {
         const response = await fetch(
-          `/order/get-business-new-orders/${userName}`
+          `/order/get-business-new-orders/${userInfo.userName}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -113,10 +110,10 @@ function ShopOwnerMainPage() {
       }
     };
 
-    if (userName) {
+    if (userInfo.userName) {
       fetchNewOrders();
     }
-  }, [userName]);
+  }, [userInfo.userName]);
 
   // Helper function to get the first day of the current month and today's date
   const getCurrentMonthDateRange = () => {
@@ -138,7 +135,7 @@ function ShopOwnerMainPage() {
     const fetchStartDate = startDate || defaultStartDate;
     const fetchEndDate = endDate || defaultEndDate;
 
-    if (!userName) return;
+    if (!userInfo.userName) return;
 
     const fetchGraphData = async () => {
       setLoadingGraph(true);
@@ -148,7 +145,9 @@ function ShopOwnerMainPage() {
         const isSameDay = fetchStartDate === fetchEndDate;
 
         const response = await fetch(
-          `/order/get-been-provided-orders/${userName}?startDate=${encodeURIComponent(
+          `/order/get-been-provided-orders/${
+            userInfo.userName
+          }?startDate=${encodeURIComponent(
             fetchStartDate
           )}&endDate=${encodeURIComponent(fetchEndDate)}`
         );
@@ -226,7 +225,7 @@ function ShopOwnerMainPage() {
     };
 
     fetchGraphData();
-  }, [userName, startDate, endDate, defaultStartDate, defaultEndDate]);
+  }, [userInfo.userName, startDate, endDate, defaultStartDate, defaultEndDate]);
 
   // Navigate to Orders page and show order details
   const handleSelectOrder = (orderNumber) => {
@@ -243,8 +242,8 @@ function ShopOwnerMainPage() {
 
   return (
     <div>
-      <ShopOwnerHeader />
       <main>
+        <h1>{userInfo.businessName}</h1>
         {/* Out of Stock Products Section */}
         {outOfStockProducts.length > 0 && (
           <section className="out-of-stock-products">
@@ -382,8 +381,6 @@ function ShopOwnerMainPage() {
           )}
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 }

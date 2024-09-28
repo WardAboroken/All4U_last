@@ -1,4 +1,11 @@
 /* #region General container styling */
+.basketCart-body {
+  background-image: url("../../assets/images/backgound1.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 /* Container for the entire cart page */
 .basket-cart-container {
   width: 90%;
@@ -14,7 +21,7 @@
 /* Individual group container styling */
 .group-container {
   display: flex;
-  flex-direction: row; /* Layout items and checkout side by side */
+  flex-direction: row;
   justify-content: space-between;
   background-color: #f9f9f9;
   padding: 20px;
@@ -22,6 +29,42 @@
   margin-bottom: 20px;
 }
 /* #endregion */
+
+/* #region Simple Title SectionMain Styling */
+.basketCart-sectionMain {
+  padding: 20px 0; /* Add vertical padding for spacing */
+  text-align: center; /* Center-align the text */
+  margin-top: 80px;
+  margin-bottom: 20px; /* Add space below the section */
+
+  position: relative; /* Ensure proper positioning of content */
+  z-index: 1; /* Place the section above other overlapping content */
+
+}
+
+/* Hero content styling */
+.hero-content h1 {
+  font-size: 32px; /* Set a slightly larger font size for emphasis */
+  color: #333; /* Use a neutral, elegant color */
+  font-weight: 600; /* Slightly bold the text for prominence */
+  margin: 0;
+  letter-spacing: 1px; /* Add slight spacing between letters for a cleaner look */
+}
+/* #endregion Simple Title SectionMain Styling */
+
+/* #region Empty Cart Message Styling */
+.empty-cart-message {
+  padding: 20px; /* Add padding for spacing */
+  text-align: center; /* Center-align the text */
+  font-size: 20px; /* Increase font size for emphasis */
+  color: #555; /* Use a softer, neutral color */
+  background-color: #f9f9f9; /* Light background to make the message stand out */
+  border-radius: 8px; /* Round the corners for a softer look */
+  margin: 20px auto; /* Add top and bottom margin, center horizontally */
+  max-width: 600px; /* Limit the width of the message */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+}
+/* #endregion Empty Cart Message Styling */
 
 /* #region Cart item styling */
 /* Styling for the cart items section */

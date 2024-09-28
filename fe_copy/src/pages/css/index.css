@@ -33,6 +33,7 @@ body {
 /* #endregion general reset */
 
 /* #region Header and Footer */
+
 /* Common styling for header and footer */
 header,
 footer {
@@ -72,6 +73,34 @@ footer a:hover {
   background-color: rgba(255, 255, 255, 0.1); /* Light background on hover */
   border-radius: 4px; /* Soft rounded corners */
 }
+/* #region Header Styling */
+header {
+  display: flex; /* Align items horizontally */
+  justify-content: space-between; /* Space out items (logo and menu) */
+  align-items: center; /* Center items vertically */
+  background-color: #333; /* Dark background for contrast */
+  padding: 1rem 2rem; /* Adjusted padding for a balanced layout */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for separation */
+  position: fixed; /* Fix header at the top */
+  width: 100%; /* Full width */
+  top: 0; /* Position at the top of the viewport */
+  z-index: 1000; /* Make sure header stays above other content */
+}
+
+/* Additional padding to prevent content overlap with the fixed header */
+.App {
+  padding-top: 120px; /* Adjust to match header height */
+}
+
+/* Header container styling */
+.header__wrap {
+  display: flex;
+  justify-content: space-between; /* Space out logo and menu */
+  align-items: center;
+  width: 100%;
+}
+
+/* #endregion Header Styling */
 
 /* Specific footer styling */
 .footer {

@@ -1,18 +1,19 @@
 /* #region Main container for the shop page */
 /* Styling for the main content container of the shop page */
 .shopMainPage-container {
-  width: 90%; /* Set the container width to 90% of the viewport */
-  max-width: 1200px; /* Maximum width of the container */
-  margin: 0 auto; /* Center the container horizontally */
-  padding: 40px 0; /* Vertical padding for spacing */
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 0;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 /* #endregion Main container for the shop page */
 
 /* #region Hero section */
-/* Styling for the main hero section */
 .sectionMain {
   position: relative;
-  height: 400px; /* Adjust height as needed */
+  height: 400px;
   overflow: hidden;
   background-color: #f0f0f0;
   border-radius: 15px;
@@ -32,7 +33,6 @@
   border-radius: 15px;
 }
 
-/* Hero content styling */
 .hero-content {
   position: absolute;
   z-index: 1;
@@ -40,149 +40,116 @@
   left: 50%;
   transform: translate(-50%, -50%);
   color: #fff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Improved text shadow for readability */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
   text-align: center;
 }
 
 .hero-content h1 {
-  font-size: 3rem; /* Adjust font size as needed */
+  font-size: 3rem;
   font-weight: bold;
-  margin: 0;
 }
 
-/* Styling for the hero slogan */
 .hero-content .shopMainPage-slogan {
-  font-size: 1.8rem; /* Font size for the slogan */
-  margin-bottom: 20px; /* Space below the slogan */
-  color: rgba(232, 194, 137, 0.9); /* Light golden color */
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: rgba(232, 194, 137, 0.9);
 }
 /* #endregion Hero section */
 
 /* #region Product Section */
-/* General styling for product sections like "Suggestions" and "Best Sellers" */
-.sectionProducts {
-  margin-bottom: 50px; /* Space below the section */
-  margin-top: 10px; /* Space above the section */
+.sectionProducts,
+.sectionBestSellers {
+  margin-bottom: 50px;
+  margin-top: 10px;
 }
 
-/* Heading styling for product sections */
-.sectionProducts h2 {
-  font-size: 2.4rem; /* Larger font size for headings */
-  font-weight: bold; /* Bold text */
-  color: #333; /* Darker text color */
-  margin-bottom: 20px; /* Space below the heading */
+.sectionProducts h2,
+.sectionBestSellers h2 {
+  font-size: 2.4rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
 }
 
-/* Styling for the product grid */
-.sectionProducts ul {
-  list-style: none; /* Remove default list styling */
-  display: grid; /* Grid layout */
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(220px, 1fr)
-  ); /* Responsive grid */
-  gap: 30px; /* Space between grid items */
-  padding: 0; /* Remove default padding */
+.sectionProducts ul,
+.sectionBestSellers ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 30px;
+  padding: 0;
 }
 
-/* Styling for individual product items */
-.sectionProducts li {
-  background-color: #fff; /* White background */
-  border: 1px solid #ddd; /* Light border */
-  border-radius: 10px; /* Rounded corners */
-  overflow: hidden; /* Hide overflowing content */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  transition: transform 0.3s ease; /* Smooth hover effect */
-  text-align: center; /* Center the text */
+.sectionProducts li,
+.sectionBestSellers li {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  text-align: center;
 }
 
-/* Hover effect for product items */
-.sectionProducts li:hover {
-  transform: translateY(-5px); /* Lift the item slightly on hover */
+.sectionProducts li:hover,
+.sectionBestSellers li:hover {
+  transform: translateY(-5px);
 }
 
-/* Styling for product images */
-.sectionProducts img {
-  width: 100%; /* Full width */
-  height: 200px; /* Fixed height */
-  object-fit: cover; /* Cover the entire image area */
-  border-bottom: 1px solid #ddd; /* Border below the image */
+.sectionProducts img,
+.sectionBestSellers img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid #ddd;
+}
+
+.sectionProducts h3,
+.sectionBestSellers h3 {
+  font-size: 1.6rem;
+  margin: 10px 0;
+  color: #333;
+}
+
+.sectionProducts p,
+.sectionBestSellers p {
+  font-size: 1.4rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+/* #region Best Sellers Specific Styling */
+.sectionBestSellers li {
+  background-color: rgb(165, 67, 42); /* Adjusted color for contrast */
+}
+
+.sectionBestSellers h3 {
+  color: #fff; /* White text color for better contrast */
+}
+
+.sectionBestSellers p {
+  color: #b1b1b1;
+}
+/* #endregion Best Sellers Specific Styling */
+
+/* Remove underline from product links */
+.sectionProducts li a,
+.sectionBestSellers li a {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Use the inherited color */
 }
 
 /* Styling for product titles */
-.sectionProducts h3 {
-  font-size: 1.6rem; /* Font size for product titles */
-  margin: 10px 0; /* Space above and below the title */
-  color: #333; /* Darker text color */
+.sectionProducts h3 a,
+.sectionBestSellers h3 a {
+  text-decoration: none; /* Ensure underline is removed for the titles */
+  color: #333; /* Color for product titles */
 }
 
-/* Styling for product prices */
-.sectionProducts p {
-  font-size: 1.4rem; /* Font size for product prices */
-  color: #666; /* Slightly muted text color */
-  margin-bottom: 10px; /* Space below the price */
+.sectionProducts p a,
+.sectionBestSellers p a {
+  text-decoration: none; /* Ensure underline is removed for the prices */
+  color: #666; /* Color for product prices */
 }
+
 /* #endregion Product Section */
-
-/* #region Best Sellers Section */
-/* General styling for the "Best Sellers" section */
-.sectionBestSellers {
-  margin-top: 10px; /* Space above the section */
-}
-
-/* Heading styling for the "Best Sellers" section */
-.sectionBestSellers h2 {
-  font-size: 2.4rem; /* Larger font size for headings */
-  color: #333; /* Darker text color */
-  font-weight: bold; /* Bold text */
-  margin-bottom: 10px; /* Space below the heading */
-}
-
-/* Styling for the product grid in "Best Sellers" */
-.sectionBestSellers ul {
-  display: grid; /* Grid layout */
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(250px, 1fr)
-  ); /* Responsive grid */
-  gap: 20px; /* Space between grid items */
-  padding: 10px; /* Padding for the grid */
-}
-
-/* Styling for individual product items in "Best Sellers" */
-.sectionBestSellers li {
-  background-color: rgb(165, 67, 42); /* Custom background color */
-  border: 1px solid #ddd; /* Light border */
-  border-radius: 10px; /* Rounded corners */
-  overflow: hidden; /* Hide overflowing content */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  transition: transform 0.3s ease; /* Smooth hover effect */
-  padding: 10px; /* Padding inside the product item */
-}
-
-/* Hover effect for product items in "Best Sellers" */
-.sectionBestSellers li:hover {
-  transform: translateY(-5px); /* Lift the item slightly on hover */
-}
-
-/* Styling for product images in "Best Sellers" */
-.sectionBestSellers img {
-  width: 100%; /* Full width */
-  height: 200px; /* Fixed height */
-  object-fit: cover; /* Cover the entire image area */
-  border-radius: 10px; /* Rounded corners for images */
-}
-
-/* Styling for product titles in "Best Sellers" */
-.sectionBestSellers h3 {
-  font-size: 1.6rem; /* Font size for product titles */
-  margin: 10px 0; /* Space above and below the title */
-  color: #fff; /* White text color for contrast */
-}
-
-/* Styling for product prices in "Best Sellers" */
-.sectionBestSellers p {
-  font-size: 1.4rem; /* Font size for product prices */
-  color: #b1b1b1; /* Light gray text color */
-}
-/* #endregion Best Sellers Section */
