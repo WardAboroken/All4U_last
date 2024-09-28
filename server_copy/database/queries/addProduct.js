@@ -1,33 +1,102 @@
 const doQuery = require("../query");
 
 /**
- * A shop function which add a new product to the products table if product does not exist already and returns success if succeeded, else returns error
- * @param {*} product 
- * @returns success/error
+ * A shop function that adds a new product to the products table if the product does not exist already and returns success if succeeded; otherwise, returns an error.
+ * @param {*} product
+ * @returns {Object} success or error message
  */
 async function addProduct(product) {
-  const { catalogNumber, productName, Amount, size, color, price , category , picture_path , Description } = product;
+  // Destructure product properties, ensuring all variables are provided correctly
+  const {
+    catalogNumber,
+    productName,
+    amount,
+    size,
+    color,
+    price,
+    categoryNumber,
+    userName,
+    picturePath,
+    description,
+  } = product;
 
   try {
-    // Check if the user already exists
-    const existingUser = await doQuery(
-      `SELECT * FROM products WHERE Catalog_Number = ?`,
-      [catalogNumber]
-    );
-    if (existingUser.length > 0) {
-      return { error: "product already exists in the database" }; // Return an error message
+    // Validate input data
+    if (
+      !catalogNumber ||
+      !productName ||
+      !amount ||
+      !price ||
+      !categoryNumber ||
+      !userName
+    ) {
+      return { error: "All required fields must be provided." };
     }
 
-    // Insert the user into the database
-    const insertSql = `INSERT INTO products (Catalog_Number, productName, Amount, Size, Color, Price,Category,picture_path , Description) VALUES (?, ?, ?, ?, ?, ? , ? , ? , ?)`;
-    const params = [catalogNumber, productName, Amount, size, color, price , category , picture_path , Description];
+    // Check if the categoryNumber exists
+    const categoryExists = await doQuery(
+      `SELECT * FROM categories WHERE categoryNumber = ?`,
+      [categoryNumber]
+    );
+
+    if (categoryExists.length === 0) {
+      return { error: "Invalid category number. The category does not exist." };
+    }
+
+    // Check if the product already exists
+    const existingProduct = await doQuery(
+      `SELECT * FROM products WHERE catalogNumber = ?`,
+      [catalogNumber]
+    );
+
+    if (existingProduct.length > 0) {
+      return {
+        error:
+          "Product with this catalog number already exists in the database.",
+      };
+    }
+
+    // Insert the product into the database
+    const insertSql = `
+      INSERT INTO products (catalogNumber, productName, amount, size, color, price, categoryNumber, userName, picturePath, description) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    const params = [
+      catalogNumber,
+      productName,
+      amount,
+      size,
+      color,
+      price,
+      categoryNumber,
+      userName,
+      picturePath,
+      description,
+    ];
+
     const result = await doQuery(insertSql, params);
+
     // Log the result for debugging (optional)
     console.log("Insert result:", result);
-    return { success: "New product has been added to the database" }; // Return a success message
+
+    return { success: "New product has been added to the database." }; // Return a success message
   } catch (error) {
-    console.error("Error adding product:", error); // Log the error for debugging
-    return { error: "Error adding product to the database" }; // Return an error message
+    // Handle specific errors like duplicate entry
+    if (error.code === "ER_DUP_ENTRY") {
+      return {
+        error:
+          "A product with this catalog number already exists. Duplicate entries are not allowed.",
+      };
+    }
+
+    // Log the error for debugging
+    console.error("Error adding product:", error);
+
+    // Return a more specific error message
+    return {
+      error:
+        "An error occurred while adding the product to the database. Please try again.",
+    };
   }
 }
 
