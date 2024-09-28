@@ -1,4 +1,4 @@
-// import user_profile from "../assets/images/user_profile.jpeg";
+const bcrypt = require("bcryptjs"); // Import bcryptjs for password hashing
 const doQuery = require("../query");
 
 async function addCustomerUser(user) {
@@ -8,35 +8,37 @@ async function addCustomerUser(user) {
     password,
     email,
     phoneNumber,
-    typeOfUser,
     selectedCategories,
+    address, // Add address here
   } = user;
 
   try {
     // Check if the user already exists
     const existingUser = await doQuery(
-      `
-      SELECT * FROM users WHERE userName = ?`,
-      [userName]
+     ` SELECT * FROM users WHERE userName = ? OR email = ?`,
+      [userName, email]
     );
 
     if (existingUser.length > 0) {
       return { success: false, message: "User already exists" };
     }
-    console.log("user's selected categories ==>>> ",selectedCategories);
 
-    // Insert new user into the database
+    // Hash the password using bcryptjs
+    const salt = await bcrypt.genSalt(10); // Generate a salt with 10 rounds
+    const hashedPassword = await bcrypt.hash(password, salt); // Hash the password
+
+
+    // Insert new user into the database with the hashed password and address
     await doQuery(
-      `
-      INSERT INTO users (userName, name, psw, email, phoneNumber, typeOfUser, preferredCategories) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO users (userName, name, psw, email, phoneNumber, preferredCategories, address) VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         userName,
         name,
-        password,
+        hashedPassword, // Store the hashed password
         email,
         phoneNumber,
-        typeOfUser,
-        JSON.stringify(selectedCategories),
+        JSON.stringify(selectedCategories), // Store categories as a JSON string
+        address, // Store the address
       ]
     );
 
