@@ -1,4 +1,9 @@
 /* #region Main Content Layout */
+.mainPage-body{
+margin-top: 50px;
+margin-bottom:150px ;
+}
+
 .main-content .content-wrapper {
   display: flex;
   justify-content: space-between;
@@ -11,7 +16,9 @@
 .introduction {
   width: 50%; /* Left half for the text */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  padding-right: 20px; /* Space between the text and image */
+  padding-left: 80px; /* Space between the text and image */
+  padding-top: 10px;
+
 }
 
 .introduction h1 {
@@ -65,9 +72,11 @@
   margin: 0 auto; /* Center the section horizontally */
 }
 
-.section-title {
+.random-products .section-title {
+  color: #853f14;
   font-size: 2.4rem;
   margin-bottom: 20px; /* Space below title */
+  margin-top: 120px;
   font-weight: 600; /* Semi-bold title */
 }
 /* #endregion Random Products Section */

@@ -6,6 +6,15 @@ import { useNavigate } from "react-router-dom";
 import { Line, Bar, Pie } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 
+// ChartJS.register(
+//   CategoryScale,
+//   LinearScale,
+//   PointElement,
+//   LineElement,
+//   Title,
+//   Tooltip,
+//   Legend
+// );
 Chart.register(...registerables);
 
 function ShopOwnerMainPage() {
@@ -58,7 +67,7 @@ function ShopOwnerMainPage() {
     const fetchOutOfStockProducts = async () => {
       try {
         const response = await fetch(
-          `/order/get-out-of-stock-products/${userInfo.userName}`
+         ` /order/get-out-of-stock-products/${userInfo.userName}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -90,7 +99,7 @@ function ShopOwnerMainPage() {
     const fetchNewOrders = async () => {
       try {
         const response = await fetch(
-          `/order/get-business-new-orders/${userInfo.userName}`
+          `  /order/get-business-new-orders/${userInfo.userName}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -111,6 +120,123 @@ function ShopOwnerMainPage() {
     }
   }, [userInfo.userName]);
 
+  // Helper function to get the first day of the current month and today's date
+  const getCurrentMonthDateRange = () => {
+    const now = new Date();
+    const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const today = new Date();
+    return {
+      startDate: firstDayCurrentMonth.toISOString().split("T")[0],
+      endDate: today.toISOString().split("T")[0],
+    };
+  };
+
+  // Declare default dates outside of useEffect
+  const { startDate: defaultStartDate, endDate: defaultEndDate } =
+    getCurrentMonthDateRange();
+
+  // Automatically fetch graph data based on date range
+  useEffect(() => {
+    const fetchStartDate = startDate || defaultStartDate;
+    const fetchEndDate = endDate || defaultEndDate;
+
+    if (!userInfo.userName) return;
+
+    const fetchGraphData = async () => {
+      setLoadingGraph(true);
+      setErrorGraph(null);
+
+      try {
+        const isSameDay = fetchStartDate === fetchEndDate;
+
+        const response = await fetch(
+          ` /order/get-been-provided-orders/${
+            userInfo.userName
+          }?startDate=${encodeURIComponent(
+            fetchStartDate
+          )}&endDate=${encodeURIComponent(fetchEndDate)}`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+
+          const filteredData = data.filter((order) => {
+            const orderDate = new Date(order.date);
+            const start = new Date(fetchStartDate);
+            const end = new Date(fetchEndDate);
+
+            if (isSameDay) {
+              return orderDate.toDateString() === start.toDateString();
+            }
+
+            return orderDate >= start && orderDate <= end;
+          });
+
+          const labels = filteredData.map((order) =>
+            new Date(order.date).toLocaleDateString()
+          );
+          const totalAmounts = filteredData.map((order) => order.totalCost);
+
+          setGraphData({
+            labels,
+            datasets: [
+              {
+                label: "Sales ($)",
+                data: totalAmounts,
+                borderColor: "rgba(75,192,192,1)",
+                backgroundColor: "rgba(75,192,192,0.2)",
+              },
+            ],
+          });
+
+          setBarGraphData({
+            labels,
+            datasets: [
+              {
+                label: "Sales ($)",
+                data: totalAmounts,
+                backgroundColor: "rgba(54, 162, 235, 0.6)",
+              },
+            ],
+          });
+
+          setPieGraphData({
+            labels,
+            datasets: [
+              {
+                label: "Sales Distribution",
+                data: totalAmounts,
+                backgroundColor: [
+                  "#FF6384",
+                  "#36A2EB",
+                  "#FFCE56",
+                  "#4BC0C0",
+                  "#9966FF",
+                  "#FF9F40",
+                ],
+              },
+            ],
+          });
+
+          setLoadingGraph(false);
+        } else {
+          setErrorGraph("Failed to fetch graph data.");
+          setLoadingGraph(false);
+        }
+      } catch (error) {
+        setErrorGraph("Error fetching graph data.");
+        setLoadingGraph(false);
+      }
+    };
+
+    fetchGraphData();
+  }, [userInfo.userName, startDate, endDate, defaultStartDate, defaultEndDate]);
+
+  // Navigate to Orders page and show order details
+  const handleSelectOrder = (orderNumber) => {
+    navigate(`/ShopOwnerOrdersPage?orderNumber=${orderNumber}`); // Navigate with orderNumber in query
+  };
+
   // Helper function to scroll containers
   const scroll = (direction, containerRef) => {
     if (containerRef.current) {
@@ -120,8 +246,8 @@ function ShopOwnerMainPage() {
   };
 
   return (
-    <div>
-      <main>
+    <div className="shopOwnerMainPage-body">
+      <main className="shopOwnerMainPage-main">
         <h1>{userInfo.businessName}</h1>
         {/* Out of Stock Products Section */}
         {outOfStockProducts.length > 0 && (
@@ -170,8 +296,99 @@ function ShopOwnerMainPage() {
             )}
           </section>
         )}
+        {/* New Orders Section */}
+        {(loading || newOrders.length > 0) && (
+          <section className="new-orders-section">
+            <h2 className="section-title">New Orders</h2>
+            <div className="arrow-container">
+              <button
+                className="arrow arrow-left"
+                onClick={() => scroll("left", ordersContainerRef)}
+              >
+                &lt;
+              </button>
+              <div className="orders-container" ref={ordersContainerRef}>
+                {loading ? (
+                  <p>Loading...</p>
+                ) : errorOrders ? (
+                  <p>{errorOrders}</p>
+                ) : newOrders.length === 0 ? (
+                  <p>No new orders available.</p>
+                ) : (
+                  newOrders.map((order) => (
+                    <div key={order.orderNumber} className="order-card">
+                      <h4>Order number {order.orderNumber}</h4>
+                      <p className="order-total-cost">
+                        ${order.totalCost} TOTAL COST
+                      </p>
+                      <ul className="order-items-list">
+                        <li>
+                          Order Date:{" "}
+                          {new Date(order.date).toLocaleDateString()}
+                        </li>
+                      </ul>
+                      <button
+                        className="select-button"
+                        onClick={() => handleSelectOrder(order.orderNumber)}
+                      >
+                        Select
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+              <button
+                className="arrow arrow-right"
+                onClick={() => scroll("right", ordersContainerRef)}
+              >
+                &gt;
+              </button>
+            </div>
+          </section>
+        )}
 
-        {/* Other sections */}
+        {/* Graph Section */}
+        <section className="graph-section" id="graphSection">
+          <h2 className="section-title">Sales Overview</h2>
+          {/* Date Range Picker */}
+          <div className="date-range-picker">
+            <label htmlFor="startDate">Start Date:</label>
+            <input
+              type="date"
+              id="startDate"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+
+            <label htmlFor="endDate">End Date:</label>
+            <input
+              type="date"
+              id="endDate"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+          {loadingGraph ? (
+            <p>Loading graph...</p>
+          ) : errorGraph ? (
+            <p>{errorGraph}</p>
+          ) : (
+            <div className="chart-container">
+              <div className="chart-item">
+                <h3>Line Chart</h3>
+                <Line data={graphData} />
+              </div>
+              <div className="chart-item">
+                <h3>Bar Chart</h3>
+                <Bar data={barGraphData} />
+              </div>
+              <div className="chart-item">
+                <h3>Pie Chart</h3>
+                <Pie data={pieGraphData} />
+              </div>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./css/shopOwnerOrdersPage.css"; // Ensure this file contains the required styles
-import ShopOwnerHeader from "../components/ShopOwnerHeader";
+
 import { useLocation } from "react-router-dom"; // Import useLocation for reading query params
 
 const ShopOwnerOrdersPage = () => {
@@ -191,105 +191,110 @@ const ShopOwnerOrdersPage = () => {
   }
 
   return (
-    <div className="orders-page">
-      <ShopOwnerHeader />
-      <h1>Orders List</h1>
-      <div className="search-filter">
-        <input
-          type="text"
-          placeholder="Search order..."
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-        {/* Updated: Replacing the button with a filter comboBox */}
-        <select
-          className="filter-select"
-          value={selectedFilter}
-          onChange={handleFilterChange}
-        >
-          <option value="All Orders">All Orders</option>
-          <option value="Received">Received</option>
-          <option value="In preparation">In preparation</option>
-          <option value="Ready">Ready</option>
-          <option value="Underway">Underway</option>
-          <option value="Been Provided">Been Provided</option>
-        </select>
-      </div>
-      <table className="orders-table">
-        <thead>
-          <tr>
-            <th>Order Number</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredOrders.map((order) => (
-            <tr key={order.orderNumber}>
-              <td>{order.orderNumber}</td>
-              <td>{new Date(order.date).toLocaleDateString()}</td>
-              <td>
-                <select
-                  value={order.status}
-                  onChange={(e) =>
-                    handleStatusChange(
-                      order.orderNumber,
-                      order.catalogNumbers,
-                      e.target.value
-                    )
-                  }
-                >
-                  <option value="Received">Received</option>
-                  <option value="In preparation">In preparation</option>
-                  <option value="Ready">Ready</option>
-                  <option value="Underway">Underway</option>
-                  <option value="Been Provided">Been Provided</option>
-                </select>
-              </td>
-              <td>
-                <button
-                  className="details-button"
-                  onClick={() => toggleDetails(order.orderNumber)}
-                >
-                  Details
-                </button>
-                {visibleDetails[order.orderNumber] && (
-                  <table className="order-details-table">
-                    <thead>
-                      <tr>
-                        <th>Catalog Number</th>
-                        <th>Product Name</th>
-                        <th>Amount</th>
-                        <th>Size</th>
-                        <th>Color</th>
-                        <th>Price</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orderDetails[order.orderNumber]?.map(
-                        (product, index) => (
-                          <tr key={index}>
-                            <td>{product.catalogNumber}</td>
-                            <td>{product.productName}</td>
-                            <td>{product.amount}</td>
-                            <td>{product.size}</td>
-                            <td>{product.color}</td>
-                            <td>${product.price}</td>
-                          </tr>
-                        )
-                      )}
-                    </tbody>
-                  </table>
-                )}
-              </td>
+    <div className="shopOwnerMainPage-body">
+      <main className="shopOwnerMainPage-main">
+        <h1>Orders List</h1>
+        <div className="filter-container">
+          <div className="search-filter">
+            <input
+              type="text"
+              placeholder="Search order..."
+              value={searchTerm}
+              onChange={handleSearch}
+            />
+          </div>
+          <select
+            className="filter-select"
+            value={selectedFilter}
+            onChange={handleFilterChange}
+          >
+            <option value="All Orders">All Orders</option>
+            <option value="Received">Received</option>
+            <option value="In preparation">In preparation</option>
+            <option value="Ready">Ready</option>
+            <option value="Underway">Underway</option>
+            <option value="Been Provided">Been Provided</option>
+          </select>
+        </div>
+
+        <table className="orders-table">
+          <thead>
+            <tr>
+              <th>Order Number</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Details</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <footer>
-        <a href="/sales-progress">Click here to view your sales progress →</a>
-      </footer>
+          </thead>
+          <tbody>
+            {filteredOrders.map((order) => (
+              <tr key={order.orderNumber}>
+                <td>{order.orderNumber}</td>
+                <td>{new Date(order.date).toLocaleDateString()}</td>
+                <td>
+                  <select
+                    value={order.status}
+                    onChange={(e) =>
+                      handleStatusChange(
+                        order.orderNumber,
+                        order.catalogNumbers,
+                        e.target.value
+                      )
+                    }
+                  >
+                    <option value="Received">Received</option>
+                    <option value="In preparation">In preparation</option>
+                    <option value="Ready">Ready</option>
+                    <option value="Underway">Underway</option>
+                    <option value="Been Provided">Been Provided</option>
+                  </select>
+                </td>
+                <td>
+                  <button
+                    className="details-button"
+                    onClick={() => toggleDetails(order.orderNumber)}
+                  >
+                    Details
+                  </button>
+                  {visibleDetails[order.orderNumber] && (
+                    <table className="order-details-table">
+                      <thead>
+                        <tr>
+                          <th>Catalog Number</th>
+                          <th>Product Name</th>
+                          <th>Amount</th>
+                          <th>Size</th>
+                          <th>Color</th>
+                          <th>Price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orderDetails[order.orderNumber]?.map(
+                          (product, index) => (
+                            <tr key={index}>
+                              <td>{product.catalogNumber}</td>
+                              <td>{product.productName}</td>
+                              <td>{product.amount}</td>
+                              <td>{product.size}</td>
+                              <td>{product.color}</td>
+                              <td>${product.price}</td>
+                            </tr>
+                          )
+                        )}
+                      </tbody>
+                    </table>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div >
+          <a href="/ShopOwnerMainPage#graphSection">
+            Click here to view your sales progress →
+          </a>
+        </div>
+      </main>
     </div>
   );
 };

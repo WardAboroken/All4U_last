@@ -1,55 +1,3 @@
-// import { PayPalButtons } from "@paypal/react-paypal-js";
-
-// const PayPalCheckoutButton = ({
-//   totalAmount,
-//   paypalEmail,
-//   items,
-//   handlePlaceOrder,
-// }) => {
-//   const createOrder = (data, actions) => {
-//     // Create an order for the total amount
-//     return actions.order.create({
-//       purchase_units: [
-//         {
-//           amount: {
-//             value: totalAmount, // Total amount for the group
-//           },
-//           payee: {
-//             email_address: paypalEmail, // PayPal email of the business owner
-//           },
-//         },
-//       ],
-//     });
-//   };
-
-//   const onApprove = async (data, actions) => {
-//     return actions.order.capture().then((details) => {
-//       console.log("Transaction completed:", details);
-//       // Once the payment is successful, call the handlePlaceOrder function
-//       handlePlaceOrder({
-//         paypalEmail,
-//         items,
-//         totalAmount,
-//         orderId: details.id, // Pass the order ID back to the parent
-//       });
-//     });
-//   };
-
-//   const onError = (err) => {
-//     console.error("PayPal error:", err);
-//     // Handle PayPal errors
-//   };
-
-//   return (
-//     <PayPalButtons
-//       createOrder={createOrder}
-//       onApprove={onApprove}
-//       onError={onError}
-//     />
-//   );
-// };
-
-// export default PayPalCheckoutButton;
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import React, { useState, useEffect } from "react";
 
@@ -59,28 +7,19 @@ const PayPalCheckoutButton = ({
   items,
   merchantID,
   handlePlaceOrder,
+  order,
 }) => {
-  // Ensure all required values are available before rendering the PayPal button
+  // State to check if all required props are ready
   const [isReady, setIsReady] = useState(false);
-  // const merchantID= "MG44X9L3T5CEE";
-  useEffect(() => {
-    if (totalAmount && paypalEmail && items && handlePlaceOrder && merchantID) {
-      setIsReady(true);
-    }
-  }, [totalAmount, paypalEmail, items, handlePlaceOrder, merchantID]);
 
-  console.log(
-    "merchantID",
-    merchantID,
-    "\nTotalAmount >> ",
-    totalAmount,
-    "\npaypalEmail >>",
-    paypalEmail,
-    "\nitems >>",
-    items,
-    "\nhandlePlaceOrder >>",
-    handlePlaceOrder
-  );
+  useEffect(() => {
+    // Ensure all necessary props are available before rendering the PayPal button
+    if (totalAmount && paypalEmail && items && handlePlaceOrder && order) {
+      setIsReady(true);
+    } else {
+      setIsReady(false);
+    }
+  }, [totalAmount, paypalEmail, items, handlePlaceOrder, merchantID, order]);
 
   return (
     <PayPalScriptProvider
@@ -91,46 +30,58 @@ const PayPalCheckoutButton = ({
     >
       {isReady ? (
         <PayPalButtons
+          // Using key to force re-render when totalAmount or other relevant props change
+          key={`${totalAmount}-${merchantID}-${items.length}`}
           createOrder={(data, actions) => {
-            return actions.order.create({
-              purchase_units: [
-                {
-                  amount: {
-                    value: totalAmount, // Use your dynamic amount
-                  },
-                  payee: {
-                    merchant_id: merchantID, // Replace with the actual Merchant ID
-                    email_address: paypalEmail,
-                  },
+            if (!paypalEmail) {
+              console.error("PayPal email is missing.");
+              alert(
+                "Merchant information is missing. Cannot proceed with payment."
+              );
+              return;
+            }
+
+            // Clean up the merchantID by removing any extra spaces or newline characters
+            const cleanedMerchantID = merchantID?.trim();
+
+            // Create the purchase units payload
+            const purchaseUnits = [
+              {
+                amount: {
+                  currency_code: "USD",
+                  value: totalAmount,
                 },
-              ],
+                payee: cleanedMerchantID
+                  ? { merchant_id: cleanedMerchantID }
+                  : { email_address: paypalEmail }, // Fallback to email if merchant_id is not provided
+              },
+            ];
+
+            console.log("Creating order with the following payload:", {
+              purchase_units: purchaseUnits,
+            });
+
+            return actions.order.create({
+              purchase_units: purchaseUnits,
             });
           }}
           onApprove={async (data, actions) => {
-            return actions.order.capture().then(async (details) => {
-              const orderData = {
-                id: data.orderID,
-                payer: details.payer,
-                items: items,
-              };
+            try {
+              const capturedOrder = await actions.order.capture();
+              console.log("Order successfully captured:", capturedOrder);
 
-              // Place the order using the captured order details
-              await handlePlaceOrder(orderData);
+              handlePlaceOrder(order);
+              alert("Transaction completed successfully.");
+            } catch (error) {
+              console.error("Error during transaction approval:", error);
               alert(
-                "Transaction completed by " + details.payer.name.given_name
+                "An error occurred during the transaction. Please try again."
               );
-            });
-          }}
-          onError={(err) => {
-            console.error("PayPal Checkout Error:", err);
-            alert("An error occurred during payment. Please try again.");
-          }}
-          onClick={(data, actions) => {
-            if (!items || items.length === 0) {
-              alert("Your cart is empty.");
-              return actions.reject();
             }
-            return actions.resolve();
+          }}
+          onError={(error) => {
+            console.error("PayPal Checkout Error:", error);
+            alert("An error occurred during payment. Please try again.");
           }}
         />
       ) : (

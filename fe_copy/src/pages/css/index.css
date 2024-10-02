@@ -45,9 +45,7 @@ footer {
   color: white; /* Light text color for contrast */
   padding: 1.5rem 3rem; /* Padding for spacing */
 }
-header {
-  margin-bottom: 0%;
-}
+
 
 /* Header and footer containers for layout */
 .header__wrap,
@@ -89,7 +87,7 @@ header {
 
 /* Additional padding to prevent content overlap with the fixed header */
 .App {
-  padding-top: 120px; /* Adjust to match header height */
+  padding-top: 70px; /* Adjust to match header height */
 }
 
 /* Header container styling */
@@ -107,6 +105,7 @@ header {
   background-color: #333; /* Dark footer background */
   padding: 20px 30px; /* Padding for space */
   color: white; /* Footer text color */
+
 }
 
 /* Footer layout with space between sections */

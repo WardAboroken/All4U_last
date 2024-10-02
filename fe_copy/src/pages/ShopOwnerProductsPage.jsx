@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // Import useLocation for URL parameters
 import "./css/shopOwnerProductsPage.css";
-import ShopOwnerHeader from "../components/ShopOwnerHeader";
 import { API_URL } from "../constans.js";
 
 // Helper function to find category name by number
@@ -22,13 +20,14 @@ const categories = {
   Safety: 11,
   Beauty: 12,
 };
+const activityOptions = ["Active", "Not Active"];
 
 const ShopOwnerProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [userName, setUserName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [editProductId, setEditProductId] = useState(null);
+  const [editProductId, setEditProductId] = useState(null); // Tracks which product is being edited
   const [editProduct, setEditProduct] = useState(null);
   const [newProduct, setNewProduct] = useState({
     catalogNumber: "",
@@ -45,8 +44,7 @@ const ShopOwnerProductsPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showAddProductForm, setShowAddProductForm] = useState(false);
-  const location = useLocation(); // Use useLocation to get URL parameters
+  const [showAddProductForm, setShowAddProductForm] = useState(false); // New state to control the visibility of Add Product form
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -75,11 +73,12 @@ const ShopOwnerProductsPage = () => {
         setLoading(true);
         try {
           const response = await fetch(
-            `/shop/get-products?userName=${userName}`,
+            ` /shop/getAllProducts?userName=${userName}`,
             { method: "GET", headers: { "Content-Type": "application/json" } }
           );
           if (response.ok) {
             const data = await response.json();
+
             setProducts(data);
             setFilteredProducts(data);
           } else {
@@ -95,24 +94,6 @@ const ShopOwnerProductsPage = () => {
       fetchProducts();
     }
   }, [userName]);
-
-  useEffect(() => {
-    // Extract catalogNumber from URL query parameter
-    const queryParams = new URLSearchParams(location.search);
-    const catalogNumberFromURL = queryParams.get("catalogNumber");
-
-    if (catalogNumberFromURL && filteredProducts.length > 0) {
-      // Find the product with the same catalog number
-      const productToEdit = filteredProducts.find(
-        (product) => product.catalogNumber.toString() === catalogNumberFromURL
-      );
-
-      // If product is found, open the edit form
-      if (productToEdit) {
-        toggleEditForm(productToEdit);
-      }
-    }
-  }, [location.search, filteredProducts]); // Runs when URL changes or products are loaded
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -133,7 +114,26 @@ const ShopOwnerProductsPage = () => {
       );
     });
 
-    setFilteredProducts(filtered);
+    const sorted = filtered.sort((a, b) => {
+      const catalogNumberA = String(a.catalogNumber || "").toLowerCase();
+      const catalogNumberB = String(b.catalogNumber || "").toLowerCase();
+      const productNameA = a.productName.toLowerCase();
+      const productNameB = b.productName.toLowerCase();
+
+      const catalogStartsWithA = catalogNumberA.startsWith(searchValue);
+      const catalogStartsWithB = catalogNumberB.startsWith(searchValue);
+      const nameStartsWithA = productNameA.startsWith(searchValue);
+      const nameStartsWithB = productNameB.startsWith(searchValue);
+
+      if (catalogStartsWithA && !catalogStartsWithB) return -1;
+      if (!catalogStartsWithA && catalogStartsWithB) return 1;
+      if (nameStartsWithA && !nameStartsWithB) return -1;
+      if (!nameStartsWithA && nameStartsWithB) return 1;
+
+      return 0;
+    });
+
+    setFilteredProducts(sorted);
   };
 
   const handleAddProduct = async (e) => {
@@ -159,13 +159,12 @@ const ShopOwnerProductsPage = () => {
           description: "",
           color: "",
           size: "",
-          status: "",
           amount: 0,
           price: 0,
           imageLink: "",
           categoryNumber: 0,
         });
-        setShowAddProductForm(false);
+        setShowAddProductForm(false); // Hide the form after adding a product
       } else {
         setError("Failed to add product.");
       }
@@ -184,7 +183,8 @@ const ShopOwnerProductsPage = () => {
 
     try {
       const response = await fetch(
-        `/productsHandler/updateProduct/${editProduct.catalogNumber}`,
+        `
+        /productsHandler/updateProduct/${editProduct.catalogNumber}`,
         {
           method: "PUT",
           body: formData,
@@ -206,7 +206,7 @@ const ShopOwnerProductsPage = () => {
               : product
           )
         );
-        setEditProductId(null);
+        setEditProductId(null); // Close edit form
         setEditProduct(null);
       } else {
         setError("Failed to update product.");
@@ -220,7 +220,8 @@ const ShopOwnerProductsPage = () => {
   const handleDeleteProduct = async (catalogNumber) => {
     try {
       const response = await fetch(
-        `/productsHandler/updateProductStatus/${catalogNumber}`,
+        `
+        /productsHandler/updateProductStatus/${catalogNumber}`,
         {
           method: "PUT",
         }
@@ -248,10 +249,15 @@ const ShopOwnerProductsPage = () => {
     setEditProduct({ ...product });
   };
 
+  const handleCancelEdit = () => {
+    setEditProductId(null);
+    setEditProduct(null);
+    setError(""); // Clear any existing error messages if needed
+  };
+
   return (
-    <div className="products-page">
-      <ShopOwnerHeader />
-      <main>
+    <div className="shopOwnerMainPage-body">
+      <main className="shopOwnerMainPage-main">
         {error && <div className="error-message">{error}</div>}
         {loading && <div>Loading...</div>}
         <section className="product-list-section">
@@ -259,12 +265,13 @@ const ShopOwnerProductsPage = () => {
             <h1>Products List</h1>
             <button
               className="add-product-button"
-              onClick={() => setShowAddProductForm(!showAddProductForm)}
+              onClick={() => setShowAddProductForm(!showAddProductForm)} // Toggle form visibility
             >
               {showAddProductForm ? "Hide Add Product" : "Add Product"}
             </button>
           </div>
 
+          {/* Conditionally render the Add Product form ABOVE the search bar */}
           {showAddProductForm && (
             <AddProductForm
               newProduct={newProduct}
@@ -294,7 +301,7 @@ const ShopOwnerProductsPage = () => {
                 <th>Amount</th>
                 <th>Picture</th>
                 <th>Price</th>
-                <th>Status</th>
+                <th>Activity</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -326,7 +333,7 @@ const ShopOwnerProductsPage = () => {
                           className="edit-button"
                           onClick={() => toggleEditForm(product)}
                         >
-                          <i className="fas fa-edit icon"></i>
+                          <i className="fas fa-edit icon">Edit</i>
                         </button>
                         <button
                           className="delete-button"
@@ -346,6 +353,7 @@ const ShopOwnerProductsPage = () => {
                           editProduct={editProduct}
                           setEditProduct={setEditProduct}
                           handleEditProduct={handleEditProduct}
+                          handleCancelEdit={handleCancelEdit} // Pass the cancel handler
                           categories={categories}
                         />
                       </td>
@@ -444,13 +452,6 @@ const AddProductForm = ({
             </option>
           ))}
         </select>
-        <input
-          type="text"
-          name="status"
-          placeholder="Status"
-          value={newProduct.status}
-          onChange={handleInputChange}
-        />
         <button type="submit">Add</button>
       </form>
     </section>
@@ -461,6 +462,7 @@ const EditProductForm = ({
   editProduct,
   setEditProduct,
   handleEditProduct,
+  handleCancelEdit, // Receive the cancel handler
   categories,
 }) => {
   const handleEditChange = (e) => {
@@ -472,13 +474,13 @@ const EditProductForm = ({
   };
 
   const handleFileChange = (e) => {
-    setEditProduct((prev) => ({ ...prev, picturePath: e.target.files[0] }));
+    setEditProduct((prev) => ({ ...prev, picture: e.target.files[0] }));
   };
 
   return (
     <div className="edit-product-form">
       <h3>Edit Product</h3>
-      <form onSubmit={handleEditProduct} encType="multipart/form-data">
+      <form onSubmit={handleEditProduct}>
         <input
           type="text"
           name="catalogNumber"
@@ -519,6 +521,7 @@ const EditProductForm = ({
           name="amount"
           placeholder="Amount"
           value={editProduct.amount || 0}
+          min={0}
           onChange={handleEditChange}
         />
         <input
@@ -526,6 +529,7 @@ const EditProductForm = ({
           name="price"
           placeholder="Price"
           value={editProduct.price || 0}
+          min={0}
           onChange={handleEditChange}
         />
         <select
@@ -540,15 +544,27 @@ const EditProductForm = ({
             </option>
           ))}
         </select>
-        <input
-          type="text"
+        <select
           name="status"
-          placeholder="Status"
           value={editProduct.status || ""}
           onChange={handleEditChange}
-        />
+        >
+          <option value="" disabled>
+            Select status
+          </option>
+          {activityOptions.map((status, index) => (
+            <option key={index} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
         <input type="file" name="picture" onChange={handleFileChange} />
-        <button type="submit">Save Changes</button>
+        <div className="button-container">
+          <button type="submit">Save Changes</button>
+          <button type="button" onClick={handleCancelEdit}>
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

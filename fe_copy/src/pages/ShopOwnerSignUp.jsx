@@ -14,6 +14,7 @@ function ShopOwnerSignUp() {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [paypalEmail, setPaypalEmail] = useState("");
+  const [merchantId, setMerchantId] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -99,7 +100,8 @@ function ShopOwnerSignUp() {
       !businessName ||
       !selectedCity ||
       !selectedStreet ||
-      !description
+      !description ||
+      !merchantId
     ) {
       setErrorMessage("Please fill in all fields.");
       return;
@@ -125,6 +127,7 @@ function ShopOwnerSignUp() {
         businessAddress: `city: ${selectedCity} / street: ${selectedStreet}`,
         typeOfUser: "businessowner",
         description,
+        merchantId
       };
 
       // Log formData to verify it's correct
@@ -189,6 +192,14 @@ function ShopOwnerSignUp() {
             placeholder="PayPal Email"
             value={paypalEmail}
             onChange={(e) => setPaypalEmail(e.target.value)} // update the correct state
+            required
+          />
+
+          <input
+            type="text"
+            placeholder="PayPal Merchant ID"
+            value={merchantId}
+            onChange={(e) => setMerchantId(e.target.value)} // update the correct state
             required
           />
 

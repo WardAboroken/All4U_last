@@ -1,283 +1,223 @@
-/* General page styling */
+/* #region General Container */
 .products-page {
-  padding: 40px 20px;
-  font-family: 'Arial', sans-serif;
-  background-color: #f8f9fa;
-}
-
-h1 {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: center;
-  color: #333;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f4f4f9; /* Light background */
 }
 
 main {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+/* #endregion */
+
+/* #region Error and Loading Messages */
+.error-message {
+  color: #d9534f; /* Bootstrap's 'danger' red */
+  font-weight: bold;
+  margin-bottom: 15px;
 }
 
-/* Styling for the product list section */
-.product-list-section {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+.loading-message {
+  font-size: 16px;
+  color: var(--hover-color); /* Bootstrap's 'primary' blue */
+  margin-bottom: 15px;
 }
+/* #endregion */
 
-/* Styling for search bar and Add Product button */
-.search-filter {
+/* #region Header and Add Product Button */
+.products-list-header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  gap: 10px;
 }
 
-.search-filter input[type="text"] {
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  flex: 1;
-  max-width: 400px;
-  transition: border-color 0.3s ease;
-  font-size: 16px;
-}
-
-.search-filter input[type="text"]:focus {
-  border-color: #4CAF50;
-}
-
-.search-filter button {
-  background: linear-gradient(to right, #34a853, #28b446); /* Green gradient */
+.add-product-button {
+  background-color:var(--primary-color) ; /* Green background */
   color: white;
-  padding: 15px 30px; /* Larger padding for a bigger button */
-  font-size: 18px; /* Larger font size */
-  font-weight: bold; /* Make text bold */
+  padding: 10px 20px;
   border: none;
-  border-radius: 50px; /* Fully rounded corners */
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
 }
 
-.search-filter button:hover {
-  background: linear-gradient(to right, #2c7c31, #2a9230); /* Darker green on hover */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* More pronounced shadow */
+.add-product-button:hover {
+  background-color:var(--hover-color) ;
+}
+/* #endregion */
+
+/* #region Search Filter */
+.search-filter {
+  margin-bottom: 20px;
 }
 
-.search-filter button:focus {
-  outline: none;
-  box-shadow: 0 0 10px rgba(40, 167, 69, 0.5); /* Green focus shadow */
+.search-filter input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+/* #endregion */
 
-.search-filter button:active {
-  background-color: #1e7e34;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* Shadow decrease on press */
-}
-
-/* Table styling */
+/* #region Table Styles */
 .products-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 40px;
-  background-color: #fff;
+  margin-bottom: 20px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .products-table th,
 .products-table td {
-  padding: 15px;
-  border: 1px solid #e0e0e0;
+  padding: 15px; /* Increase padding for a cleaner look */
   text-align: left;
-  vertical-align: middle;
+  border: 1px solid #ddd;
 }
 
 .products-table th {
-  background-color: #f3f3f3;
-  font-weight: 600;
+  background-color: var(--secondary-color);
+  color: white;
 }
 
-.products-table td img {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 4px;
+.products-table tbody tr:hover {
+  background-color: #f1f1f1; /* Light gray hover effect */
 }
 
-/* Action buttons styling */
 .table-actions {
   display: flex;
-  gap: 8px;
+  gap: 5px;
 }
+/* #endregion */
 
-.table-actions button {
-  display: flex;
-  align-items: center;
-  padding: 6px 10px;
+/* #region Action Buttons */
+.edit-button,
+.delete-button {
+  background: none;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
-  margin: 0 5px;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  color: var(--hover-color);
+  font-size: 18px; /* Icon size */
 }
 
-.table-actions button i {
-  margin-right: 5px;
+.edit-button:hover,
+.delete-button:hover {
+  color: var(--primary-color);
 }
+/* #endregion */
 
-.table-actions .edit-button {
-  background-color: #008cba;
-  color: white;
-}
-
-.table-actions .edit-button:hover {
-  background-color: #0079a1;
-}
-
-.table-actions .delete-button {
-  background-color: #f44336;
-  color: white;
-}
-
-.table-actions .delete-button:hover {
-  background-color: #d32f2f;
-}
-
-/* Add product form styling */
-.add-product-section {
-  background-color: white;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-}
-
-.add-product-section h2 {
-  font-size: 24px;
-  font-weight: bold;
+/* #region Form Styles */
+.add-product-section,
+.edit-product-form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
-.add-product-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+.add-product-section h2,
+.edit-product-form h3 {
+  margin-bottom: 15px;
 }
 
 .add-product-form input,
+.add-product-form select,
 .add-product-form textarea,
-.add-product-form select {
-  flex: 1 1 calc(33.33% - 20px);
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  transition: border-color 0.3s ease;
-}
-
-.add-product-form textarea {
-  height: 100px;
-}
-
-.add-product-form button {
-  flex: 1 1 100%;
-  padding: 12px;
-  background-color: #8c8c8c;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.3s ease;
-}
-
-.add-product-form button:hover {
-  background-color: #7a7a7a;
-}
-
-.add-product-form input:focus,
-.add-product-form select:focus,
-.add-product-form textarea:focus {
-  border-color: #4CAF50;
-}
-
-/* Edit product form styling */
-.edit-product-form {
-  padding: 20px;
-  margin-top: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-}
-
-.edit-product-form h3 {
-  margin-bottom: 15px;
-  font-size: 18px;
-  color: #333;
-}
-
-.edit-product-form input[type="text"],
-.edit-product-form input[type="number"],
+.edit-product-form input,
 .edit-product-form select,
 .edit-product-form textarea {
-  width: calc(100% - 20px);
+  width: 100%;
   padding: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  font-size: 14px;
-  transition: border-color 0.3s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+/* #endregion */
 
-.edit-product-form input:focus,
-.edit-product-form select:focus,
-.edit-product-form textarea:focus {
-  border-color: #4CAF50;
+/* #region Button Container */
+.button-container {
+  display: flex;
+  justify-content: center; /* Center the buttons */
+  gap: 15px; /* Add space between buttons */
+  margin-top: 20px; /* Add space above the buttons */
+}
+/* #endregion */
+
+/* #region Submit and Cancel Buttons */
+.add-product-form button,
+.edit-product-form button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .edit-product-form button[type="submit"] {
-  padding: 10px 15px;
-  background-color: #4CAF50;
+  background-color: var(--hover-color);
   color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
 }
 
 .edit-product-form button[type="submit"]:hover {
-  background-color: #45a049;
+  background-color: var(--primary-color); /* Darker blue on hover */
 }
 
-/* Focus states */
-input:focus,
-select:focus,
-button:focus,
-textarea:focus {
-  outline: 2px solid #4CAF50;
-  outline-offset: 2px;
+.edit-product-form button[type="button"] {
+  background-color: #ccc; /* Grey background for cancel button */
+  color: #333; /* Darker text */
 }
 
-/* Media query for better responsiveness */
+.edit-product-form button[type="button"]:hover {
+  background-color: #999; /* Slightly darker grey on hover */
+}
+/* #endregion */
+
+/* #region Image Styling */
+.products-table img {
+  max-width: 50px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  margin: 5px; /* Add margin around images */
+}
+/* #endregion */
+
+/* #region Responsive Design */
 @media (max-width: 768px) {
+  .products-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .add-product-button {
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .products-table th,
+  .products-table td {
+    padding: 10px;
+  }
+
   .add-product-form input,
+  .add-product-form select,
   .add-product-form textarea,
-  .add-product-form select {
-    flex: 1 1 100%;
+  .edit-product-form input,
+  .edit-product-form select,
+  .edit-product-form textarea {
+    font-size: 14px;
   }
 
-  .search-filter {
-    flex-direction: column;
-    gap: 10px;
+  .button-container {
+    flex-direction: column; /* Stack buttons on smaller screens */
   }
 
-  .table-actions {
-    flex-direction: column;
-    gap: 4px;
+  .edit-product-form button,
+  .add-product-form button {
+    width: 100%;
+    margin-bottom: 10px;
   }
 }
+/* #endregion */

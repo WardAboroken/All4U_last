@@ -1,94 +1,159 @@
+/* #region General Styles */
 .orders-page {
   padding: 40px;
   max-width: 1200px;
   margin: 0 auto;
   font-family: Arial, sans-serif;
+  background-color: #f9f9f9; /* Light background for better contrast */
+  color: #333; /* Standard text color */
 }
+/* #endregion */
 
+/* #region Search and Filter Styles */
 .search-filter {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px; /* Increased gap for a cleaner look */
   margin-bottom: 20px;
+  width: 30%;
 }
 
 .search-filter input {
   flex: 1;
-  padding: 8px 12px;
+  padding: 10px 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow for input */
+  font-size: 16px; /* Slightly larger text */
 }
 
-.filter-button {
-  padding: 8px 20px;
-  background-color: #8B4513; /* Brown color for button */
-  color: white;
-  border: none;
+.filter-select {
+  padding: 10px;
+  border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
+  background-color: #fff; /* White background for select */
+  font-size: 16px;
+  width: 30%;
 }
+/* #endregion */
 
+/* #region Orders Table Styles */
 .orders-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 40px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for better separation */
+  background-color: #fff; /* White background for the table */
 }
 
 .orders-table th,
 .orders-table td {
-  padding: 12px 20px;
+  padding: 15px 20px; /* Increased padding for readability */
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
 .orders-table th {
-  background-color: #f8f8f8;
+  background-color: var( --secondary-color); 
+  color: white;
   font-weight: bold;
 }
 
 .orders-table select {
-  padding: 6px;
+  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
+  background-color: #fff; /* White background for select */
 }
+/* #endregion */
 
-.details-button {
-  background-color: #8B4513; /* Brown color for button */
+/* #region Buttons */
+.details-button,
+.filter-button {
+  background-color:var(--hover-color); 
   color: white;
-  padding: 8px 15px;
+  padding: 10px 20px; /* Unified padding for buttons */
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
+  font-size: 16px; /* Larger font for buttons */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.details-button:hover,
+.filter-button:hover {
+  background-color: var(--primary-color); /* Slightly lighter brown on hover */
 }
 
 .details-button .arrow {
   margin-left: 8px;
   font-size: 12px;
 }
+/* #endregion */
 
-.order-details {
-  margin-top: 10px; /* Space below details button */
-  padding: 10px;
+/* #region Order Details Table */
+.order-details-table {
+  width: 100%;
+  margin-top: 15px;
+  border-collapse: collapse;
+  background-color: #f8f8f8; /* Light grey background for details */
+}
+
+.order-details-table th,
+.order-details-table td {
+  padding: 12px;
   border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f8f8f8;
 }
 
-.details-button:hover + .order-details {
-  display: block; /* Show details on hover */
+.order-details-table th {
+  background-color: #dcdcdc; /* Light gray for details table header */
+  color: #333; /* Dark text for readability */
 }
+/* #endregion */
 
+/* #region Additional Styles */
 footer {
   text-align: center;
   padding: 20px;
   border-top: 1px solid #ddd;
+  background-color: #f8f8f8; /* Light background for footer */
 }
 
 footer a {
-  color: #8B4513; /* Brown color for link */
+  color: #8B4513; /* Brown color for links */
   text-decoration: none;
   font-size: 16px;
+  transition: color 0.3s ease; /* Smooth transition for hover effect */
 }
+
+footer a:hover {
+  color: #a0522d;
+}
+/* #endregion */
+
+/* #region Responsive Design */
+@media (max-width: 768px) {
+  .search-filter {
+    flex-direction: column; /* Stack search input and filter on smaller screens */
+    gap: 10px;
+  }
+
+  .orders-table th,
+  .orders-table td {
+    padding: 10px;
+  }
+
+  .details-button,
+  .filter-button {
+    width: 100%; /* Full width buttons for mobile */
+    margin-bottom: 10px;
+  }
+
+  .order-details-table th,
+  .order-details-table td {
+    padding: 10px;
+  }
+}
+/* #endregion */

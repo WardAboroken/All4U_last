@@ -38,7 +38,7 @@ function MainPage() {
   };
 
   return (
-    <div>
+    <div className="mainPage-body">
       <main className="main-content">
         <div className="content-wrapper">
           {/* Introduction Section */}
@@ -84,7 +84,7 @@ function MainPage() {
 
       {/* Random Products Section */}
       <section className="random-products">
-        <h2 className="section-title">Random Products</h2>
+        <h2 className="section-title">Take a look on our products</h2>
         {loading ? (
           <p>Loading products...</p>
         ) : randomProducts.length > 0 ? (
