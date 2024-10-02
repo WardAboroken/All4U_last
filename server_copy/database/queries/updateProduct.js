@@ -17,6 +17,7 @@ async function updateProduct(catalogNumber, updatedProductData) {
     price,
     categoryNumber, // Ensure categoryNumber is handled correctly
     picturePath,
+    status,
   } = updatedProductData;
 
   try {
@@ -72,6 +73,10 @@ async function updateProduct(catalogNumber, updatedProductData) {
     if (price !== undefined) {
       updateFields.push("price = ?");
       params.push(price);
+    }
+    if (status !== undefined) {
+      updateFields.push("status = ?");
+      params.push(status);
     }
     if (categoryNumber !== undefined) {
       // Ensure `categoryNumber` is included in the update

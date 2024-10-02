@@ -57,6 +57,7 @@ router.put("/updateProduct/:catalogNumber",
         amount,
         price,
         categoryNumber,
+        status
       } = req.body;
 
       const parsedCategoryNumber = categoryNumber
@@ -85,6 +86,7 @@ router.put("/updateProduct/:catalogNumber",
         price,
         categoryNumber: parsedCategoryNumber,
         picturePath,
+        status
       };
 
       const result = await updateProduct(catalogNumber, updatedProductData);
