@@ -1,4 +1,5 @@
 import { Route, Routes, useLocation, matchPath } from "react-router-dom";
+import React from "react";
 
 import CustomerSignUp from "./pages/CustomerSignUp";
 import Login from "./pages/Login";
@@ -57,6 +58,7 @@ function App() {
       "/ShopOwnerMainPage",
       "/ShopOwnerOrdersPage",
       "/ShopOwnerProductsPage",
+      "/EditShopOwnerProfile",
     ],
     admin: ["/AdminMainPage"],
   };

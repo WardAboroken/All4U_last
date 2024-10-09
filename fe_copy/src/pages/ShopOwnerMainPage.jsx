@@ -67,7 +67,7 @@ function ShopOwnerMainPage() {
     const fetchOutOfStockProducts = async () => {
       try {
         const response = await fetch(
-         ` /order/get-out-of-stock-products/${userInfo.userName}`
+          `/order/get-out-of-stock-products/${userInfo.userName}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -89,17 +89,12 @@ function ShopOwnerMainPage() {
     fetchOutOfStockProducts();
   }, [userInfo.userName]);
 
-  // Navigate to PRODUCTS page to edit the product
-  const handleEditProduct = (catalogNumber) => {
-    navigate(`/ShopOwnerProductsPage?catalogNumber=${catalogNumber}`);
-  };
-
   // Fetch new orders
   useEffect(() => {
     const fetchNewOrders = async () => {
       try {
         const response = await fetch(
-          `  /order/get-business-new-orders/${userInfo.userName}`
+          `/order/get-business-new-orders/${userInfo.userName}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -150,7 +145,7 @@ function ShopOwnerMainPage() {
         const isSameDay = fetchStartDate === fetchEndDate;
 
         const response = await fetch(
-          ` /order/get-been-provided-orders/${
+          `/order/get-been-provided-orders/${
             userInfo.userName
           }?startDate=${encodeURIComponent(
             fetchStartDate
@@ -246,8 +241,8 @@ function ShopOwnerMainPage() {
   };
 
   return (
-    <div className="shopOwnerMainPage-body">
-      <main className="shopOwnerMainPage-main">
+    <div>
+      <main>
         <h1>{userInfo.businessName}</h1>
         {/* Out of Stock Products Section */}
         {outOfStockProducts.length > 0 && (
@@ -277,12 +272,7 @@ function ShopOwnerMainPage() {
                         alt={product.productName}
                         className="product-image"
                       />
-                      <button
-                        className="replenish-button"
-                        onClick={() => handleEditProduct(product.catalogNumber)}
-                      >
-                        Edit
-                      </button>
+                      <button className="replenish-button">Replenish</button>
                     </div>
                   ))}
                 </div>
@@ -347,27 +337,28 @@ function ShopOwnerMainPage() {
           </section>
         )}
 
-        {/* Graph Section */}
-        <section className="graph-section" id="graphSection">
-          <h2 className="section-title">Sales Overview</h2>
-          {/* Date Range Picker */}
-          <div className="date-range-picker">
-            <label htmlFor="startDate">Start Date:</label>
-            <input
-              type="date"
-              id="startDate"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
+        {/* Date Range Picker */}
+        <div className="date-range-picker">
+          <label htmlFor="startDate">Start Date:</label>
+          <input
+            type="date"
+            id="startDate"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
 
-            <label htmlFor="endDate">End Date:</label>
-            <input
-              type="date"
-              id="endDate"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-          </div>
+          <label htmlFor="endDate">End Date:</label>
+          <input
+            type="date"
+            id="endDate"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
+
+        {/* Graph Section */}
+        <section className="graph-section">
+          <h2 className="section-title">Sales Overview</h2>
           {loadingGraph ? (
             <p>Loading graph...</p>
           ) : errorGraph ? (
@@ -376,15 +367,15 @@ function ShopOwnerMainPage() {
             <div className="chart-container">
               <div className="chart-item">
                 <h3>Line Chart</h3>
-                <Line data={graphData} />
+                <Line data={graphData} width={200} height={200} />
               </div>
               <div className="chart-item">
                 <h3>Bar Chart</h3>
-                <Bar data={barGraphData} />
+                <Bar data={barGraphData} width={200} height={200} />
               </div>
               <div className="chart-item">
                 <h3>Pie Chart</h3>
-                <Pie data={pieGraphData} />
+                <Pie data={pieGraphData} width={200} height={200} />
               </div>
             </div>
           )}

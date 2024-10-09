@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import "./css/index.css";
-import "./css/customerHeader.css";
-import ShopOwnerHeader from "../components/ShopOwnerHeader";
-import Footer from "../components/Footer";
+import "./css/editProfile.css"
+import "./css/customerSignup.css";
 import user_profile from "../assets/images/user_profile.jpeg";
 
 function EditShopOwnerProfile() {
@@ -118,10 +116,8 @@ function EditShopOwnerProfile() {
   };
 
   return (
-    <div>
-      <ShopOwnerHeader />
-      <div className="container">
-        <h1>All4U</h1>
+    <div className="editCustomerProfile-body">
+      <main className="editCustomerProfile-container">
         <h2>Shop Owner Profile Edit</h2>
         <form onSubmit={handleSubmit}>
           <input type="file" accept="image/*" onChange={handleImageChange} />
@@ -133,6 +129,7 @@ function EditShopOwnerProfile() {
             />
           )}
           <input
+            className="name"
             type="text"
             placeholder={userInfo.name}
             value={name}
@@ -140,6 +137,7 @@ function EditShopOwnerProfile() {
             required
           />
           <input
+            className="UserName"
             type="text"
             placeholder={userInfo.userName}
             value={userName}
@@ -147,6 +145,7 @@ function EditShopOwnerProfile() {
             required
           />
           <input
+            className="email"
             type="email"
             placeholder={userInfo.email}
             value={email}
@@ -154,6 +153,7 @@ function EditShopOwnerProfile() {
             required
           />
           <input
+            className="phoneNumber"
             type="tel"
             placeholder={userInfo.phoneNumber}
             value={number}
@@ -161,6 +161,7 @@ function EditShopOwnerProfile() {
             required
           />
           <input
+            className="businessName"
             type="text"
             placeholder={userInfo.businessName}
             value={businessName}
@@ -168,6 +169,7 @@ function EditShopOwnerProfile() {
             required
           />
           <input
+          className=""
             type="text"
             placeholder={userInfo.businessAddress}
             value={businessAddress}
@@ -209,8 +211,7 @@ function EditShopOwnerProfile() {
           {error && <p className="error">{error}</p>}
           <button type="submit">Update Profile</button>
         </form>
-      </div>
-      <Footer />
+      </main>
     </div>
   );
 }

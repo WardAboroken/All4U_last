@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { API_URL } from "../constans.js";
 import axios from "axios";
-import "./css/editProfile.css"
-import "./css/customerSignup.css"
-
+import "./css/editProfile.css";
+import "./css/customerSignup.css";
 
 // Constants for API endpoints
 const api_url = "https://data.gov.il/api/3/action/datastore_search";
@@ -14,7 +13,6 @@ const street_name_key = "שם_רחוב";
 
 function EditProfile() {
   /* #region State Variables */
-  // User information state variables
   const [name, setName] = useState("");
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
@@ -23,6 +21,7 @@ function EditProfile() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // Image handling state variables
   const [image, setImage] = useState(null);
@@ -65,7 +64,6 @@ function EditProfile() {
   /* #endregion */
 
   /* #region Handlers */
-  // Handle category selection change
   const handleCategoryChange = (categoryId) => {
     const newSelectedCategories = selectedCategories.includes(categoryId)
       ? selectedCategories.filter((id) => id !== categoryId)
@@ -73,7 +71,6 @@ function EditProfile() {
     setSelectedCategories(newSelectedCategories);
   };
 
-  // Handle image selection and preview
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file && file.type.startsWith("image/")) {
@@ -86,7 +83,6 @@ function EditProfile() {
   /* #endregion */
 
   /* #region API Calls */
-  // Fetch data from external APIs
   const getData = useCallback((resource_id, q = "", limit = "100") => {
     return axios.get(api_url, {
       params: { resource_id, q, limit },
@@ -94,12 +90,10 @@ function EditProfile() {
     });
   }, []);
 
-  // Parse API response
   const parseResponse = useCallback((records = [], field_name) => {
     return records.map((record) => record[field_name].trim()).filter(Boolean);
   }, []);
 
-  // Populate cities from the API
   const populateCities = useCallback(async () => {
     try {
       const citiesList = await getData(cities_resource_id);
@@ -109,7 +103,6 @@ function EditProfile() {
     }
   }, [getData, parseResponse]);
 
-  // Populate streets based on selected city
   const populateStreets = useCallback(
     async (city) => {
       try {
@@ -127,7 +120,6 @@ function EditProfile() {
     [getData, parseResponse]
   );
 
-  // Fetch user information on component mount
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -166,12 +158,13 @@ function EditProfile() {
   /* #endregion */
 
   /* #region Form Submission */
-  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError("");
+    setSuccess("");
 
     if (newPassword !== confirmNewPassword) {
-      window.alert("New passwords do not match. Please try again.");
+      setError("New passwords do not match. Please try again.");
       return;
     }
 
@@ -198,21 +191,23 @@ function EditProfile() {
 
       if (!response.ok) {
         const errorData = await response.text();
-        window.alert("Update unsuccessful.");
-        throw new Error(`Error: ${response.statusText}, ${errorData}`);
+        setError(`Update unsuccessful: ${errorData}`);
+        return;
       }
-      window.alert("Profile updated successfully!");
+      setSuccess("Profile updated successfully!");
+      // Optionally reset or refetch user info here
     } catch (error) {
-      window.alert("Update unsuccessful.");
+      setError("Update unsuccessful. Please try again later.");
     }
   };
   /* #endregion */
 
   return (
-    <div className="editCustomerProfile-body" >
+    <div className="editCustomerProfile-body">
       <main className="editCustomerProfile-container">
         <h2>Customer Profile Edit</h2>
-        <form onSubmit={handleSubmit}>{imagePreview && (
+        <form onSubmit={handleSubmit}>
+          {imagePreview && (
             <img
               src={imagePreview}
               alt="User Profile"
@@ -220,7 +215,7 @@ function EditProfile() {
             />
           )}
           <input type="file" accept="image/*" onChange={handleImageChange} />
-          
+
           <input
             className="name"
             type="text"
@@ -276,6 +271,7 @@ function EditProfile() {
             onChange={(e) => setConfirmNewPassword(e.target.value)}
           />
           {error && <p className="error">{error}</p>}
+          {success && <p className="success">{success}</p>}
 
           {/* City Selection */}
           <div className="form-field">
@@ -316,6 +312,7 @@ function EditProfile() {
               ))}
             </select>
           </div>
+
           {/* Category Selection */}
           <div className="category-list">
             <h3>Select Your Favorite Categories:</h3>
