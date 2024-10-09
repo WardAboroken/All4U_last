@@ -12,14 +12,23 @@ router.post("/updateCustomerProfile", async (req, res, next) => {
 
     // Sending a response to the client
     if (result.success) {
-      res.status(200).json({ message: "Update success!" }); // Sending success message if addition is successful
+      res.status(200).json({ success: true, message: "Update success!" });
     } else {
-      res.status(400).json({ message: "Update faild" }); // Sending error message if user already exists
+      res
+        .status(400)
+        .json({ success: false, message: result.message || "Update failed." });
     }
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while update the user" });
+    console.error("Error in updating profile:", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: "An error occurred while updating the user.",
+      });
   }
 });
+
 
 // updateShopOwnerProfile
 router.post("/updateShopOwnerProfile", async (req, res, next) => {

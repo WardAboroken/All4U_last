@@ -44,7 +44,8 @@ router.post("/addProduct", upload.single("picturePath"), async (req, res) => {
 });
 
 // Route to update a product
-router.put("/updateProduct/:catalogNumber",
+router.put(
+  "/updateProduct/:catalogNumber",
   upload.single("picture"),
   async (req, res) => {
     try {
@@ -57,7 +58,7 @@ router.put("/updateProduct/:catalogNumber",
         amount,
         price,
         categoryNumber,
-        status
+        status,
       } = req.body;
 
       const parsedCategoryNumber = categoryNumber
@@ -86,7 +87,7 @@ router.put("/updateProduct/:catalogNumber",
         price,
         categoryNumber: parsedCategoryNumber,
         picturePath,
-        status
+        status,
       };
 
       const result = await updateProduct(catalogNumber, updatedProductData);
