@@ -209,8 +209,8 @@ router.get("/get-catalog-numbers/:orderNumber/:userName", async (req, res) => {
 // Route to get out-of-stock products for a specific business owner
 router.get("/get-out-of-stock-products/:userName", async (req, res) => {
   const { userName } = req.params;
-  console.log(
-    `Received request for out-of-stock products for user: ${userName}`
+  console.log(`
+    Received request for out-of-stock products for user: ${userName}`
   );
   try {
     const outOfStockQuery = `
@@ -309,35 +309,6 @@ router.get("/get-business-orders/:userName", async (req, res) => {
 });
 
 
-// router.get("/get-been-provided-orders/:userName", async (req, res) => {
-//   const { userName } = req.params;
-
-//   try {
-//     const ordersQuery = `
-//       SELECT o.orderNumber, o.orderDate AS date, ocp.orderStatus AS status, 
-//              SUM(p.price * ocp.productQuantity) AS totalCost
-//       FROM orderscontainsproducts ocp
-//       JOIN orders o ON ocp.orderNumber = o.orderNumber
-//       JOIN products p ON ocp.catalogNumber = p.catalogNumber
-//       WHERE p.userName = ? AND ocp.orderStatus = 'Been Provided'
-//       GROUP BY o.orderNumber, ocp.orderStatus, o.orderDate
-//       ORDER BY o.orderDate DESC;
-//     `;
-
-//     const orders = await doQuery(ordersQuery, [userName]);
-//     console.log(`Been Provided orders to  ${userName} >> `, orders);
-//     if (orders.length === 0) {
-//       return res.status(404).json({
-//         message: "No 'Been Provided' orders found for this business owner.",
-//       });
-//     }
-
-//     res.json(orders);
-//   } catch (error) {
-//     console.error("Error fetching 'Been Provided' orders:", error);
-//     res.status(500).json({ message: "Error fetching 'Been Provided' orders." });
-//   }
-// });
 
 // פונקציה לעדכון סטטוס ההזמנה עבור מוצר ספציפי
 // Route to update order status for a specific product within an order
@@ -428,97 +399,61 @@ router.put("/update-order-status/:orderNumber", async (req, res) => {
 
 // Endpoint to get detailed product information for a specific order and user
 router.post("/get-order-details", async (req, res) => {
-  const { orderNumber, userName } = req.body; // Get orderNumber and userName from the request body
+  const { orderNumber } = req.body; // Get orderNumber and userName from the request body
 
   try {
     const db = await getDbConnection();
 
-    // SQL query to fetch the product details for each catalogNumber in the order
+    // SQL query to fetch the product details for the given order
     const [orderDetailsResult] = await db.query(
-      `SELECT 
-         ocp.catalogNumber, 
-         p.productName, 
-         ocp.productQuantity AS amount, 
-         p.size, 
-         p.color, 
-         p.price 
-       FROM 
-         orderscontainsproducts ocp 
-       JOIN 
-         products p ON ocp.catalogNumber = p.catalogNumber 
-       WHERE 
-         ocp.orderNumber = ? 
-       AND 
-         p.userName = ?`, // Ensure products belong to the logged-in user (business owner)
-      [orderNumber, userName]
+      `SELECT  
+  ocp.catalogNumber, 
+  p.productName, 
+  ocp.productQuantity AS amount, 
+  p.size, 
+  p.color, 
+  p.price,
+  o.userName,
+  u.name,         -- Fetch the name from users table
+  u.phoneNumber,        -- Fetch the phone from users table
+  u.address       -- Fetch the address from users table
+FROM 
+  orderscontainsproducts ocp
+JOIN 
+  products p ON ocp.catalogNumber = p.catalogNumber 
+JOIN 
+  orders o ON ocp.orderNumber = o.orderNumber
+JOIN 
+  users u ON o.userName = u.userName  -- Join with users table based on userName from orders
+WHERE 
+  ocp.orderNumber = ?;
+`, // Ensure products belong to the logged-in user (business owner)
+      [orderNumber]
     );
-    console.log(" Order details >> ", orderDetailsResult);
-    if (!orderDetailsResult) {
+
+    console.log("Order details >>", orderDetailsResult);
+    if (!orderDetailsResult || orderDetailsResult.length === 0) {
       return res
         .status(404)
         .json({ message: "No details found for this order." });
     }
 
-    res.json(orderDetailsResult);
+    // Send both customer userName and product details in the response
+    res.json({
+      orderDetails: orderDetailsResult,
+    });
   } catch (error) {
     console.error("Error fetching order details:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
 // Define handleError function
 const handleError = (res, error, message = "An error occurred") => {
   console.error(message, error);
   res.status(500).json({ error: message });
 };
 
-// Reintroduce /addOrder route ///// ward
-// router.post("/addOrder", async (req, res) => {
-//   // Accessing the userInfo from session
-//   const userInfo = req.session.userInfo;
 
-//   if (!userInfo) {
-//     return res
-//       .status(401)
-//       .json({ success: false, message: "User not logged in" });
-//   }
-
-//   const { cartItems } = req.body;
-
-//   try {
-//     const result = await addOrder({
-//       userName: userInfo.userName, // Use userName from session
-//       cartItems,
-//     });
-
-//     if (result.error) {
-//       return res.status(400).json({ success: false, message: result.error });
-//     }
-
-//     res.status(201).json({ success: true, message: result.success });
-//   } catch (error) {
-//     handleError(res, error, "Error adding order.");
-//   }
-// });
-// Example: /order/addOrder route
-
-
-// router.post("/addOrder", (req, res) => {
-// const { userName, shippingAddress, cartItems } = req.body; // Access user info from session
-// console.log("add orderrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr", userName);
-//   // if (!userName) {
-//   //   return res.status(401).json({ message: "User not logged in" });
-//   // }
-//   // Proceed to add the order
-//   addOrder({ userName, shippingAddress, cartItems })
-//     .then((result) => {
-//       res.status(201).json({ success: true, message: "Order added" });
-//     })
-//     .catch((error) => {
-//       console.error("Error adding order:", error);
-//       res.status(500).json({ error: "Failed to add order" });
-//     });
-// }); 
 router.post("/addOrder", async (req, res) => {
   const { userName, shippingAddress, cartItems } = req.body;
 
@@ -539,18 +474,18 @@ router.post("/addOrder", async (req, res) => {
 
     // Step 2: Delete each ordered item from the cart after successfully adding the order
     for (let item of cartItems) {
-      const deleteCartItemResponse = await fetch(
-        `http://localhost:5000/cart/${encodeURIComponent(item.catalogNumber)}`,
+      const deleteCartItemResponse = await fetch(`
+        http://localhost:5000/cart/${encodeURIComponent(item.catalogNumber)}`,
         { method: "DELETE" }
       );
 
       if (!deleteCartItemResponse.ok) {
-        console.error(
-          `Failed to delete cart item with catalogNumber: ${item.catalogNumber}`
+        console.error(`
+          Failed to delete cart item with catalogNumber: ${item.catalogNumber}`
         );
       } else {
-        console.log(
-          `Deleted item with catalogNumber ${item.catalogNumber} from the cart.`
+        console.log(`
+          Deleted item with catalogNumber ${item.catalogNumber} from the cart.`
         );
       }
     }
