@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from "react";
-import "./css/shopOwnerOrdersPage.css"; // Ensure this file contains the required styles
-
-import { useLocation } from "react-router-dom"; // Import useLocation for reading query params
+import "./css/shopOwnerOrdersPage.css";
+import { useLocation } from "react-router-dom";
 
 const ShopOwnerOrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredOrders, setFilteredOrders] = useState([]);
-  const [visibleDetails, setVisibleDetails] = useState({}); // State to manage visibility of details
-  const [orderDetails, setOrderDetails] = useState({}); // State to manage fetched order details
-  const [userName, setUserName] = useState(""); // State to manage the logged-in user's username
-  const [loading, setLoading] = useState(true); // State to handle loading
-  const [selectedFilter, setSelectedFilter] = useState("All Orders"); // For the comboBox filter
+  const [visibleDetails, setVisibleDetails] = useState({});
+  const [orderDetails, setOrderDetails] = useState({});
+  const [userName, setUserName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [selectedFilter, setSelectedFilter] = useState("All Orders");
 
-  const location = useLocation(); // Hook to get the current URL location
-  const queryParams = new URLSearchParams(location.search); // Parse query parameters from the URL
-  const autoExpandOrderNumber = queryParams.get("orderNumber"); // Read the orderNumber query parameter
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const autoExpandOrderNumber = queryParams.get("orderNumber");
 
   useEffect(() => {
-    // Fetch user data and then orders for the logged-in business owner
     const fetchUserOrders = async () => {
       try {
         const res = await fetch("/userinfo/getUserInfo", {
@@ -37,24 +35,22 @@ const ShopOwnerOrdersPage = () => {
           return;
         }
 
-        setUserName(businessOwnerId); // Set the userName for future use
+        setUserName(businessOwnerId);
 
-        // Now fetch orders for the business owner using the correct ID
-        const response = await fetch(`
-          /order/get-business-orders/${businessOwnerId}`
+        const response = await fetch(
+         ` /order/get-business-orders/${businessOwnerId}`
         );
         if (response.ok) {
           const data = await response.json();
           setOrders(data);
           setFilteredOrders(data);
 
-          // After fetching orders, auto-expand the order details if needed
           if (autoExpandOrderNumber) {
             const orderExists = data.some(
               (order) => order.orderNumber.toString() === autoExpandOrderNumber
             );
             if (orderExists) {
-              fetchOrderDetails(autoExpandOrderNumber); // Auto-fetch details for the order
+              fetchOrderDetails(autoExpandOrderNumber);
             }
           }
         } else {
@@ -63,32 +59,33 @@ const ShopOwnerOrdersPage = () => {
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
-        setLoading(false); // Stop loading after fetching
+        setLoading(false);
       }
     };
 
     fetchUserOrders();
-  }, [autoExpandOrderNumber]); // Run the effect again if the query parameter changes
+  }, [autoExpandOrderNumber]);
 
-  // Function to fetch and display order details
   const fetchOrderDetails = async (orderNumber) => {
-    if (!orderNumber) return; // Ensure orderNumber is valid
+    if (!orderNumber) return;
 
     try {
       const response = await fetch(`/order/get-order-details`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderNumber, userName }), // Send both orderNumber and userName
+        body: JSON.stringify({ orderNumber, userName }),
       });
       if (response.ok) {
         const data = await response.json();
+        const { orderDetails, userName } = data;
+
         setOrderDetails((prevDetails) => ({
           ...prevDetails,
-          [orderNumber]: data,
+          [orderNumber]: { orderDetails, userName },
         }));
         setVisibleDetails((prevDetails) => ({
           ...prevDetails,
-          [orderNumber]: true, // Automatically set visibility to true
+          [orderNumber]: true,
         }));
       } else {
         console.error("Failed to fetch order details.");
@@ -98,14 +95,12 @@ const ShopOwnerOrdersPage = () => {
     }
   };
 
-  // Function to auto-expand the order details when the component mounts
   useEffect(() => {
     if (autoExpandOrderNumber && filteredOrders.length > 0) {
-      fetchOrderDetails(autoExpandOrderNumber); // Fetch details automatically for the order
+      fetchOrderDetails(autoExpandOrderNumber);
     }
   }, [autoExpandOrderNumber, filteredOrders]);
 
-  // Toggle visibility of order details
   const toggleDetails = (orderNumber) => {
     if (visibleDetails[orderNumber]) {
       setVisibleDetails((prevDetails) => ({
@@ -113,11 +108,10 @@ const ShopOwnerOrdersPage = () => {
         [orderNumber]: false,
       }));
     } else {
-      fetchOrderDetails(orderNumber); // Fetch details when toggling open
+      fetchOrderDetails(orderNumber);
     }
   };
 
-  // Function to update order status in the backend
   const updateOrderStatus = async (orderNumber, catalogNumbers, newStatus) => {
     try {
       const response = await fetch(`
@@ -125,7 +119,7 @@ const ShopOwnerOrdersPage = () => {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ catalogNumbers, status: newStatus }), // Send catalog numbers as an array
+          body: JSON.stringify({ catalogNumbers, status: newStatus }),
         }
       );
 
@@ -139,7 +133,6 @@ const ShopOwnerOrdersPage = () => {
     }
   };
 
-  // Function to handle status change
   const handleStatusChange = (orderNumber, catalogNumbers, newStatus) => {
     setOrders((prevOrders) =>
       prevOrders.map((order) =>
@@ -164,7 +157,6 @@ const ShopOwnerOrdersPage = () => {
       });
   };
 
-  // Filter orders based on search term
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
     setFilteredOrders(
@@ -174,7 +166,6 @@ const ShopOwnerOrdersPage = () => {
     );
   };
 
-  // Filter orders based on selected filter option
   const handleFilterChange = (e) => {
     setSelectedFilter(e.target.value);
     if (e.target.value === "All Orders") {
@@ -189,12 +180,12 @@ const ShopOwnerOrdersPage = () => {
   if (loading) {
     return <p>Loading orders...</p>;
   }
-
-  return (
-    <div className="shopOwnerMainPage-body">
-      <main className="shopOwnerMainPage-main">
-        <h1>Orders List</h1>
-        <div className="filter-container">
+return (
+  <div className="shopOwnerMainPage-body ">
+    <main className="shopOwnerMainPage-main ">
+      <section className="order-list-section">
+        <div className="orders-list-header">
+          <h1>Orders List</h1>
           <div className="search-filter">
             <input
               type="text"
@@ -202,19 +193,21 @@ const ShopOwnerOrdersPage = () => {
               value={searchTerm}
               onChange={handleSearch}
             />
+          </div>{" "}
+          <div>
+            <select
+              className="filter-select"
+              value={selectedFilter}
+              onChange={handleFilterChange}
+            >
+              <option value="All Orders">All Orders</option>
+              <option value="Received">Received</option>
+              <option value="In preparation">In preparation</option>
+              <option value="Ready">Ready</option>
+              <option value="Underway">Underway</option>
+              <option value="Been Provided">Been Provided</option>
+            </select>
           </div>
-          <select
-            className="filter-select"
-            value={selectedFilter}
-            onChange={handleFilterChange}
-          >
-            <option value="All Orders">All Orders</option>
-            <option value="Received">Received</option>
-            <option value="In preparation">In preparation</option>
-            <option value="Ready">Ready</option>
-            <option value="Underway">Underway</option>
-            <option value="Been Provided">Been Provided</option>
-          </select>
         </div>
 
         <table className="orders-table">
@@ -257,46 +250,79 @@ const ShopOwnerOrdersPage = () => {
                     Details
                   </button>
                   {visibleDetails[order.orderNumber] && (
-                    <table className="order-details-table">
-                      <thead>
+                    <>
+                      {orderDetails[order.orderNumber]?.orderDetails?.length >
+                      0 ? (
+                        <>
+                          {/* Customer Details Table (from the first product only) */}
+                          <table className="customer-details-table">
+                            <thead>
+                              <tr>
+                                <th>Customer Name</th>
+                                <th>Customer PhoneNumber</th>
+                                <th>Customer Location</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {orderDetails[order.orderNumber].orderDetails
+                                .slice(0, 1) // Fetch only the first item
+                                .map((product, index) => (
+                                  <tr key={index}>
+                                    <td>{product.name}</td>
+                                    <td>{product.phoneNumber}</td>
+                                    <td>{product.address}</td>
+                                  </tr>
+                                ))}
+                            </tbody>
+                          </table>
+
+                          {/* Product Details Table */}
+                          <table className="order-details-table">
+                            <thead>
+                              <tr>
+                                <th>Catalog Number</th>
+                                <th>Product Name</th>
+                                <th>Amount</th>
+                                <th>Size</th>
+                                <th>Color</th>
+                                <th>Price</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {orderDetails[order.orderNumber].orderDetails.map(
+                                (product, index) => (
+                                  <tr key={index}>
+                                    <td>{product.catalogNumber}</td>
+                                    <td>{product.productName}</td>
+                                    <td>{product.amount}</td>
+                                    <td>{product.size}</td>
+                                    <td>{product.color}</td>
+                                    <td>${product.price}</td>
+                                  </tr>
+                                )
+                              )}
+                            </tbody>
+                          </table>
+                        </>
+                      ) : (
                         <tr>
-                          <th>Catalog Number</th>
-                          <th>Product Name</th>
-                          <th>Amount</th>
-                          <th>Size</th>
-                          <th>Color</th>
-                          <th>Price</th>
+                          <td colSpan="6">No details available</td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {orderDetails[order.orderNumber]?.map(
-                          (product, index) => (
-                            <tr key={index}>
-                              <td>{product.catalogNumber}</td>
-                              <td>{product.productName}</td>
-                              <td>{product.amount}</td>
-                              <td>{product.size}</td>
-                              <td>{product.color}</td>
-                              <td>${product.price}</td>
-                            </tr>
-                          )
-                        )}
-                      </tbody>
-                    </table>
+                      )}
+                    </>
                   )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div >
-          <a href="/ShopOwnerMainPage#graphSection">
-            Click here to view your sales progress →
-          </a>
-        </div>
-      </main>
+      </section> 
+         <div>
+      <a href="/sales-progress">Click here to view your sales progress →</a>
     </div>
-  );
-};
+    </main>
+  </div>
+);
+}
 
 export default ShopOwnerOrdersPage;

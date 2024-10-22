@@ -241,8 +241,8 @@ function ShopOwnerMainPage() {
   };
 
   return (
-    <div>
-      <main>
+    <div className="shopOwnerMainPage-body">
+      <main className="shopOwnerMainPage-main">
         <h1>{userInfo.businessName}</h1>
         {/* Out of Stock Products Section */}
         {outOfStockProducts.length > 0 && (
