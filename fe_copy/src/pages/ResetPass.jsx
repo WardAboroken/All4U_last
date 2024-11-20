@@ -1,35 +1,32 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./css/login.css";
-import OutHeader from "../components/OutHeader";
-import Footer from "../components/Footer";
 
-function Login() {
+function ResetPass() {
   const navigate = useNavigate();
-  const [message, setMessage] = useState("");
-  
+  const [message, setMessage] = useState(""); // State to store any feedback message
 
+  // Handle the form submission for password reset
   const handleLoginClick = async (event) => {
     event.preventDefault();
 
-    // Extract username and password from form data
     // Extract username, password, and confirmPassword from form data
     const formData = new FormData(event.target);
     const userName = formData.get("UserName");
     const psw = formData.get("psw");
     const confirmPsw = formData.get("confirmPassword");
 
-    // Check if passwords match
+    // Check if passwords match before sending to backend
     if (psw !== confirmPsw) {
       setMessage("Passwords do not match. Please try again.");
       return;
     }
 
-    // Send only username and password to backend
+    // Only send username and new password to the backend
     const userData = { userName, psw };
 
     try {
-      // Send login request to backend
+      // Send reset password request to the backend
       const response = await fetch("/recoveryPsw/resetPsw", {
         method: "POST",
         headers: {
@@ -38,43 +35,47 @@ function Login() {
         body: JSON.stringify(userData),
       });
 
-      // Parse response JSON data
+      // Parse the response JSON data
       const data = await response.json();
-      console.log("Login response:", data); // Log response for debugging
+      console.log("Reset password response:", data); // Log response for debugging
 
-      // Handle response based on server's success or failure
+      // Display appropriate messages based on success or failure
       if (response.ok) {
-         window.alert(
-           "you success to reset your password , you can to login with your new password now"
-         );
-        navigate("/Login"); // Redirect to the specified URL after successful login
+        window.alert(
+          "You have successfully reset your password. You can now log in with your new password."
+        );
+        navigate("/Login"); // Redirect to login page after successful reset
       } else {
-        window.alert("you failed to reset your password , please try again");
+        window.alert("Failed to reset your password. Please try again.");
       }
     } catch (error) {
-      console.error("Error checking user:", error.message);
-      window.alert("you failed to reset your password , please try again");
+      console.error("Error resetting password:", error.message);
+      window.alert("Failed to reset your password. Please try again.");
     }
   };
 
   return (
-    <body>
-      <OutHeader />
-      <div className="container">
+    <div className="login-body">
+      <main className="login-container">
         <h2>Reset Password</h2>
         <form onSubmit={handleLoginClick}>
+          {/* Username input field */}
           <input
             className="UserName"
             type="text"
             name="UserName"
             placeholder="Username"
+            required
           />
+          {/* New password input field */}
           <input
             className="psw"
             type="password"
             name="psw"
             placeholder="Password"
+            required
           />
+          {/* Confirm new password input field */}
           <input
             className="confirmPassword"
             type="password"
@@ -82,15 +83,16 @@ function Login() {
             placeholder="Confirm Password"
             required
           />
+          {/* Submit button to reset password */}
           <button className="menuItem_login" type="submit">
             RESET
           </button>
         </form>
+        {/* Display message if passwords do not match or other issues occur */}
         {message && <p>{message}</p>}
-      </div>
-      <Footer />
-    </body>
+      </main>
+    </div>
   );
 }
 
-export default Login;
+export default ResetPass;
