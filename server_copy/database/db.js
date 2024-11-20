@@ -6,10 +6,11 @@ const mysql = require("mysql2/promise");
 // ! with a single connection multiple queries will be executed sequentially
 
 const dbConfig = {
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "final_project",
+  host: "127.0.0.1", // Localhost IP
+  user: "root", // Username for MySQL
+  password: "", // Password for MySQL (empty if no password)
+  database: "final_project", // Your database name
+  port: 3308, // Custom port since you're using 3308
 };
 
 let connection;

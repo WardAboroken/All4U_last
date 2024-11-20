@@ -4,7 +4,7 @@ const doQuery = require("../query");
  * A shop function which gets all products from products table
  * @returns result of query
  */
-async function getProducts() {
+async function getAllProducts() {
   const sql = `SELECT 
     p.catalogNumber,
     p.productName,
@@ -20,14 +20,10 @@ async function getProducts() {
   FROM 
     products p
   JOIN 
-    businessowner b ON p.userName = b.userName
-  WHERE 
-    p.amount > 0
-    AND b.status = 1
-    AND p.status = 'Active'`;
+    businessowner b ON p.userName = b.userName`;
 
   const result = await doQuery(sql);
   return result;
 }
 
-module.exports = getProducts;
+module.exports = getAllProducts;
