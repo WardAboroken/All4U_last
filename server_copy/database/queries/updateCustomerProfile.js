@@ -52,7 +52,7 @@ async function updateCustomerProfile(user) {
     if (newPassword) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(newPassword, salt);
-      sql +=` , psw = ?`; // Add password field to the query
+      sql += ` , psw = ?`; // Add password field to the query
       params.push(hashedPassword); // Add hashed password to the parameters
     }
 

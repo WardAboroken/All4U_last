@@ -31,7 +31,7 @@ async function updateShopOwnerProfile(shopOwner) {
         psw = ?, 
         businessName = ?, 
         businessAddress = ?, 
-        description = ? 
+        description = ? ,
         paypalEmail = ? 
       WHERE userName = ?
     `;

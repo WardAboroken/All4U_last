@@ -22,7 +22,7 @@ async function getProducts() {
   JOIN 
     businessowner b ON p.userName = b.userName
   WHERE 
-    p.amount >= 0
+    p.amount > 0
     AND b.status = 1
     AND p.status = 'Active'`;
 

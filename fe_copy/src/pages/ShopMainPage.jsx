@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
-import InsideHeader from "../components/InsideHeader";
-import Footer from "../components/Footer";
-import "./css/index.css";
+import { NavLink, useLocation } from "react-router-dom";
 import "./css/shopMainPage.css";
-import background_img from "../asserts/images/warmth_background.jpeg";
+import { API_URL } from "../constans.js";
+import background_img from "../assets/images/warmth_background.jpeg";
 
 function ShopMainPage() {
+  // State variables for products, user favorite categories, and loading state
   const [products, setProducts] = useState([]);
   const [userFavCategories, setUserFavCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  const location = useLocation();
+
+  // Extract search term from URL query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const searchTerm = queryParams.get("search");
+
+  // Fetch user info and set favorite categories
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -34,10 +42,12 @@ function ShopMainPage() {
     };
 
     fetchUserInfo();
-  }, []); // Only run once when the component mounts
+  }, []);
 
+  // Fetch products based on user favorites or search term
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       try {
         const response = await fetch("/shop/get-products", {
           method: "GET",
@@ -52,66 +62,101 @@ function ShopMainPage() {
 
         const data = await response.json();
 
-        // Filter products based on the user's favorite categories
-        if (userFavCategories.length > 0) {
-          const filteredProducts = data.filter((product) =>
+        // Filter products to show only those with available stock
+        let filteredProducts = data.filter((product) => product.amount > 0);
+
+        // Filter products based on search term if provided
+        if (searchTerm) {
+          filteredProducts = filteredProducts.filter((product) =>
+            product.productName.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        }
+        // Otherwise, filter by user's favorite categories
+        else if (userFavCategories.length > 0) {
+          filteredProducts = filteredProducts.filter((product) =>
             userFavCategories.includes(product.categoryNumber)
           );
-          setProducts(filteredProducts);
-        } else {
-          setProducts(data); // If no favorite categories, display all products
         }
+
+        setProducts(filteredProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-      fetchProducts(); // Only fetch products once categories are fetched
-  }, [userFavCategories]); // Run when userFavCategories updates
-
-  const getImagePath = (picturePath) => {
-    try {
-      return require(`../asserts/images/${picturePath}`).default;
-    } catch (error) {
-      console.error(`Image not found: ${picturePath}`);
-      return require("../asserts/images/map.png").default; // Fallback image if not found
-    }
-  };
+    fetchProducts();
+  }, [userFavCategories, searchTerm]);
 
   return (
-    <div>
-      <InsideHeader />
-      <main className="container">
-        <section className="section1">
+    <div className="div-body">
+      <main className="shopMainPage-container">
+        {/* Hero Section */}
+        <section className="sectionMain">
           <div className="hero-content">
             <h1>All4U</h1>
+            <p className="shopMainPage-slogan">
+              The ultimate shopping experience, tailored exclusively for you.
+            </p>
           </div>
-          <img src={background_img} alt="backgroundImg" />
+          <img
+            src={background_img}
+            alt="backgroundImg"
+            className="hero-image"
+          />
         </section>
-        <section className="section2">
-          <h2>Products</h2>
-          <ul>
-            {products.map((product) => (
-              <li key={product.productId}>
-                <img
-                  src={getImagePath(product.picture_path)}
-                  alt={product.productName}
-                />
-                <h3>{product.productName}</h3>
-                <p>Price: ${product.price}</p>
-                <ul>
-                  <li>Description: {product.description}</li>
-                  <li>Catalog Number: {product.catalogNumber}</li>
-                  <li>Amount: {product.amount}</li>
-                  <li>Size: {product.size}</li>
-                  <li>Color: {product.color}</li>
-                </ul>
-              </li>
-            ))}
-          </ul>
+
+        {/* Best Sellers Section */}
+        <section className="sectionBestSellers">
+          {loading ? (
+            <p>Loading...</p>
+          ) : products.length > 0 ? (
+            <>
+              <h2>Best Sellers</h2>
+              <ul>
+                {products.slice(0, 4).map((product) => (
+                  <li key={product.productId}>
+                    <NavLink to={`/Product/${product.catalogNumber}`}>
+                      <img
+                        src={`${API_URL}/uploads/${product.picturePath}`}
+                        alt={product.productName}
+                      />
+                      <h3>{product.productName}</h3>
+                      <p>Price: ${product.price}</p>
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="pCategory">
+              No products found for your search criteria.
+            </p>
+          )}
         </section>
+
+        {/* Suggestions Section */}
+        {!loading && products.length > 0 && (
+          <section className="sectionProducts">
+            <h2>Suggestions</h2>
+            <ul>
+              {products.map((product) => (
+                <li key={product.productId}>
+                  <NavLink to={`/Product/${product.catalogNumber}`}>
+                    <img
+                      src={`${API_URL}/uploads/${product.picturePath}`}
+                      alt={product.productName}
+                    />
+                    <h3>{product.productName}</h3>
+                    <p>Price: ${product.price}</p>
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </main>
-      <Footer />
     </div>
   );
 }
